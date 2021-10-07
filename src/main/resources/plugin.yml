@@ -1,0 +1,9 @@
+name: IndrocraftPlugin
+version: 1.0
+main: indrocraft.indrocraftplugin.Main
+api-version: 1.17
+
+commands:
+  dev:
+    usage: /<command>
+    description: for developer testing
