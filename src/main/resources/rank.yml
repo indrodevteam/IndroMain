@@ -1,1 +1,56 @@
+# ranks to use this feature ranks should be structured like this:
+# ranks:
+# <name of rank for database>:
+#     - <rank display name>
+#     - <primary colour>
+#     - <secondary colour>
+#     - <name colour leave as 'null' for white>
+#     - <rank level for other features admin should be lowest>
+
 useRanks: true
+
+autoRankUp: true
+rankUpOrder:
+  - story/mine_diamond
+  - nether/obtain_ancient_debris
+  - story/mine_stone
+  - adventure/throw_trident
+  - adventure/shoot_arrow
+
+ranks:
+  '0':
+    displayName: GREMLIN
+    primaryColour: GRAY
+    secondaryColour: DARK_GRAY
+    nameColour: gold
+    advancements: 1
+  '1':
+    displayName: HERO
+    primaryColour: GRAY
+    secondaryColour: DARK_GRAY
+    nameColour: gold
+    advancements: 1
+  '2':
+    displayName: TITAN
+    primaryColour: GRAY
+    secondaryColour: DARK_GRAY
+    nameColour: gold
+    advancements: 1
+  '3':
+    displayName: DEMIGOD
+    primaryColour: GRAY
+    secondaryColour: DARK_GRAY
+    nameColour: gold
+    advancements: 1
+  '4':
+    displayName: GOD
+    primaryColour: GRAY
+    secondaryColour: DARK_GRAY
+    nameColour: gold
+    advancements: 1
+  '5':
+    displayName: DEV
+    primaryColour: GRAY
+    secondaryColour: DARK_GRAY
+    nameColour: gold
+    advancements: 1

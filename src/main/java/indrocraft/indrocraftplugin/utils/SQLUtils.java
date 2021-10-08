@@ -187,7 +187,7 @@ public class SQLUtils {
                 PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + tableName);
                 ResultSet results = ps.executeQuery();
                 results.next();
-                PreparedStatement ps2 = plugin.SQL.getConnection().prepareStatement("INSERT IGNORE INTO " + tableName + " (NAME) VALUE (?)");
+                PreparedStatement ps2 = plugin.SQL.getConnection().prepareStatement("INSERT IGNORE INTO " + tableName + " (" + idColumn + ") VALUE (?)");
                 ps2.setString(1, idEquals);
                 ps2.executeUpdate();
             } catch (SQLException e) {

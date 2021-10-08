@@ -3,6 +3,8 @@ package indrocraft.indrocraftplugin;
 import indrocraft.indrocraftplugin.commands.Dev;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.dataManager.MySQL;
+import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
+import indrocraft.indrocraftplugin.utils.RankUtils;
 import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +24,7 @@ public final class Main extends JavaPlugin implements Listener {
     public MySQL SQL;
     public SQLUtils sqlUtils;
     public ConfigTools configTools;
+    public RankUtils rankUtils;
 
     @Override
     public void onEnable() {
@@ -30,6 +33,7 @@ public final class Main extends JavaPlugin implements Listener {
         sqlUtils = new SQLUtils(this);
         configTools = new ConfigTools(this);
         SQL = new MySQL(this);
+        rankUtils = new RankUtils();
 
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev(this));
@@ -50,6 +54,13 @@ public final class Main extends JavaPlugin implements Listener {
         if (SQL.isConnected()) {
             Bukkit.getLogger().info(ChatColor.BLUE + "Database is connected!");
         }
+
+        //register events:
+        getServer().getPluginManager().registerEvents(new JoinLeaveEvent(this), this);
+
+        //create tables:
+        sqlUtils.createTable("players", "UUID");
+        sqlUtils.createColumn("ign", "VARCHAR(100)", "players");
 
         // testing:
         sqlUtils.createTable("testing", "NAME");
