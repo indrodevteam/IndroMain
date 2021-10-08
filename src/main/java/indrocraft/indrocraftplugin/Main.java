@@ -3,6 +3,7 @@ package indrocraft.indrocraftplugin;
 import indrocraft.indrocraftplugin.commands.Dev;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.dataManager.MySQL;
+import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -18,21 +19,24 @@ import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
 
-    FileConfiguration config = getConfig();
-
-    public File configA;
-
     public MySQL SQL;
+    public SQLUtils sqlUtils;
+    public ConfigTools configTools;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        //init utils
+        sqlUtils = new SQLUtils(this);
+        configTools = new ConfigTools(this);
+        SQL = new MySQL(this);
+
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev(this));
 
         // create config files
-        generateConfig("config.yml");
-        generateConfig("rank.yml");
+        configTools.generateConfig("config.yml");
+        configTools.generateConfig("rank.yml");
 
         // connects to the database:
         this.SQL = new MySQL(this);
@@ -46,27 +50,17 @@ public final class Main extends JavaPlugin implements Listener {
         if (SQL.isConnected()) {
             Bukkit.getLogger().info(ChatColor.BLUE + "Database is connected!");
         }
+
+        // testing:
+        sqlUtils.createTable("testing", "NAME");
+        sqlUtils.createColumn("test", "VARCHAR(100)", "testing");
+        sqlUtils.createRow("NAME", "player", "testing");
     }
 
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-    }
-
-    public void generateConfig(String configName) {
-        File configA = new File(getDataFolder(), configName);
-
-        if (!configA.exists()) {
-            configA.getParentFile().mkdirs();
-            saveResource(configName, false);
-        }
-        FileConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(configA);
-        } catch (IOException | InvalidConfigurationException e ) {
-            e.printStackTrace();
-        }
+        SQL.disconnect();
     }
 }
