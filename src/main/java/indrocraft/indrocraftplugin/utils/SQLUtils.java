@@ -6,18 +6,17 @@ import org.bukkit.Bukkit;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
-
 public class SQLUtils {
     /*
     todo:
-        - create (table | row | column)
         - delete (table | row | column)
-        - change data type
-        - item exists
         - clear (table | row | column)
-        - set (int | string | double | float)
         - get (int | string | double | float)
+    finished:
+        - item exists
+        - create
+        - change data type
+        - set data
      */
 
     private Main plugin;
@@ -37,21 +36,117 @@ public class SQLUtils {
                 int valNum = Integer.valueOf(value);
                 ps.setInt(1, valNum);
                 ps.setString(2, id);
-            } else if (isNum("double", value)) {
-                double valNum = Double.valueOf(value);
-                ps.setDouble(1, valNum);
-                ps.setString(2, id);
+                Bukkit.getLogger().warning("int");
             } else if (isNum("float", value)) {
                 float valNum = Float.valueOf(value);
                 ps.setFloat(1, valNum);
                 ps.setString(2, id);
+                Bukkit.getLogger().warning("float");
+            } else if (isNum("double", value)) {
+                double valNum = Double.valueOf(value);
+                ps.setDouble(1, valNum);
+                ps.setString(2, id);
+                Bukkit.getLogger().warning("double");
             } else {
-                return;
+                ps.setString(1, value);
+                ps.setString(2, id);
             }
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * @param column What column is the desired cell in
+     * @param idColumn What is the id column used for this table
+     * @param idEquals What id are you looking for?
+     * @param tableName What is the name of the table
+     * @return returns the number value of the specified cell
+     */
+    public int getInt(String column, String idColumn, String idEquals, String tableName) {
+        try{
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
+            ps.setString(1, idEquals);
+            ResultSet rs = ps.executeQuery();
+            int info = 0;
+            if (rs.next()) {
+                info = rs.getInt(column);
+                return info;
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * @param column What column is the desired cell in
+     * @param idColumn What is the id column used for this table
+     * @param idEquals What id are you looking for?
+     * @param tableName What is the name of the table
+     * @return returns the string value of the specified cell
+     */
+    public String getString(String column, String idColumn, String idEquals, String tableName) {
+        try{
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
+            ps.setString(1, idEquals);
+            ResultSet rs = ps.executeQuery();
+            String info = "";
+            if (rs.next()) {
+                info = rs.getString(column);
+                return info;
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * @param column What column is the desired cell in
+     * @param idColumn What is the id column used for this table
+     * @param idEquals What id are you looking for?
+     * @param tableName What is the name of the table
+     * @return returns the string value of the specified cell
+     */
+    public double getDouble(String column, String idColumn, String idEquals, String tableName) {
+        try{
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
+            ps.setString(1, idEquals);
+            ResultSet rs = ps.executeQuery();
+            double info = 0;
+            if (rs.next()) {
+                info = rs.getDouble(column);
+                return info;
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * @param column What column is the desired cell in
+     * @param idColumn What is the id column used for this table
+     * @param idEquals What id are you looking for?
+     * @param tableName What is the name of the table
+     * @return returns the string value of the specified cell
+     */
+    public float getFloat(String column, String idColumn, String idEquals, String tableName) {
+        try{
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
+            ps.setString(1, idEquals);
+            ResultSet rs = ps.executeQuery();
+            float info = 0;
+            if (rs.next()) {
+                info = rs.getFloat(column);
+                return info;
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     /**
@@ -87,7 +182,7 @@ public class SQLUtils {
      * @param tableName What table dp you want to inset into?
      */
     public void createRow(String idColumn, String idEquals, String tableName) {
-        if (!exists(idColumn, idEquals, tableName)) {
+        if (!rowExists(idColumn, idEquals, tableName)) {
             try {
                 PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + tableName);
                 ResultSet results = ps.executeQuery();
@@ -103,14 +198,20 @@ public class SQLUtils {
         }
     }
 
-    public boolean exists(String idColumn, String test, String tableName) {
+    /**
+     * @param idColumn What column in this table is unique generally the "NAME" column
+     * @param test What do u want to test the idColumn for
+     * @param tableName In what table
+     * @return Returns true if it exists and false if it does not
+     */
+    public boolean rowExists(String idColumn, String test, String tableName) {
         try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, test);
 
             ResultSet results = ps.executeQuery();
             if (results.next()) {
-                //player is found
+                //row is found
                 return true;
             }
             return false;
@@ -120,25 +221,47 @@ public class SQLUtils {
         return false;
     }
 
+
+    /**
+     * @param column What is the name of the column you want to alter
+     * @param dataType What data type do u want to set it to
+     * @param tableName In what table?
+     */
+    public void setDataType(String column, String dataType, String tableName) {
+        try {
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("ALTER TABLE " + tableName + " MODIFY " + column + " " + dataType);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean isNum(String type, String num) {
         try {
             if (type.equalsIgnoreCase("int")) {
-                Integer.parseInt(num);
-            } else if (type.equalsIgnoreCase("double")) {
-                Bukkit.getLogger().warning("double");
-                Double.parseDouble(num);
+                int i = Integer.parseInt(num);
+                if (num == String.valueOf(i)) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else if (type.equalsIgnoreCase("float")) {
-                Bukkit.getLogger().warning("Float");
-                Float.parseFloat(num);
+                float i = Float.parseFloat(num);
+                if (num == String.valueOf(i)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if (type.equalsIgnoreCase("double")) {
+                double i = Double.parseDouble(num);
+                if (num == String.valueOf(i)) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         } catch (Exception e) {
-            if (type.equalsIgnoreCase("int")) {
-                Bukkit.getLogger().warning("Not an Integer");
-            } else if (type.equalsIgnoreCase("double")) {
-                Bukkit.getLogger().warning("Not an Double");
-            } else if (type.equalsIgnoreCase("float")) {
-                Bukkit.getLogger().warning("Not an Float");
-            }
             return false;
         }
         return true;

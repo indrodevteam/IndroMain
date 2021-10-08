@@ -7,3 +7,4 @@ commands:
   dev:
     usage: /<command>
     description: for developer testing
+    aliases: [int, float, double, string]

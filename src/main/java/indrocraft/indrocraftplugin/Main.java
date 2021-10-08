@@ -53,8 +53,10 @@ public final class Main extends JavaPlugin implements Listener {
 
         // testing:
         sqlUtils.createTable("testing", "NAME");
-        sqlUtils.createColumn("test", "VARCHAR(100)", "testing");
+        sqlUtils.createColumn("test", "DOUBLE", "testing");
         sqlUtils.createRow("NAME", "player", "testing");
+
+        sqlUtils.setDataType("test", "VARCHAR(100)", "testing");
     }
 
 
