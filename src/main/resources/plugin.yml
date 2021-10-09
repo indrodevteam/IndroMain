@@ -8,3 +8,7 @@ commands:
     usage: /<command>
     description: for developer testing
     aliases: [int, float, double, string]
+  setRank:
+    usage: /<command>
+    description: chenges the players name in the game and tablist
+    aliases: [namecolour]

@@ -6,13 +6,17 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class RankUtils {
-    public FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
+    public static FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
 
     public static void setRank(Player player, SQLUtils sqlUtils, String newRank) {
         sqlUtils.setData(newRank, "UUID", player.getUniqueId().toString(), "rank", "players");
     }
 
-    public void LoadRank(Player player, SQLUtils data) {
+    public static void setNameColour(Player player, SQLUtils data, String newColour) {
+        data.setData(newColour, "UUID", player.getUniqueId().toString(), "nameColour", "players");
+    }
+
+    public static void LoadRank(Player player, SQLUtils data) {
         String code = data.getString("rank", "UUID", player.getUniqueId().toString(), "players");
         String displayName = config.getString("ranks." + code + ".displayName");
         ChatColor colorA = getColour(1, player, data);
@@ -22,7 +26,7 @@ public class RankUtils {
         player.setPlayerListName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
     }
 
-    public ChatColor getColour(int colourNum, Player player, SQLUtils data) {
+    public static ChatColor getColour(int colourNum, Player player, SQLUtils data) {
         String uuid = player.getUniqueId().toString();
         String code = data.getString("rank", "UUID", uuid, "players");
         String color = null;

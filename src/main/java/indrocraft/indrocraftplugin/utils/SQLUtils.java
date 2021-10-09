@@ -193,8 +193,6 @@ public class SQLUtils {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        } else {
-            Bukkit.getLogger().warning("this row already exists");
         }
     }
 

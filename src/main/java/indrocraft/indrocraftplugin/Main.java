@@ -1,6 +1,7 @@
 package indrocraft.indrocraftplugin;
 
 import indrocraft.indrocraftplugin.commands.Dev;
+import indrocraft.indrocraftplugin.commands.SetRank;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.dataManager.MySQL;
 import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
@@ -8,14 +9,9 @@ import indrocraft.indrocraftplugin.utils.RankUtils;
 import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 
@@ -37,6 +33,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev(this));
+        getServer().getPluginCommand("setRank").setExecutor(new SetRank(this));
 
         // create config files
         configTools.generateConfig("config.yml");

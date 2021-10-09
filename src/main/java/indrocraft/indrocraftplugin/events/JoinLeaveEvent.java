@@ -15,7 +15,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class JoinLeaveEvent implements Listener {
 
-    public FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
+    public FileConfiguration config = ConfigTools.getFileConfig("config.yml");
+    public FileConfiguration ranksTemplate = ConfigTools.getFileConfig("rank.yml");
 
     public Main main;
     public JoinLeaveEvent(Main main) {this.main = main;}
@@ -41,7 +42,7 @@ public class JoinLeaveEvent implements Listener {
         }
 
         //load rank:
-        if (config.getBoolean("useRanks")) {
+        if (ranksTemplate.getBoolean("useRanks")) {
             main.sqlUtils.createColumn("rank", "int(100)", "players");
             main.sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
 
