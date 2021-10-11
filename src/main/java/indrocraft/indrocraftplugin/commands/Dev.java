@@ -22,8 +22,23 @@ public class Dev implements CommandExecutor {
         FileConfiguration config = ConfigTools.getFileConfig("config.yml");
 
         if (sender.isOp()) {
+            if (args[0].equalsIgnoreCase("createTable")) {
+                main.sqlUtils.createTable(args[1], args[2]);
+            }
+            if (args[0].equalsIgnoreCase("addColumn")) {
+                main.sqlUtils.createColumn(args[1], args[2], args[3]);
+            }
+            if (args[0].equalsIgnoreCase("addRow")) {
+                main.sqlUtils.createRow(args[1], args[2], args[3]);
+            }
+            if (args[0].equalsIgnoreCase("setData")) {
+                main.sqlUtils.setData(args[1], args[2], args[3], args[4], args[5]);
+            }
             if (args[0].equalsIgnoreCase("time")) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "time set night");
+
+            }
+            if (args[0].equalsIgnoreCase("time")) {
+
             }
         }
 

@@ -18,22 +18,20 @@ public class Home implements TabExecutor {
 
     public Home(Main main) {this.main = main;}
 
-    FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
     FileConfiguration configA = ConfigTools.getFileConfig("config.yml");
-    public String databaseName = config.getString("databaseForTP");
+    public String databaseName = configA.getString("databaseForTP");
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         ChatColor red = ChatColor.RED;
-        Boolean homeEnabled = configA.getBoolean("homes");
+        boolean homeEnabled = configA.getBoolean("homes");
 
         if (homeEnabled) {
 
             if (sender instanceof Player) {
-                String homeID = args[0].toLowerCase();
                 Player player = (Player) sender;
                 String uuid = player.getUniqueId().toString();
-                int getNumOfHomes = main.sqlUtils.getInt(databaseName + "num", "UUID", player.getUniqueId().toString(), "players");
+                int getNumOfHomes = main.sqlUtils.getInt(databaseName + "num", "UUID", uuid, "players");
                 int numOfHomes = 0;
                 int playerLevel = RankUtils.getLevel(player, main.sqlUtils);
                 if (playerLevel == 0) {
@@ -53,13 +51,14 @@ public class Home implements TabExecutor {
                 if ("sethome".equalsIgnoreCase(label)) {
                     if (getNumOfHomes < numOfHomes) {
                         if (args.length > 0) {
-                            String homesList = main.sqlUtils.getString(databaseName, uuid, databaseName, "players");
+                            String homeID = args[0];
+                            String homesList = main.sqlUtils.getString(databaseName, "UUID", uuid, "players");
                             if (!(homesList.contains(" " + homeID + " "))) {
                                 player.sendMessage(ChatColor.BLUE + "Successfully set home: " + ChatColor.GREEN + homeID);
-                                Integer newNum = getNumOfHomes + 1;
+                                int newNum = getNumOfHomes + 1;
 
                                 //increases number of homes
-                                main.sqlUtils.setData(newNum.toString(), "UUID", uuid, databaseName + "num", "players");
+                                main.sqlUtils.setData(Integer.toString(newNum), "UUID", uuid, databaseName + "num", "players");
 
                                 //gets then sets the list of players homes
                                 String hList = main.sqlUtils.getString(databaseName, "UUID", uuid, "players");
@@ -70,20 +69,21 @@ public class Home implements TabExecutor {
                                 String[] world = getWorld.split("\\=");
 
                                 //location and direction of player:
-                                Double x = player.getLocation().getX();
-                                Double y = player.getLocation().getY();
-                                Double z = player.getLocation().getZ();
-                                Float yaw = player.getLocation().getYaw();
-                                Float pitch = player.getLocation().getPitch();
+                                double x = player.getLocation().getX();
+                                double y = player.getLocation().getY();
+                                double z = player.getLocation().getZ();
+                                float yaw = player.getLocation().getYaw();
+                                float pitch = player.getLocation().getPitch();
 
                                 //creates new row and fills in location data
                                 main.sqlUtils.createRow("homeID", uuid + homeID, databaseName);
+                                main.sqlUtils.setData(uuid, "homeID", uuid + homeID, "playerId", databaseName);
                                 main.sqlUtils.setData(world[1], "homeID", uuid + homeID,"world", databaseName);
-                                main.sqlUtils.setData(x.toString(), "homeID", uuid + homeID,"x", databaseName);
-                                main.sqlUtils.setData(y.toString(), "homeID", uuid + homeID,"y", databaseName);
-                                main.sqlUtils.setData(z.toString(), "homeID", uuid + homeID,"z", databaseName);
-                                main.sqlUtils.setData(yaw.toString(), "homeID", uuid + homeID,"yaw", databaseName);
-                                main.sqlUtils.setData(pitch.toString(), "homeID", uuid + homeID,"pitch", databaseName);
+                                main.sqlUtils.setData(Double.toString(x), "homeID", uuid + homeID,"x", databaseName);
+                                main.sqlUtils.setData(Double.toString(y), "homeID", uuid + homeID,"y", databaseName);
+                                main.sqlUtils.setData(Double.toString(z), "homeID", uuid + homeID,"z", databaseName);
+                                main.sqlUtils.setData(Float.toString(yaw), "homeID", uuid + homeID,"yaw", databaseName);
+                                main.sqlUtils.setData(Float.toString(pitch), "homeID", uuid + homeID,"pitch", databaseName);
                             } else {
                                 player.sendMessage(red + "You already have a home set with this name please delete it first!");
                                 return true;
@@ -98,7 +98,8 @@ public class Home implements TabExecutor {
                     }
                 } else if ("home".equalsIgnoreCase(label)) {
                     if (args.length > 0) {
-                        String test = main.sqlUtils.getString("homeID", "UUID", player.getUniqueId() + homeID, databaseName);
+                        String homeID = args[0];
+                        String test = main.sqlUtils.getString("homeID", "homeID", player.getUniqueId() + homeID, databaseName);
 
                         if ((player.getUniqueId() + homeID).equalsIgnoreCase(test)) {
                             String getWorld = main.sqlUtils.getString("world", "homeID", uuid + homeID, databaseName);
@@ -126,14 +127,15 @@ public class Home implements TabExecutor {
                         return true;
                     }
                 } else if ("delhome".equalsIgnoreCase(label)) {
-
                     if (args.length > 0) {
-                        String test = main.sqlUtils.getString("NAME", "homeID", uuid + homeID, databaseName);
+                        String homeID = args[0];
+                        String test = main.sqlUtils.getString("homeID", "homeID", uuid + homeID, databaseName);
 
-                        if ((player.getUniqueId() + homeID).equalsIgnoreCase(test)) {
+                        if ((uuid + homeID).equalsIgnoreCase(test)) {
                             player.sendMessage(ChatColor.BLUE + "Home " + ChatColor.GREEN + homeID + ChatColor.BLUE + " was successfully deleted!");
-                            Integer currentNum = main.sqlUtils.getInt(databaseName + "num", "homeID", uuid + homeID, "players") - 1;
-                            main.sqlUtils.setData(currentNum.toString(), "homeID", uuid + homeID, databaseName + "num", "players");
+                            Integer currentNum = getNumOfHomes--;
+                            currentNum--;
+                            main.sqlUtils.setData(currentNum.toString(), "UUID", uuid, databaseName + "num", "players");
                             main.sqlUtils.remove("homeID", uuid + homeID, databaseName);
                             String hl = main.sqlUtils.getString(databaseName, "UUID", uuid, "players");
                             main.sqlUtils.setData(hl.replace(" " + homeID + " ", " "), "UUID", uuid, databaseName, "players");
@@ -149,10 +151,10 @@ public class Home implements TabExecutor {
                     String string = main.sqlUtils.getString(databaseName, "UUID", uuid, "players");
                     String[] list = string.split(" ");
 
-                    String homeList = "";
+                    StringBuilder homeList = new StringBuilder();
 
                     for (int i = 1; i < list.length; i++) {
-                        homeList = homeList + ChatColor.GREEN + list[i] + ChatColor.WHITE + ", ";
+                        homeList.append(ChatColor.GREEN).append(list[i]).append(ChatColor.WHITE).append(", ");
                     }
 
                     try {
