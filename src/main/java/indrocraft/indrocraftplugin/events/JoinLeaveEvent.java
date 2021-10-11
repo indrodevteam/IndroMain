@@ -40,6 +40,36 @@ public class JoinLeaveEvent implements Listener {
         if (ign != name) {
             main.sqlUtils.setData(name, "UUID", uuid, "ign", "players");
         }
+        String warns = main.sqlUtils.getString("ign", "UUID", uuid, "players");
+        if (warns == null) {
+            main.sqlUtils.setData("0", "UUID", uuid, "warns", "players");
+        }
+
+        //columns for homes:
+        if (config.getBoolean("homes")) {
+            String tpDatabase = config.getString("databaseForTP");
+            //players columns:
+            main.sqlUtils.createColumn(tpDatabase, "VARCHAR(100)", "players");
+            main.sqlUtils.createColumn(tpDatabase + "num", "INT(100)", "players");
+            //location Storage:
+            main.sqlUtils.createTable(tpDatabase, "homeID");
+            main.sqlUtils.createColumn("playerID", "VARCHAR(100)", tpDatabase);
+            main.sqlUtils.createColumn("world", "VARCHAR(200)", tpDatabase);
+            main.sqlUtils.createColumn("x", "DOUBLE", tpDatabase);
+            main.sqlUtils.createColumn("y", "DOUBLE", tpDatabase);
+            main.sqlUtils.createColumn("z", "DOUBLE", tpDatabase);
+            main.sqlUtils.createColumn("pitch", "Float", tpDatabase);
+            main.sqlUtils.createColumn("yaw", "Float", tpDatabase);
+
+            String homeList = main.sqlUtils.getString(tpDatabase, "UUID", uuid, "players");
+            if (homeList == null) {
+                main.sqlUtils.setData(" ", "UUID", uuid, tpDatabase, "players");
+            }
+            String homeNum = main.sqlUtils.getString(tpDatabase + "num", "UUID", uuid, "players");
+            if (homeNum == null) {
+                main.sqlUtils.setData("0", "UUID", uuid, tpDatabase + "num", "players");
+            }
+        }
 
         //load rank:
         if (ranksTemplate.getBoolean("useRanks")) {

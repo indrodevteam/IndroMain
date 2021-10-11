@@ -235,6 +235,17 @@ public class SQLUtils {
         }
     }
 
+    public void remove(String idColumn, String idEquals, String tableName) {
+        try {
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("DELETE FROM " + tableName + " WHERE " + idColumn + "=?");
+            ps.setString(1, idEquals);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean isNum(String type, String num) {
         try {
             if (type.equalsIgnoreCase("int")) {

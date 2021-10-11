@@ -12,3 +12,10 @@ commands:
     usage: /<command>
     description: chenges the players name in the game and tablist
     aliases: [namecolour]
+  warn:
+    usage: /<command>
+    description: used by admins to ban users slowly increases the time they are banned for
+  home:
+    usage: /<command>
+    description: lets players save locations then teleport to them
+    aliases: [h, sethome, delhome, homelist]

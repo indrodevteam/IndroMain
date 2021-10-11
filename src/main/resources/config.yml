@@ -5,7 +5,7 @@ useEconomy: true
 
 # teleport home using /home command
 homes: true
-databseForTP: world
+databaseForTP: tpdatabase
 
 database:
   host: localhost # host of your database

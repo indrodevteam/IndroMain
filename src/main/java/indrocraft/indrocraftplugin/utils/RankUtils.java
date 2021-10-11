@@ -1,12 +1,24 @@
 package indrocraft.indrocraftplugin.utils;
 
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class RankUtils {
     public static FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
+
+    public static void levelUp(Player player, SQLUtils data, String newRank) {
+        setRank(player, data, newRank);
+        LoadRank(player, data);
+    }
+
+    public static int getLevel(Player player, SQLUtils data) {
+        String code = data.getString("rank", "UUID",player.getUniqueId().toString(), "players");
+        int level = Integer.parseInt(code);
+        return level;
+    }
 
     public static void setRank(Player player, SQLUtils sqlUtils, String newRank) {
         sqlUtils.setData(newRank, "UUID", player.getUniqueId().toString(), "rank", "players");
@@ -19,11 +31,15 @@ public class RankUtils {
     public static void LoadRank(Player player, SQLUtils data) {
         String code = data.getString("rank", "UUID", player.getUniqueId().toString(), "players");
         String displayName = config.getString("ranks." + code + ".displayName");
-        ChatColor colorA = getColour(1, player, data);
-        ChatColor colorB = getColour(2, player, data);
-        ChatColor name = getColour(3, player, data);
-        player.setDisplayName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
-        player.setPlayerListName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
+        try {
+            ChatColor colorA = getColour(1, player, data);
+            ChatColor colorB = getColour(2, player, data);
+            ChatColor name = getColour(3, player, data);
+            player.setDisplayName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
+            player.setPlayerListName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
+        } catch (NullPointerException e) {
+            Bukkit.getLogger().severe("must reload server for Ranks");
+        }
     }
 
     public static ChatColor getColour(int colourNum, Player player, SQLUtils data) {

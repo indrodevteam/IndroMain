@@ -1,10 +1,13 @@
 package indrocraft.indrocraftplugin;
 
 import indrocraft.indrocraftplugin.commands.Dev;
+import indrocraft.indrocraftplugin.commands.Home;
 import indrocraft.indrocraftplugin.commands.SetRank;
+import indrocraft.indrocraftplugin.commands.Warn;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.dataManager.MySQL;
 import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
+import indrocraft.indrocraftplugin.events.RankEvents;
 import indrocraft.indrocraftplugin.utils.RankUtils;
 import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
@@ -34,6 +37,12 @@ public final class Main extends JavaPlugin implements Listener {
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev(this));
         getServer().getPluginCommand("setRank").setExecutor(new SetRank(this));
+        getServer().getPluginCommand("warn").setExecutor(new Warn(this));
+        getServer().getPluginCommand("home").setExecutor(new Home(this));
+
+        // tab executors:
+        getCommand("warn").setTabCompleter(new Warn(this));
+        getCommand("home").setTabCompleter(new Home(this));
 
         // create config files
         configTools.generateConfig("config.yml");
@@ -54,10 +63,12 @@ public final class Main extends JavaPlugin implements Listener {
 
         //register events:
         getServer().getPluginManager().registerEvents(new JoinLeaveEvent(this), this);
+        getServer().getPluginManager().registerEvents(new RankEvents(this), this);
 
         //create tables:
         sqlUtils.createTable("players", "UUID");
         sqlUtils.createColumn("ign", "VARCHAR(100)", "players");
+        sqlUtils.createColumn("warns", "INT(100)", "players");
 
         // testing:
         sqlUtils.createTable("testing", "NAME");

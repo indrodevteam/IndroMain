@@ -23,8 +23,7 @@ public class Dev implements CommandExecutor {
 
         if (sender.isOp()) {
             if (args[0].equalsIgnoreCase("time")) {
-                Long time = player.getWorld().getTime();
-                player.sendMessage(time.toString());
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "time set night");
             }
         }
 
