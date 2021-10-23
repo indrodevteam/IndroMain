@@ -19,3 +19,16 @@ commands:
     usage: /<command>
     description: lets players save locations then teleport to them
     aliases: [h, sethome, delhome, homelist]
+  inspector:
+    usage: /<command>
+    description: switches player into inspector mode for checking for hackers
+    aliases: [i]
+  warp:
+    usage: /<command>
+    description: sends players to a predetermined location
+    aliases: [setwarp]
+
+permissions:
+  inspector:
+    description: switches player into inspector mode for checking for hackers
+    default: op

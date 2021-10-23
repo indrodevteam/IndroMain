@@ -1,7 +1,6 @@
 package indrocraft.indrocraftplugin.dataManager;
 
 import indrocraft.indrocraftplugin.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.Connection;

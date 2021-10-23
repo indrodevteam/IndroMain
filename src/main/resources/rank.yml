@@ -9,6 +9,11 @@
 
 useRanks: true
 
+inspectorRank: '6'
+# command used for core protect to enable inspector mode or any other command that u want to run when they enter
+# inspector:
+inspectorCommand: "/co i"
+
 autoRankUp: true
 rankUpOrder:
   - story/mine_diamond
@@ -22,35 +27,34 @@ ranks:
     displayName: GREMLIN
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    nameColour: gold
     advancements: 1
   '1':
     displayName: HERO
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    nameColour: gold
     advancements: 1
   '2':
     displayName: TITAN
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    nameColour: gold
     advancements: 1
   '3':
     displayName: DEMIGOD
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    nameColour: gold
     advancements: 1
   '4':
     displayName: GOD
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    nameColour: gold
     advancements: 1
   '5':
     displayName: DEV
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    nameColour: gold
+    advancements: 1
+  '6':
+    displayName: INSPECTOR
+    primaryColour: GRAY
+    secondaryColour: DARK_GRAY
     advancements: 1

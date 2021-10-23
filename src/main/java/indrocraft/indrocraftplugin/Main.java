@@ -1,9 +1,6 @@
 package indrocraft.indrocraftplugin;
 
-import indrocraft.indrocraftplugin.commands.Dev;
-import indrocraft.indrocraftplugin.commands.Home;
-import indrocraft.indrocraftplugin.commands.SetRank;
-import indrocraft.indrocraftplugin.commands.Warn;
+import indrocraft.indrocraftplugin.commands.*;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.dataManager.MySQL;
 import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
@@ -39,6 +36,8 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginCommand("setRank").setExecutor(new SetRank(this));
         getServer().getPluginCommand("warn").setExecutor(new Warn(this));
         getServer().getPluginCommand("home").setExecutor(new Home(this));
+        getServer().getPluginCommand("inspector").setExecutor(new Inspector(this));
+        getServer().getPluginCommand("warp").setExecutor(new Warp(this));
 
         // tab executors:
         getCommand("warn").setTabCompleter(new Warn(this));
@@ -65,17 +64,21 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new JoinLeaveEvent(this), this);
         getServer().getPluginManager().registerEvents(new RankEvents(this), this);
 
-        //create tables:
-        sqlUtils.createTable("players", "UUID");
-        sqlUtils.createColumn("ign", "VARCHAR(100)", "players");
-        sqlUtils.createColumn("warns", "INT(100)", "players");
+        try {
+            //create tables:
+            sqlUtils.createTable("players", "UUID");
+            sqlUtils.createColumn("ign", "VARCHAR(100)", "players");
+            sqlUtils.createColumn("warns", "INT(100)", "players");
 
-        // testing:
-        sqlUtils.createTable("testing", "NAME");
-        sqlUtils.createColumn("test", "DOUBLE", "testing");
-        sqlUtils.createRow("NAME", "player", "testing");
+            // testing:
+            sqlUtils.createTable("testing", "NAME");
+            sqlUtils.createColumn("test", "DOUBLE", "testing");
+            sqlUtils.createRow("NAME", "player", "testing");
 
-        sqlUtils.setDataType("test", "VARCHAR(100)", "testing");
+            sqlUtils.setDataType("test", "VARCHAR(100)", "testing");
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("testing canceled please connect database");
+        }
     }
 
 
