@@ -9,30 +9,34 @@ import indrocraft.indrocraftplugin.utils.RankUtils;
 import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 
 
-public final class Main extends JavaPlugin implements Listener {
+public final class Main extends JavaPlugin{
 
-    public MySQL SQL;
+    //public MySQL SQL;
     public SQLUtils sqlUtils;
-    public ConfigTools configTools;
     public RankUtils rankUtils;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        //initialize config files
+        ConfigTools config = new ConfigTools(this, "config.yml");
+        config.saveDefaultConfig();
+        ConfigTools ranks = new ConfigTools(this, "rank.yml");
+        ranks.saveDefaultConfig();
+
         //init utils
         sqlUtils = new SQLUtils(this);
-        configTools = new ConfigTools(this);
-        SQL = new MySQL(this);
-        rankUtils = new RankUtils();
+        MySQL SQL = new MySQL(this);
+        rankUtils = new RankUtils(this);
 
         // commands:
-        getServer().getPluginCommand("dev").setExecutor(new Dev(this));
+        getServer().getPluginCommand("dev").setExecutor(new Dev(/*this*/));
         getServer().getPluginCommand("setRank").setExecutor(new SetRank(this));
         getServer().getPluginCommand("warn").setExecutor(new Warn(this));
         getServer().getPluginCommand("home").setExecutor(new Home(this));
@@ -43,12 +47,8 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("warn").setTabCompleter(new Warn(this));
         getCommand("home").setTabCompleter(new Home(this));
 
-        // create config files
-        configTools.generateConfig("config.yml");
-        configTools.generateConfig("rank.yml");
-
         // connects to the database:
-        this.SQL = new MySQL(this);
+        //this.SQL = new MySQL(this);
 
         try {
             SQL.connect();
@@ -65,19 +65,16 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new RankEvents(this), this);
 
         try {
-            //create tables:
-            sqlUtils.createTable("players", "UUID");
-            sqlUtils.createColumn("ign", "VARCHAR(100)", "players");
-            sqlUtils.createColumn("warns", "INT(100)", "players");
-
-            // testing:
-            sqlUtils.createTable("testing", "NAME");
-            sqlUtils.createColumn("test", "DOUBLE", "testing");
-            sqlUtils.createRow("NAME", "player", "testing");
-
-            sqlUtils.setDataType("test", "VARCHAR(100)", "testing");
+            if (config.getConfig().getBoolean("useWarp")) {
+                String database = config.getConfig().getString("databaseForTP") + "Warps";
+                sqlUtils.createTable(database, "warpID");
+                sqlUtils.createColumn("x", "DOUBLE", database);
+                sqlUtils.createColumn("y", "DOUBLE", database);
+                sqlUtils.createColumn("z", "DOUBLE", database);
+                sqlUtils.createColumn("world", "VARCHAR(100)", database);
+            }
         } catch (Exception e) {
-            Bukkit.getLogger().warning("testing canceled please connect database");
+            Bukkit.getLogger().warning("startup table creation canceled please connect database");
         }
     }
 
@@ -85,6 +82,7 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        MySQL SQL = new MySQL(this);
         SQL.disconnect();
     }
 }

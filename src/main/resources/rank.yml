@@ -15,46 +15,41 @@ inspectorRank: '6'
 inspectorCommand: "/co i"
 
 autoRankUp: true
-rankUpOrder:
-  - story/mine_diamond
-  - nether/obtain_ancient_debris
-  - story/mine_stone
-  - adventure/throw_trident
-  - adventure/shoot_arrow
 
 ranks:
   '0':
     displayName: GREMLIN
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    advancements: 1
+    advancements: story/mine_diamond
+    teleports: 1
   '1':
     displayName: HERO
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    advancements: 1
+    advancements: nether/obtain_ancient_debris
+    teleports: 1
   '2':
     displayName: TITAN
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    advancements: 1
+    advancements: story/mine_stone
+    teleports: 1
   '3':
     displayName: DEMIGOD
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    advancements: 1
+    advancements: adventure/throw_trident
+    teleports: 1
   '4':
     displayName: GOD
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    advancements: 1
+    advancements: adventure/shoot_arrow
+    teleports: 1
   '5':
     displayName: DEV
     primaryColour: GRAY
     secondaryColour: DARK_GRAY
-    advancements: 1
-  '6':
-    displayName: INSPECTOR
-    primaryColour: GRAY
-    secondaryColour: DARK_GRAY
-    advancements: 1
+    advancements:
+    teleports: 1

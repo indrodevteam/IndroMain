@@ -15,10 +15,10 @@ import java.util.List;
 
 public class SetRank implements TabExecutor {
 
-    public Main main;
+    private Main main;
     public SetRank(Main main) {this.main = main;}
 
-    FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
+    ConfigTools config = new ConfigTools(main, "rank.yml");
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -41,7 +41,7 @@ public class SetRank implements TabExecutor {
         if(args.length == 2){
             List<String> arg1 = new ArrayList<>();
             if (alias.equalsIgnoreCase("setrank")) {
-                for (String ranks : config.getConfigurationSection("ranks").getKeys(false))
+                for (String ranks : config.getConfig().getConfigurationSection("ranks").getKeys(false))
                     arg1.add(ranks);
             } else {
                 arg1.add("dark_red");

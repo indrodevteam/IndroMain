@@ -15,15 +15,15 @@ import org.bukkit.persistence.PersistentDataHolder;
 
 public class Inspector implements CommandExecutor {
 
-    public Main main;
+    private Main main;
     public Inspector(Main main) {this.main = main;}
 
-    public FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
+    ConfigTools config = new ConfigTools(main, "config.yml");
     
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         //string gets which rank is designated to be displayed for an inspector
-        String inspectorRank = config.getString("inspectorRank");
+        String inspectorRank = config.getConfig().getString("inspectorRank");
         if (sender instanceof Player) {
             //checks for the permission
             if (sender.hasPermission("inspector")) {

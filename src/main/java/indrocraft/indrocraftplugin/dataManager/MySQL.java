@@ -1,7 +1,6 @@
 package indrocraft.indrocraftplugin.dataManager;
 
 import indrocraft.indrocraftplugin.Main;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,17 +8,16 @@ import java.sql.SQLException;
 
 public class MySQL {
 
-
     private Main main;
-    public MySQL(Main main) {this.main = main;}
+    public MySQL(Main plugin) {this.main = plugin;}
 
-    FileConfiguration config = ConfigTools.getFileConfig("config.yml");
+    ConfigTools config = new ConfigTools(main, "config.yml");
 
-    private String host = config.getString("database.host");
-    private String port = config.getString("database.port");
-    private String database = config.getString("database.database");
-    private String username = config.getString("database.user");
-    String pass = config.getString("database.password");
+    private String host = config.getConfig().getString("database.host");
+    private String port = config.getConfig().getString("database.port");
+    private String database = config.getConfig().getString("database.database");
+    private String username = config.getConfig().getString("database.user");
+    String pass = config.getConfig().getString("database.password");
     private String password = pass;
 
 
@@ -30,7 +28,7 @@ public class MySQL {
     }
 
     public void connect() throws ClassNotFoundException, SQLException {
-        String pass = config.getString("database.password");
+        String pass = config.getConfig().getString("database.password");
         if (pass.equalsIgnoreCase("passwordhere")){
             password = "";
         }

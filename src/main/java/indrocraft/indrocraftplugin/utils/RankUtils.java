@@ -1,5 +1,6 @@
 package indrocraft.indrocraftplugin.utils;
 
+import indrocraft.indrocraftplugin.Main;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,7 +8,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class RankUtils {
-    public static FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
+
+    private static Main main;
+    public RankUtils(Main main) {this.main = main;}
+
+    public static ConfigTools config = new ConfigTools(main, "rank.yml");
 
     public static void levelUp(Player player, SQLUtils data, String newRank) {
         setRank(player, data, newRank);
@@ -30,7 +35,7 @@ public class RankUtils {
 
     public static void LoadRank(Player player, SQLUtils data) {
         String code = data.getString("rank", "UUID", player.getUniqueId().toString(), "players");
-        String displayName = config.getString("ranks." + code + ".displayName");
+        String displayName = config.getConfig().getString("ranks." + code + ".displayName");
         try {
             ChatColor colorA = getColour(1, player, data);
             ChatColor colorB = getColour(2, player, data);
@@ -47,9 +52,9 @@ public class RankUtils {
         String code = data.getString("rank", "UUID", uuid, "players");
         String color = null;
         if (colourNum == 1) {
-            color = config.getString("ranks." + code + ".primaryColour");
+            color = config.getConfig().getString("ranks." + code + ".primaryColour");
         } else if (colourNum == 2) {
-            color = config.getString("ranks." + code + ".secondaryColour");
+            color = config.getConfig().getString("ranks." + code + ".secondaryColour");
         } else if (colourNum == 3) {
             color = data.getString("nameColour", "UUID", uuid, "players");
         }

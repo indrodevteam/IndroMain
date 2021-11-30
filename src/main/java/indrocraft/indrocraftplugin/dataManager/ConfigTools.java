@@ -1,41 +1,85 @@
 package indrocraft.indrocraftplugin.dataManager;
 
-import indrocraft.indrocraftplugin.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 
 public class ConfigTools {
 
-    private static Main main;
-    public ConfigTools(Main main) {this.main = main;}
+    private final String fileName;
+    private final JavaPlugin plugin;
 
-    public static FileConfiguration getFileConfig(String fileName) {
-        File configFile = new File(Bukkit.getServer().getWorldContainer().getAbsolutePath() + "/plugins/IndrocraftPlugin/"+fileName); // First we
-        // will load
-        // the file.
-        FileConfiguration config = YamlConfiguration.loadConfiguration(configFile); // Now we will load the file into a
-        // FileConfiguration.
-        return config;
+    private File configFile;
+    private FileConfiguration fileConfiguration;
+
+    public ConfigTools(JavaPlugin plugin, String fileName) {
+        this.plugin = plugin;
+        this.fileName = fileName;
     }
 
-    public static void generateConfig(String configName) {
-        File configA = new File(main.getDataFolder(), configName);
-
-        if (!configA.exists()) {
-            configA.getParentFile().mkdirs();
-            main.saveResource(configName, false);
+    // gets all of the
+    public void reloadConfig() {
+        if (configFile == null) {
+            File dataFolder = plugin.getDataFolder();
+            if (dataFolder == null)
+                throw new IllegalStateException();
+            configFile = new File(dataFolder, fileName);
         }
-        FileConfiguration config = new YamlConfiguration();
+        fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
 
-        try {
-            config.load(configA);
-        } catch (IOException | InvalidConfigurationException e ) {
-            e.printStackTrace();
+        // Look for defaults in the jar
+        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new File(this.getClass()
+                .getClassLoader().getResource(fileName).getPath()));
+        fileConfiguration.setDefaults(defConfig);
+    }
+
+    public FileConfiguration getConfig() {
+        if (fileConfiguration == null) {
+            this.reloadConfig();
+        }
+        return fileConfiguration;
+    }
+
+    // Saves all the data to the selected yml file
+    public void saveConfig() {
+        if (fileConfiguration == null || configFile == null) {
+            return;
+        } else {
+            try {
+                getConfig().save(configFile);
+            } catch (IOException ex) {
+                plugin.getLogger().severe("Could not save config to " + configFile);
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    // Saves
+
+    /**
+     * public void saveDefaultConfig() {
+     * if (!configFile.exists()) {
+     * this.plugin.saveResource(fileName, false);
+     * }
+     * }
+     */
+
+    // New save default config saving code, it checks if the needed config is in the jar file before
+    // overriding it.
+    public void saveDefaultConfig() {
+        if (configFile == null) {
+            configFile = new File(plugin.getDataFolder(), fileName);
+        }
+        if (!configFile.exists()) {
+            try {
+                plugin.saveResource(fileName, false);
+            } catch (IllegalArgumentException e) {
+                Bukkit.getLogger().severe("Config file not loaded incorrect file name" + e.getCause());
+            }
         }
     }
 }

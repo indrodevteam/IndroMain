@@ -15,18 +15,18 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class JoinLeaveEvent implements Listener {
 
-    public FileConfiguration config = ConfigTools.getFileConfig("config.yml");
-    public FileConfiguration ranksTemplate = ConfigTools.getFileConfig("rank.yml");
-
-    public Main main;
+    private Main main;
     public JoinLeaveEvent(Main main) {this.main = main;}
+
+    ConfigTools config = new ConfigTools(main, "config.yml");
+    ConfigTools ranksConfig = new ConfigTools(main, "ranks.yml");
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
         //join message:
-        String serverName = config.getString("serverName");
+        String serverName = config.getConfig().getString("serverName");
         event.setJoinMessage(ChatColor.GREEN  + "Welcome " + ChatColor.YELLOW + player.getName() + ChatColor.GREEN +
                 " To " + ChatColor.BOLD + serverName + "!");
 
@@ -46,8 +46,8 @@ public class JoinLeaveEvent implements Listener {
         }
 
         //columns for homes:
-        if (config.getBoolean("homes")) {
-            String tpDatabase = config.getString("databaseForTP");
+        if (config.getConfig().getBoolean("homes")) {
+            String tpDatabase = config.getConfig().getString("databaseForTP");
             //players columns:
             main.sqlUtils.createColumn(tpDatabase, "VARCHAR(100)", "players");
             main.sqlUtils.createColumn(tpDatabase + "num", "INT(100)", "players");
@@ -72,7 +72,7 @@ public class JoinLeaveEvent implements Listener {
         }
 
         //load rank:
-        if (ranksTemplate.getBoolean("useRanks")) {
+        if (ranksConfig.getConfig().getBoolean("useRanks")) {
             main.sqlUtils.createColumn("rank", "int(100)", "players");
             main.sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
 

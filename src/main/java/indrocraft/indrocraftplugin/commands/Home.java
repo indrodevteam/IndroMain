@@ -14,17 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Home implements TabExecutor {
-    private final Main main;
 
+    private Main main;
     public Home(Main main) {this.main = main;}
 
-    FileConfiguration configA = ConfigTools.getFileConfig("config.yml");
-    public String databaseName = configA.getString("databaseForTP");
+    ConfigTools config = new ConfigTools(main, "config.yml");
+    public String databaseName = config.getConfig().getString("databaseForTP");
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         ChatColor red = ChatColor.RED;
-        boolean homeEnabled = configA.getBoolean("homes");
+        boolean homeEnabled = config.getConfig().getBoolean("homes");
 
         if (homeEnabled) {
 

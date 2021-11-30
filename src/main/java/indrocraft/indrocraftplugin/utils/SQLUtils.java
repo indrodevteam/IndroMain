@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 public class SQLUtils {
     /*
     todo:
@@ -20,13 +21,16 @@ public class SQLUtils {
      */
 
     private Main plugin;
-    public SQLUtils(Main plugin) {this.plugin = plugin;}
+
+    public SQLUtils(Main plugin) {
+        this.plugin = plugin;
+    }
 
     /**
-     * @param value Data to be saved in form of a string, number will be converted depending on dataType
-     * @param idColumn identifier column to check
-     * @param id String that the id column is checked against
-     * @param column column to insert data
+     * @param value     Data to be saved in form of a string, number will be converted depending on dataType
+     * @param idColumn  identifier column to check
+     * @param id        String that the id column is checked against
+     * @param column    column to insert data
      * @param tableName table to insert data
      */
     public void setData(String value, String idColumn, String id, String column, String tableName) {
@@ -58,14 +62,14 @@ public class SQLUtils {
     }
 
     /**
-     * @param column What column is the desired cell in
-     * @param idColumn What is the id column used for this table
-     * @param idEquals What id are you looking for?
+     * @param column    What column is the desired cell in
+     * @param idColumn  What is the id column used for this table
+     * @param idEquals  What id are you looking for?
      * @param tableName What is the name of the table
      * @return returns the number value of the specified cell
      */
     public int getInt(String column, String idColumn, String idEquals, String tableName) {
-        try{
+        try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
@@ -74,21 +78,21 @@ public class SQLUtils {
                 info = rs.getInt(column);
                 return info;
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
 
     /**
-     * @param column What column is the desired cell in
-     * @param idColumn What is the id column used for this table
-     * @param idEquals What id are you looking for?
+     * @param column    What column is the desired cell in
+     * @param idColumn  What is the id column used for this table
+     * @param idEquals  What id are you looking for?
      * @param tableName What is the name of the table
      * @return returns the string value of the specified cell
      */
     public String getString(String column, String idColumn, String idEquals, String tableName) {
-        try{
+        try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
@@ -97,21 +101,21 @@ public class SQLUtils {
                 info = rs.getString(column);
                 return info;
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return "";
     }
 
     /**
-     * @param column What column is the desired cell in
-     * @param idColumn What is the id column used for this table
-     * @param idEquals What id are you looking for?
+     * @param column    What column is the desired cell in
+     * @param idColumn  What is the id column used for this table
+     * @param idEquals  What id are you looking for?
      * @param tableName What is the name of the table
      * @return returns the string value of the specified cell
      */
     public double getDouble(String column, String idColumn, String idEquals, String tableName) {
-        try{
+        try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
@@ -120,21 +124,21 @@ public class SQLUtils {
                 info = rs.getDouble(column);
                 return info;
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
 
     /**
-     * @param column What column is the desired cell in
-     * @param idColumn What is the id column used for this table
-     * @param idEquals What id are you looking for?
+     * @param column    What column is the desired cell in
+     * @param idColumn  What is the id column used for this table
+     * @param idEquals  What id are you looking for?
      * @param tableName What is the name of the table
      * @return returns the string value of the specified cell
      */
     public float getFloat(String column, String idColumn, String idEquals, String tableName) {
-        try{
+        try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
@@ -143,14 +147,14 @@ public class SQLUtils {
                 info = rs.getFloat(column);
                 return info;
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
 
     /**
-     * @param name What name do you want to u se for the table
+     * @param name     What name do you want to u se for the table
      * @param idColumn This is the unique ID column generally 'NAME'
      */
     public void createTable(String name, String idColumn) {
@@ -163,8 +167,8 @@ public class SQLUtils {
     }
 
     /**
-     * @param id This is the name of the column
-     * @param dataType What data type do u want to use
+     * @param id        This is the name of the column
+     * @param dataType  What data type do u want to use
      * @param tableName The name of the table you want to put the column into
      */
     public void createColumn(String id, String dataType, String tableName) {
@@ -177,8 +181,8 @@ public class SQLUtils {
     }
 
     /**
-     * @param idColumn What is the ID column used in this table generally "NAME"
-     * @param idEquals What should the id of this row be? What is the name?
+     * @param idColumn  What is the ID column used in this table generally "NAME"
+     * @param idEquals  What should the id of this row be? What is the name?
      * @param tableName What table dp you want to inset into?
      */
     public void createRow(String idColumn, String idEquals, String tableName) {
@@ -197,8 +201,8 @@ public class SQLUtils {
     }
 
     /**
-     * @param idColumn What column in this table is unique generally the "NAME" column
-     * @param test What do u want to test the idColumn for
+     * @param idColumn  What column in this table is unique generally the "NAME" column
+     * @param test      What do u want to test the idColumn for
      * @param tableName In what table
      * @return Returns true if it exists and false if it does not
      */
@@ -221,8 +225,8 @@ public class SQLUtils {
 
 
     /**
-     * @param column What is the name of the column you want to alter
-     * @param dataType What data type do u want to set it to
+     * @param column    What is the name of the column you want to alter
+     * @param dataType  What data type do u want to set it to
      * @param tableName In what table?
      */
     public void setDataType(String column, String dataType, String tableName) {

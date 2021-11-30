@@ -10,32 +10,45 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RankEvents implements Listener {
+
     private Main main;
     public RankEvents(Main main) {this.main = main;}
 
+    public ConfigTools config = new ConfigTools(main, "ranks.yml");
+
     @EventHandler
     public void advancementDoneEvent(PlayerAdvancementDoneEvent event) {
-        FileConfiguration config = ConfigTools.getFileConfig("rank.yml");
+
         Player player = event.getPlayer();
-        if (config.getBoolean("autoRankUp")) {
+
+        if (config.getConfig().getBoolean("autoRankUp")) {
             NamespacedKey key = event.getAdvancement().getKey();
             Integer level = RankUtils.getLevel(player, main.sqlUtils);
-            List<String> rankUpOrder = config.getStringList("rankUpOrder");
+            List<String> rankUpOrder = new ArrayList<>();
+            List<String> totalRanks = new ArrayList<>();
+            for (String ranks : config.getConfig().getConfigurationSection("ranks").getKeys(false))
+                totalRanks.add(ranks);
+
+            for (Integer i = 0; i<totalRanks.size(); i++) {
+                String na = config.getConfig().getString("ranks." + i + ".advancements");
+                rankUpOrder.add(na);
+            }
+            player.sendMessage(rankUpOrder.toString());
+
             if (key.getNamespace().equals(NamespacedKey.MINECRAFT)) {
                 if (rankUpOrder.contains(key.getKey())) {
+
                     Integer advancement = rankUpOrder.indexOf(key.getKey());
                     if (key.getKey().equals(rankUpOrder.get(advancement))) {
                         if (level < advancement + 1) {
                             level++;
 
                             advancement++;
-                            player.sendMessage(advancement.toString());
                             RankUtils.levelUp(player, main.sqlUtils, advancement.toString());
-
-                            player.sendMessage("leveled up\n" + advancement);
                         }
                     }
                 }
