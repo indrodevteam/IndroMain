@@ -17,8 +17,7 @@ import java.util.List;
 
 public class Warp implements TabExecutor {
 
-    private Main main;
-    public Warp(Main main) {this.main = main;}
+    private Main main = Main.getPlugin(Main.class);
 
     ConfigTools config = new ConfigTools(main, "config.yml");
 

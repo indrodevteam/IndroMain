@@ -15,8 +15,7 @@ import java.util.List;
 
 public class SetRank implements TabExecutor {
 
-    private Main main;
-    public SetRank(Main main) {this.main = main;}
+    private final Main main = Main.getPlugin(Main.class);
 
     ConfigTools config = new ConfigTools(main, "rank.yml");
 

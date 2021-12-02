@@ -7,7 +7,6 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -15,10 +14,9 @@ import java.util.List;
 
 public class Home implements TabExecutor {
 
-    private Main main;
-    public Home(Main main) {this.main = main;}
+    private Main main = Main.getPlugin(Main.class);
 
-    ConfigTools config = new ConfigTools(main, "config.yml");
+    ConfigTools config = new ConfigTools(Main.getPlugin(Main.class), "config.yml");
     public String databaseName = config.getConfig().getString("databaseForTP");
 
     @Override

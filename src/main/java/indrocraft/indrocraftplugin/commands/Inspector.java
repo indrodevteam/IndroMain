@@ -8,15 +8,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataHolder;
 
 public class Inspector implements CommandExecutor {
 
-    private Main main;
-    public Inspector(Main main) {this.main = main;}
+    private Main main = Main.getPlugin(Main.class);
 
     ConfigTools config = new ConfigTools(main, "config.yml");
     

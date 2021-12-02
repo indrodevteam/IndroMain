@@ -15,11 +15,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class JoinLeaveEvent implements Listener {
 
-    private Main main;
-    public JoinLeaveEvent(Main main) {this.main = main;}
+    private final Main main = Main.getPlugin(Main.class);
 
     ConfigTools config = new ConfigTools(main, "config.yml");
-    ConfigTools ranksConfig = new ConfigTools(main, "ranks.yml");
+    ConfigTools ranksConfig = new ConfigTools(main, "rank.yml");
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -65,7 +64,8 @@ public class JoinLeaveEvent implements Listener {
             if (homeList == null) {
                 main.sqlUtils.setData(" ", "UUID", uuid, tpDatabase, "players");
             }
-            String homeNum = main.sqlUtils.getString(tpDatabase + "num", "UUID", uuid, "players");
+            String homeNum = main.sqlUtils.getString(tpDatabase + "num", "UUID", uuid,
+                    "players");
             if (homeNum == null) {
                 main.sqlUtils.setData("0", "UUID", uuid, tpDatabase + "num", "players");
             }
@@ -81,11 +81,11 @@ public class JoinLeaveEvent implements Listener {
                 main.sqlUtils.setData("0", "UUID", uuid, "rank", "players");
             }
             String nameColour = main.sqlUtils.getString("nameColour", "UUID", uuid, "players");
-            if (rank == null) {
+            if (nameColour == null) {
                 main.sqlUtils.setData("WHITE", "UUID", uuid, "nameColour", "players");
             }
 
-            main.rankUtils.LoadRank(player, main.sqlUtils);
+            RankUtils.LoadRank(player, main.sqlUtils);
         }
     }
 
@@ -107,6 +107,5 @@ public class JoinLeaveEvent implements Listener {
                 player.sendMessage(ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " went to bed sweet dreams!");
             }
         }
-
     }
 }

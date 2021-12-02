@@ -6,15 +6,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public class Warn implements TabExecutor {
 
-    private Main main;
-    public Warn(Main main) {this.main = main;}
+    private Main main = Main.getPlugin(Main.class);
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -43,7 +41,6 @@ public class Warn implements TabExecutor {
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tempban " + target.getName() + time + message);
 
             main.sqlUtils.setData(warns.toString(), "UUID", target.getUniqueId().toString(), "warns", "players");
-            //Bukkit.dispatchCommand(sender, "time set night");
         }
         return true;
     }

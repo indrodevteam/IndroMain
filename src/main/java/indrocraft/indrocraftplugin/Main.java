@@ -16,7 +16,7 @@ import java.sql.SQLException;
 
 public final class Main extends JavaPlugin{
 
-    //public MySQL SQL;
+    public MySQL SQL;
     public SQLUtils sqlUtils;
     public RankUtils rankUtils;
 
@@ -32,20 +32,20 @@ public final class Main extends JavaPlugin{
 
         //init utils
         sqlUtils = new SQLUtils(this);
-        MySQL SQL = new MySQL(this);
-        rankUtils = new RankUtils(this);
+        SQL = new MySQL();
+        rankUtils = new RankUtils();
 
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev(/*this*/));
-        getServer().getPluginCommand("setRank").setExecutor(new SetRank(this));
-        getServer().getPluginCommand("warn").setExecutor(new Warn(this));
-        getServer().getPluginCommand("home").setExecutor(new Home(this));
-        getServer().getPluginCommand("inspector").setExecutor(new Inspector(this));
-        getServer().getPluginCommand("warp").setExecutor(new Warp(this));
+        getServer().getPluginCommand("setRank").setExecutor(new SetRank());
+        getServer().getPluginCommand("warn").setExecutor(new Warn());
+        getServer().getPluginCommand("home").setExecutor(new Home());
+        getServer().getPluginCommand("inspector").setExecutor(new Inspector());
+        getServer().getPluginCommand("warp").setExecutor(new Warp());
 
         // tab executors:
-        getCommand("warn").setTabCompleter(new Warn(this));
-        getCommand("home").setTabCompleter(new Home(this));
+        getCommand("warn").setTabCompleter(new Warn());
+        getCommand("home").setTabCompleter(new Home());
 
         // connects to the database:
         //this.SQL = new MySQL(this);
@@ -61,8 +61,8 @@ public final class Main extends JavaPlugin{
         }
 
         //register events:
-        getServer().getPluginManager().registerEvents(new JoinLeaveEvent(this), this);
-        getServer().getPluginManager().registerEvents(new RankEvents(this), this);
+        getServer().getPluginManager().registerEvents(new JoinLeaveEvent(), this);
+        getServer().getPluginManager().registerEvents(new RankEvents(), this);
 
         try {
             if (config.getConfig().getBoolean("useWarp")) {
@@ -82,7 +82,7 @@ public final class Main extends JavaPlugin{
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        MySQL SQL = new MySQL(this);
         SQL.disconnect();
+        Bukkit.getLogger().info("Successfully disabled Indrocraft plugin!");
     }
 }

@@ -9,8 +9,7 @@ import org.bukkit.entity.Player;
 
 public class RankUtils {
 
-    private static Main main;
-    public RankUtils(Main main) {this.main = main;}
+    private static Main main = Main.getPlugin(Main.class);
 
     public static ConfigTools config = new ConfigTools(main, "rank.yml");
 
@@ -44,6 +43,7 @@ public class RankUtils {
             player.setPlayerListName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
         } catch (NullPointerException e) {
             Bukkit.getLogger().severe("must reload server for Ranks");
+            e.printStackTrace();
         }
     }
 
@@ -63,7 +63,9 @@ public class RankUtils {
     }
 
     public static ChatColor readColour(String color) {
-        if (color.equalsIgnoreCase("gray")) {
+        if (color == null) {
+            return ChatColor.WHITE;
+        } else if (color.equalsIgnoreCase("gray")) {
             return ChatColor.GRAY;
         } else if (color.equalsIgnoreCase("dark_gray")) {
             return ChatColor.DARK_GRAY;

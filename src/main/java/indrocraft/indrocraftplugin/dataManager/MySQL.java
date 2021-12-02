@@ -8,10 +8,7 @@ import java.sql.SQLException;
 
 public class MySQL {
 
-    private Main main;
-    public MySQL(Main plugin) {this.main = plugin;}
-
-    ConfigTools config = new ConfigTools(main, "config.yml");
+    ConfigTools config = new ConfigTools(Main.getPlugin(Main.class), "config.yml");
 
     private String host = config.getConfig().getString("database.host");
     private String port = config.getConfig().getString("database.port");
@@ -24,7 +21,7 @@ public class MySQL {
     private Connection connection;
 
     public boolean isConnected() {
-        return (connection == null ? false : true);
+        return (connection != null);
     }
 
     public void connect() throws ClassNotFoundException, SQLException {

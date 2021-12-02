@@ -15,8 +15,7 @@ import java.util.List;
 
 public class RankEvents implements Listener {
 
-    private Main main;
-    public RankEvents(Main main) {this.main = main;}
+    private Main main = Main.getPlugin(Main.class);
 
     public ConfigTools config = new ConfigTools(main, "ranks.yml");
 
