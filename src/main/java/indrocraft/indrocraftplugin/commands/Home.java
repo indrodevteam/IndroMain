@@ -8,8 +8,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Home implements TabExecutor {
@@ -187,7 +189,12 @@ public class Home implements TabExecutor {
                     arg1.add(homes[len]);
                     len--;
                 }
-                return arg1;
+                final List<String> completions = new ArrayList<>();
+                //copy matches of first argument from list (ex: if first arg is 'm' will return just 'minecraft')
+                StringUtil.copyPartialMatches(strings[0], arg1, completions);
+                //sort the list
+                Collections.sort(completions);
+                return completions;
             }
         }
         return null;
