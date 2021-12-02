@@ -10,10 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class Warp implements TabExecutor {
 
@@ -65,14 +62,18 @@ public class Warp implements TabExecutor {
                                 String[] world = getWorld.split("\\=");
 
                                 //location and direction of player:
-                                Double x = player.getLocation().getX();
-                                Double y = player.getLocation().getY();
-                                Double z = player.getLocation().getZ();
+                                double x = player.getLocation().getX();
+                                double y = player.getLocation().getY();
+                                double z = player.getLocation().getZ();
+                                float yaw = player.getLocation().getYaw();
+                                float pitch = player.getLocation().getPitch();
 
                                 //creates new row and fills in location data
                                 config.set("warps." + warpName + ".x", x);
                                 config.set("warps." + warpName + ".y", y);
                                 config.set("warps." + warpName + ".z", z);
+                                config.set("warps." + warpName + ".pitch", pitch);
+                                config.set("warps." + warpName + ".yaw", yaw);
                                 config.set("warps." + warpName + ".world", world[1]);
                                 c.saveConfig();
 
@@ -100,10 +101,13 @@ public class Warp implements TabExecutor {
                     double x = config.getDouble("warps." + warpName + ".x");
                     double y = config.getDouble("warps." + warpName + ".y");
                     double z = config.getDouble("warps." + warpName + ".z");
+                    float pitch = Float.parseFloat(Objects.requireNonNull(config.get("warps." + warpName + ".pitch")).toString());
+                    float yaw = Float.parseFloat(Objects.requireNonNull(config.get("warps." + warpName + ".yaw")).toString());
                     String targetWorld = config.getString("warps." + warpName + ".world");
 
+                    assert targetWorld != null;
                     World world = Bukkit.getWorld(targetWorld);
-                    Location location = new Location(world, x, y, z);
+                    Location location = new Location(world, x, y, z, yaw, pitch);
 
                     Chunk chunk = player.getWorld().getChunkAt(location);
                     player.getWorld().loadChunk(chunk);
