@@ -29,6 +29,8 @@ public final class Main extends JavaPlugin{
         config.saveDefaultConfig();
         ConfigTools ranks = new ConfigTools(this, "rank.yml");
         ranks.saveDefaultConfig();
+        ConfigTools warps = new ConfigTools(this, "warps.yml");
+        warps.saveDefaultConfig();
 
         //init utils
         sqlUtils = new SQLUtils(this);
@@ -36,7 +38,7 @@ public final class Main extends JavaPlugin{
         rankUtils = new RankUtils();
 
         // commands:
-        getServer().getPluginCommand("dev").setExecutor(new Dev(/*this*/));
+        getServer().getPluginCommand("dev").setExecutor(new Dev());
         getServer().getPluginCommand("setRank").setExecutor(new SetRank());
         getServer().getPluginCommand("warn").setExecutor(new Warn());
         getServer().getPluginCommand("home").setExecutor(new Home());

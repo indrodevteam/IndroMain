@@ -43,7 +43,6 @@ public class RankUtils {
             player.setPlayerListName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
         } catch (NullPointerException e) {
             Bukkit.getLogger().severe("must reload server for Ranks");
-            e.printStackTrace();
         }
     }
 

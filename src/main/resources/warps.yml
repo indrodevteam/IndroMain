@@ -1,0 +1,5 @@
+databaseForTP: tpdatabase
+
+# use /warp command
+useWarp: true
+warps:
