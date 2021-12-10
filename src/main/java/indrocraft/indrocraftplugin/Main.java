@@ -44,10 +44,12 @@ public final class Main extends JavaPlugin{
         getServer().getPluginCommand("home").setExecutor(new Home());
         getServer().getPluginCommand("inspector").setExecutor(new Inspector());
         getServer().getPluginCommand("warp").setExecutor(new Warp());
+        getServer().getPluginCommand("rankEditor").setExecutor(new RankEditor());
 
         // tab executors:
         getCommand("warn").setTabCompleter(new Warn());
         getCommand("home").setTabCompleter(new Home());
+        getCommand("rankEditor").setTabCompleter(new RankEditor());
 
         // connects to the database:
         //this.SQL = new MySQL(this);

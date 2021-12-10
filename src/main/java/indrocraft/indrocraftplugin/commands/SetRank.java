@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ public class SetRank implements TabExecutor {
     private final Main main = Main.getPlugin(Main.class);
 
     ConfigTools config = new ConfigTools(main, "rank.yml");
+    private final RankUtils rankUtils = new RankUtils();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -25,11 +25,11 @@ public class SetRank implements TabExecutor {
 
         if (sender.isOp()){
             if (label.equalsIgnoreCase("namecolour")) {
-                RankUtils.setNameColour(target, main.sqlUtils, args[1]);
+                rankUtils.setNameColour(target, main.sqlUtils, args[1]);
             } else {
-                RankUtils.setRank(target, main.sqlUtils, args[1]);
+                rankUtils.setRank(target, main.sqlUtils, args[1]);
             }
-            RankUtils.LoadRank(target, main.sqlUtils);
+            rankUtils.LoadRank(target, main.sqlUtils);
         }
 
         return true;
@@ -40,6 +40,7 @@ public class SetRank implements TabExecutor {
         if(args.length == 2){
             List<String> arg1 = new ArrayList<>();
             if (alias.equalsIgnoreCase("setrank")) {
+                config.reloadConfig();
                 for (String ranks : config.getConfig().getConfigurationSection("ranks").getKeys(false))
                     arg1.add(ranks);
             } else {

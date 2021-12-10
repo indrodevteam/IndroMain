@@ -27,6 +27,10 @@ commands:
     usage: /<command>
     description: sends players to a predetermined location
     aliases: [setwarp, delwarp, togglewarp]
+  rankEditor:
+    usage: /<command>
+    description: edits ranks
+    aliases: [re]
 
 permissions:
   inspector:

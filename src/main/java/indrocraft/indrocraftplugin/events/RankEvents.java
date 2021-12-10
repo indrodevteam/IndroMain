@@ -18,6 +18,7 @@ public class RankEvents implements Listener {
     private Main main = Main.getPlugin(Main.class);
 
     public ConfigTools config = new ConfigTools(main, "ranks.yml");
+    private RankUtils rankUtils = new RankUtils();
 
     @EventHandler
     public void advancementDoneEvent(PlayerAdvancementDoneEvent event) {
@@ -26,7 +27,7 @@ public class RankEvents implements Listener {
 
         if (config.getConfig().getBoolean("autoRankUp")) {
             NamespacedKey key = event.getAdvancement().getKey();
-            Integer level = RankUtils.getLevel(player, main.sqlUtils);
+            Integer level = rankUtils.getLevel(player, main.sqlUtils);
             List<String> rankUpOrder = new ArrayList<>();
             List<String> totalRanks = new ArrayList<>();
             for (String ranks : config.getConfig().getConfigurationSection("ranks").getKeys(false))
@@ -47,7 +48,7 @@ public class RankEvents implements Listener {
                             level++;
 
                             advancement++;
-                            RankUtils.levelUp(player, main.sqlUtils, advancement.toString());
+                            rankUtils.levelUp(player, main.sqlUtils, advancement.toString());
                         }
                     }
                 }

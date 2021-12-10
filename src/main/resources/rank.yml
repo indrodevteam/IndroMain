@@ -9,47 +9,14 @@
 
 useRanks: true
 
-inspectorRank: '6'
-# command used for core protect to enable inspector mode or any other command that u want to run when they enter
-# inspector:
-inspectorCommand: "/co i"
-
 autoRankUp: true
 
 ranks:
-  '0':
-    displayName: GREMLIN
-    primaryColour: GRAY
-    secondaryColour: DARK_GRAY
-    advancements: story/mine_diamond
-    teleports: 1
-  '1':
-    displayName: HERO
-    primaryColour: GRAY
-    secondaryColour: DARK_GRAY
-    advancements: nether/obtain_ancient_debris
-    teleports: 1
-  '2':
-    displayName: TITAN
-    primaryColour: GRAY
-    secondaryColour: DARK_GRAY
-    advancements: story/mine_stone
-    teleports: 1
-  '3':
-    displayName: DEMIGOD
-    primaryColour: GRAY
-    secondaryColour: DARK_GRAY
-    advancements: adventure/throw_trident
-    teleports: 1
-  '4':
-    displayName: GOD
-    primaryColour: GRAY
-    secondaryColour: DARK_GRAY
-    advancements: adventure/shoot_arrow
-    teleports: 1
-  '5':
-    displayName: DEV
-    primaryColour: GRAY
-    secondaryColour: DARK_GRAY
-    advancements:
-    teleports: 1
+  default:
+    colours:
+      primary: gray
+      secondary: light_gray
+    details:
+      nextRank: null
+      nextAdvancement: null
+      level: 0

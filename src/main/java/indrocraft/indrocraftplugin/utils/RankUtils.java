@@ -4,65 +4,53 @@ import indrocraft.indrocraftplugin.Main;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class RankUtils {
 
-    private static Main main = Main.getPlugin(Main.class);
+    private Main main = Main.getPlugin(Main.class);
 
-    public static ConfigTools config = new ConfigTools(main, "rank.yml");
+    public ConfigTools config = new ConfigTools(main, "rank.yml");
 
-    public static void levelUp(Player player, SQLUtils data, String newRank) {
+    public void levelUp(Player player, SQLUtils data, String newRank) {
         setRank(player, data, newRank);
         LoadRank(player, data);
     }
 
-    public static int getLevel(Player player, SQLUtils data) {
+    public int getLevel(Player player, SQLUtils data) {
         String code = data.getString("rank", "UUID",player.getUniqueId().toString(), "players");
         int level = Integer.parseInt(code);
         return level;
     }
 
-    public static void setRank(Player player, SQLUtils sqlUtils, String newRank) {
+    public void setRank(Player player, SQLUtils sqlUtils, String newRank) {
         sqlUtils.setData(newRank, "UUID", player.getUniqueId().toString(), "rank", "players");
     }
 
-    public static void setNameColour(Player player, SQLUtils data, String newColour) {
+    public void setNameColour(Player player, SQLUtils data, String newColour) {
         data.setData(newColour, "UUID", player.getUniqueId().toString(), "nameColour", "players");
     }
 
-    public static void LoadRank(Player player, SQLUtils data) {
-        String code = data.getString("rank", "UUID", player.getUniqueId().toString(), "players");
-        String displayName = config.getConfig().getString("ranks." + code + ".displayName");
+    public void LoadRank(Player player, SQLUtils data) {
+        String uuid = player.getUniqueId().toString();
+        String displayName = data.getString("rank", "UUID", uuid, "players");
+
         try {
-            ChatColor colorA = getColour(1, player, data);
-            ChatColor colorB = getColour(2, player, data);
-            ChatColor name = getColour(3, player, data);
-            player.setDisplayName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
-            player.setPlayerListName(colorB + "[" + colorA + displayName + colorB + "] " + name + player.getName() + ChatColor.WHITE + "");
+            ChatColor pc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.primary"));
+            ChatColor sc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.secondary"));
+            ChatColor nc = readColour(main.sqlUtils.getString("nameColour", "UUID", uuid, "players"));
+            player.setDisplayName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
+            player.setPlayerListName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
         } catch (NullPointerException e) {
             Bukkit.getLogger().severe("must reload server for Ranks");
+            e.printStackTrace();
         }
     }
 
-    public static ChatColor getColour(int colourNum, Player player, SQLUtils data) {
-        String uuid = player.getUniqueId().toString();
-        String code = data.getString("rank", "UUID", uuid, "players");
-        String color = null;
-        if (colourNum == 1) {
-            color = config.getConfig().getString("ranks." + code + ".primaryColour");
-        } else if (colourNum == 2) {
-            color = config.getConfig().getString("ranks." + code + ".secondaryColour");
-        } else if (colourNum == 3) {
-            color = data.getString("nameColour", "UUID", uuid, "players");
-        }
-
-        return readColour(color);
-    }
-
-    public static ChatColor readColour(String color) {
-        if (color == null) {
+    public ChatColor readColour(String color) {
+        if (color.equalsIgnoreCase("white")) {
             return ChatColor.WHITE;
         } else if (color.equalsIgnoreCase("gray")) {
             return ChatColor.GRAY;
@@ -94,7 +82,10 @@ public class RankUtils {
             return ChatColor.LIGHT_PURPLE;
         } else if (color.equalsIgnoreCase("dark_purple")) {
             return ChatColor.DARK_PURPLE;
+        } else {
+            Bukkit.getLogger().warning("'" + color + "' is an invalid colour! try reloading the plugin.");
+            Bukkit.getLogger().warning("Defaulting to white!");
+            return ChatColor.WHITE;
         }
-        return ChatColor.WHITE;
     }
 }

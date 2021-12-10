@@ -18,6 +18,7 @@ public class JoinLeaveEvent implements Listener {
 
     ConfigTools config = new ConfigTools(main, "config.yml");
     ConfigTools ranksConfig = new ConfigTools(main, "rank.yml");
+    RankUtils rankUtils = new RankUtils();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -72,7 +73,7 @@ public class JoinLeaveEvent implements Listener {
 
         //load rank:
         if (ranksConfig.getConfig().getBoolean("useRanks")) {
-            main.sqlUtils.createColumn("rank", "int(100)", "players");
+            main.sqlUtils.createColumn("rank", "VARCHAR(100)", "players");
             main.sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
 
             String rank = main.sqlUtils.getString("rank", "UUID", uuid, "players");
@@ -84,7 +85,7 @@ public class JoinLeaveEvent implements Listener {
                 main.sqlUtils.setData("WHITE", "UUID", uuid, "nameColour", "players");
             }
 
-            RankUtils.LoadRank(player, main.sqlUtils);
+            rankUtils.LoadRank(player, main.sqlUtils);
         }
     }
 

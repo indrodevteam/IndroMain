@@ -21,6 +21,8 @@ public class Home implements TabExecutor {
     ConfigTools config = new ConfigTools(Main.getPlugin(Main.class), "config.yml");
     public String databaseName = config.getConfig().getString("databaseForTP");
 
+    private RankUtils rankUtils = new RankUtils();
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         ChatColor red = ChatColor.RED;
@@ -33,7 +35,7 @@ public class Home implements TabExecutor {
                 String uuid = player.getUniqueId().toString();
                 int getNumOfHomes = main.sqlUtils.getInt(databaseName + "num", "UUID", uuid, "players");
                 int numOfHomes = 0;
-                int playerLevel = RankUtils.getLevel(player, main.sqlUtils);
+                int playerLevel = rankUtils.getLevel(player, main.sqlUtils);
                 if (playerLevel == 0) {
                     numOfHomes = 1;
                 } else if (playerLevel == 1) {
