@@ -3,6 +3,7 @@ package indrocraft.indrocraftplugin.utils;
 import indrocraft.indrocraftplugin.Main;
 import org.bukkit.Bukkit;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,11 +21,11 @@ public class SQLUtils {
         - set data
      */
 
-    private Main plugin;
+    private Main plugin = Main.getPlugin(Main.class);
 
-    public SQLUtils(Main plugin) {
+    /*public SQLUtils(Main plugin) {
         this.plugin = plugin;
-    }
+    }*/
 
     /**
      * @param value     Data to be saved in form of a string, number will be converted depending on dataType
@@ -37,17 +38,17 @@ public class SQLUtils {
         try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + idColumn + "=?");
             if (isNum("int", value)) {
-                int valNum = Integer.valueOf(value);
+                int valNum = Integer.parseInt(value);
                 ps.setInt(1, valNum);
                 ps.setString(2, id);
                 Bukkit.getLogger().warning("int");
             } else if (isNum("float", value)) {
-                float valNum = Float.valueOf(value);
+                float valNum = Float.parseFloat(value);
                 ps.setFloat(1, valNum);
                 ps.setString(2, id);
                 Bukkit.getLogger().warning("float");
             } else if (isNum("double", value)) {
-                double valNum = Double.valueOf(value);
+                double valNum = Double.parseDouble(value);
                 ps.setDouble(1, valNum);
                 ps.setString(2, id);
                 Bukkit.getLogger().warning("double");

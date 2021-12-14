@@ -2,7 +2,9 @@ package indrocraft.indrocraftplugin;
 
 import indrocraft.indrocraftplugin.commands.*;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
+import indrocraft.indrocraftplugin.utils.Database;
 import indrocraft.indrocraftplugin.dataManager.MySQL;
+import indrocraft.indrocraftplugin.utils.SQLite;
 import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
 import indrocraft.indrocraftplugin.events.RankEvents;
 import indrocraft.indrocraftplugin.utils.RankUtils;
@@ -19,6 +21,7 @@ public final class Main extends JavaPlugin{
     public MySQL SQL;
     public SQLUtils sqlUtils;
     public RankUtils rankUtils;
+    public Database database;
 
     @Override
     public void onEnable() {
@@ -33,9 +36,16 @@ public final class Main extends JavaPlugin{
         warps.saveDefaultConfig();
 
         //init utils
-        sqlUtils = new SQLUtils(this);
+        sqlUtils = new SQLUtils();
         SQL = new MySQL();
         rankUtils = new RankUtils();
+
+        //define table names
+
+
+        //initialize and load db
+        this.database = new SQLite(this);
+        this.database.load();
 
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev());
