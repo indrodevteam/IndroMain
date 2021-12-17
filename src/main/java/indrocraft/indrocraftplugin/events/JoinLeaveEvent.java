@@ -3,6 +3,7 @@ package indrocraft.indrocraftplugin.events;
 import indrocraft.indrocraftplugin.Main;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.utils.RankUtils;
+import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.Objects;
 
 public class JoinLeaveEvent implements Listener {
 
@@ -36,7 +39,7 @@ public class JoinLeaveEvent implements Listener {
         main.sqlUtils.createRow("UUID", uuid, "players");
 
         String ign = main.sqlUtils.getString("ign", "UUID", uuid, "players");
-        if (ign != name) {
+        if (!Objects.equals(ign, name)) {
             main.sqlUtils.setData(name, "UUID", uuid, "ign", "players");
         }
         String warns = main.sqlUtils.getString("ign", "UUID", uuid, "players");
