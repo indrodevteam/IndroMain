@@ -1,128 +1,31 @@
 package indrocraft.indrocraftplugin.utils;
 
+import indrocraft.indrocraftplugin.Main;
 import org.bukkit.Bukkit;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 
 public class SQLUtils {
-
-    //private final Main main = Main.getPlugin(Main.class);
-    //private final SQLite sqLite = main.sqLite;
-
-    private final Connection connection;
-
-    public SQLUtils(Connection conn) {
-        connection = conn;
-    }
-
-    //functions for editing database structure:
-
-    /**
-     * @param name     What name do you want to u se for the table
-     * @param idColumn This is the unique ID column generally 'NAME'
+    /*
+    todo:
+        - delete (table | row | column)
+        - clear (table | row | column)
+        - get (int | string | double | float)
+    finished:
+        - item exists
+        - create
+        - change data type
+        - set data
      */
-    public void createTable(String name, String idColumn) {
-        try {
-            PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + name +
-                    " (" + idColumn + " VARCHAR(100),PRIMARY KEY (" + idColumn + "))");
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+    private Main plugin;
+
+    public SQLUtils(Main plugin) {
+        this.plugin = plugin;
     }
-
-    /**
-     * @param id        This is the name of the column
-     * @param dataType  What data type do u want to use
-     * @param tableName The name of the table you want to put the column into
-     */
-    public void createColumn(String id, String dataType, String tableName) {
-        try {
-            PreparedStatement ps = connection.prepareStatement("ALTER TABLE " + tableName + " ADD IF NOT EXISTS "
-                    + id + " " + dataType);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * @param idColumn  What is the ID column used in this table generally "NAME"
-     * @param idEquals  What should the id of this row be? What is the name?
-     * @param tableName What table dp you want to inset into?
-     */
-    public void createRow(String idColumn, String idEquals, String tableName) {
-        if (!rowExists(idColumn, idEquals, tableName)) {
-            try {
-                PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + tableName);
-                ResultSet results = ps.executeQuery();
-                results.next();
-                PreparedStatement ps2 = connection.prepareStatement("INSERT IGNORE INTO " +
-                        tableName + " (" + idColumn + ") VALUE (?)");
-                ps2.setString(1, idEquals);
-                ps2.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * @param idColumn  What column in this table is unique generally the "NAME" column
-     * @param test      What do u want to test the idColumn for
-     * @param tableName In what table
-     * @return Returns true if it exists and false if it does not
-     */
-    public boolean rowExists(String idColumn, String test, String tableName) {
-        try {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM " +
-                    tableName + " WHERE " + idColumn + "=?");
-            ps.setString(1, test);
-
-            ResultSet results = ps.executeQuery();
-            if (results.next()) {
-                //row is found
-                return true;
-            }
-            return false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * @param column    What is the name of the column you want to alter
-     * @param dataType  What data type do u want to set it to
-     * @param tableName In what table?
-     */
-    public void setDataType(String column, String dataType, String tableName) {
-        try {
-            PreparedStatement ps = connection.prepareStatement("ALTER TABLE " + tableName +
-                    " MODIFY " + column + " " + dataType);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void remove(String idColumn, String idEquals, String tableName) {
-        try {
-            PreparedStatement ps = connection.prepareStatement("DELETE FROM " + tableName +
-                    " WHERE " + idColumn + "=?");
-            ps.setString(1, idEquals);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //functions for writing data:
 
     /**
      * @param value     Data to be saved in form of a string, number will be converted depending on dataType
@@ -133,31 +36,31 @@ public class SQLUtils {
      */
     public void setData(String value, String idColumn, String id, String column, String tableName) {
         try {
-            PreparedStatement ps = connection.prepareStatement("UPDATE " + tableName + " SET " + column +
-                    "=? WHERE " + idColumn + "=?");
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + idColumn + "=?");
             if (isNum("int", value)) {
-                int valNum = Integer.parseInt(value);
+                int valNum = Integer.valueOf(value);
                 ps.setInt(1, valNum);
+                ps.setString(2, id);
                 Bukkit.getLogger().warning("int");
             } else if (isNum("float", value)) {
-                float valNum = Float.parseFloat(value);
+                float valNum = Float.valueOf(value);
                 ps.setFloat(1, valNum);
+                ps.setString(2, id);
                 Bukkit.getLogger().warning("float");
             } else if (isNum("double", value)) {
-                double valNum = Double.parseDouble(value);
+                double valNum = Double.valueOf(value);
                 ps.setDouble(1, valNum);
+                ps.setString(2, id);
                 Bukkit.getLogger().warning("double");
             } else {
                 ps.setString(1, value);
+                ps.setString(2, id);
             }
-            ps.setString(2, id);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    //reading data:
 
     /**
      * @param column    What column is the desired cell in
@@ -168,8 +71,7 @@ public class SQLUtils {
      */
     public int getInt(String column, String idColumn, String idEquals, String tableName) {
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT " + column + " FROM " + tableName +
-                    " WHERE " + idColumn + "=?");
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
             int info = 0;
@@ -192,14 +94,20 @@ public class SQLUtils {
      */
     public String getString(String column, String idColumn, String idEquals, String tableName) {
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT " + column + " FROM " + tableName +
-                    " WHERE " + idColumn + "=?");
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT `" + column + "` FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
             String info = "";
             if (rs.next()) {
                 info = rs.getString(column);
                 return info;
+            }
+        } catch (SQLSyntaxErrorException e) {
+            try {
+                PreparedStatement p = plugin.SQL.getConnection().prepareStatement("UPDATE " + tableName + " SET `" + column + "`=' ' WHERE " + idColumn + "=" + idEquals);
+                p.executeUpdate();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -216,8 +124,7 @@ public class SQLUtils {
      */
     public double getDouble(String column, String idColumn, String idEquals, String tableName) {
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT " + column + " FROM " + tableName +
-                    " WHERE " + idColumn + "=?");
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
             double info = 0;
@@ -240,8 +147,7 @@ public class SQLUtils {
      */
     public float getFloat(String column, String idColumn, String idEquals, String tableName) {
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT " + column + " FROM " + tableName +
-                    " WHERE " + idColumn + "=?");
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT " + column + " FROM " + tableName + " WHERE " + idColumn + "=?");
             ps.setString(1, idEquals);
             ResultSet rs = ps.executeQuery();
             float info = 0;
@@ -255,7 +161,105 @@ public class SQLUtils {
         return 0;
     }
 
-    //exta utils:
+    /**
+     * @param name     What name do you want to u se for the table
+     * @param idColumn This is the unique ID column generally 'NAME'
+     */
+    public void createTable(String name, String idColumn) {
+        try {
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + name + " (" + idColumn + " VARCHAR(100),PRIMARY KEY (" + idColumn + "))");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param id        This is the name of the column
+     * @param dataType  What data type do u want to use
+     * @param tableName The name of the table you want to put the column into
+     */
+    public void createColumn(String id, String dataType, String tableName) {
+        try {
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("ALTER TABLE " + tableName + " ADD " + id + " " + dataType + " NOT NULL");
+            ps.executeUpdate();
+        } catch (SQLSyntaxErrorException err) {
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param idColumn  What is the ID column used in this table generally "NAME"
+     * @param idEquals  What should the id of this row be? What is the name?
+     * @param tableName What table dp you want to inset into?
+     */
+    public void createRow(String idColumn, String idEquals, String tableName) {
+        if (!rowExists(idColumn, idEquals, tableName)) {
+            try {
+                PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + tableName);
+                ResultSet results = ps.executeQuery();
+                results.next();
+                PreparedStatement ps2 = plugin.SQL.getConnection().prepareStatement("INSERT IGNORE INTO " + tableName + " (" + idColumn + ") VALUE (?)");
+                ps2.setString(1, idEquals);
+                ps2.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * @param idColumn  What column in this table is unique generally the "NAME" column
+     * @param test      What do u want to test the idColumn for
+     * @param tableName In what table
+     * @return Returns true if it exists and false if it does not
+     */
+    public boolean rowExists(String idColumn, String test, String tableName) {
+        try {
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + tableName + " WHERE " + idColumn + "=?");
+            ps.setString(1, test);
+
+            ResultSet results = ps.executeQuery();
+            if (results.next()) {
+                //row is found
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    /**
+     * @param column    What is the name of the column you want to alter
+     * @param dataType  What data type do u want to set it to
+     * @param tableName In what table?
+     */
+    public void setDataType(String column, String dataType, String tableName) {
+        try {
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("ALTER TABLE " + tableName + " MODIFY " + column + " " + dataType);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void remove(String idColumn, String idEquals, String tableName) {
+        try {
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("DELETE FROM " + tableName + " WHERE " + idColumn + "=?");
+            ps.setString(1, idEquals);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean isNum(String type, String num) {
         try {
             if (type.equalsIgnoreCase("int")) {

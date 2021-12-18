@@ -3,7 +3,6 @@ package indrocraft.indrocraftplugin.events;
 import indrocraft.indrocraftplugin.Main;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.utils.RankUtils;
-import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,7 +12,7 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Objects;
+import java.sql.SQLSyntaxErrorException;
 
 public class JoinLeaveEvent implements Listener {
 
@@ -39,7 +38,7 @@ public class JoinLeaveEvent implements Listener {
         main.sqlUtils.createRow("UUID", uuid, "players");
 
         String ign = main.sqlUtils.getString("ign", "UUID", uuid, "players");
-        if (!Objects.equals(ign, name)) {
+        if (ign != name) {
             main.sqlUtils.setData(name, "UUID", uuid, "ign", "players");
         }
         String warns = main.sqlUtils.getString("ign", "UUID", uuid, "players");
@@ -76,15 +75,15 @@ public class JoinLeaveEvent implements Listener {
 
         //load rank:
         if (ranksConfig.getConfig().getBoolean("useRanks")) {
-            main.sqlUtils.createColumn("rank", "VARCHAR(100)", "players");
+            main.sqlUtils.createColumn("`rank`", "VARCHAR(100)", "players");
             main.sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
 
             String rank = main.sqlUtils.getString("rank", "UUID", uuid, "players");
-            if (rank == null) {
-                main.sqlUtils.setData("0", "UUID", uuid, "rank", "players");
+            if (rank.isEmpty()) {
+                main.sqlUtils.setData("default", "UUID", uuid, "`rank`", "players");
             }
             String nameColour = main.sqlUtils.getString("nameColour", "UUID", uuid, "players");
-            if (nameColour == null) {
+            if (nameColour.isEmpty()) {
                 main.sqlUtils.setData("WHITE", "UUID", uuid, "nameColour", "players");
             }
 

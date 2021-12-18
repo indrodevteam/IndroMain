@@ -20,13 +20,13 @@ public class RankUtils {
     }
 
     public int getLevel(Player player, SQLUtils data) {
-        String code = data.getString("rank", "UUID",player.getUniqueId().toString(), "players");
-        int level = Integer.parseInt(code);
-        return level;
+        String rank = data.getString("rank", "UUID",player.getUniqueId().toString(), "players");
+        String code = config.getConfig().getString("ranks." + rank + ".details.level");
+        return Integer.parseInt(code);
     }
 
     public void setRank(Player player, SQLUtils sqlUtils, String newRank) {
-        sqlUtils.setData(newRank, "UUID", player.getUniqueId().toString(), "rank", "players");
+        sqlUtils.setData(newRank, "UUID", player.getUniqueId().toString(), "`rank`", "players");
     }
 
     public void setNameColour(Player player, SQLUtils data, String newColour) {

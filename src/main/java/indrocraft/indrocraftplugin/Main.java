@@ -2,22 +2,23 @@ package indrocraft.indrocraftplugin;
 
 import indrocraft.indrocraftplugin.commands.*;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
-import indrocraft.indrocraftplugin.dataManager.SQLite;
+import indrocraft.indrocraftplugin.dataManager.MySQL;
 import indrocraft.indrocraftplugin.utils.SQLUtils;
 import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
 import indrocraft.indrocraftplugin.events.RankEvents;
 import indrocraft.indrocraftplugin.utils.RankUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Connection;
+import java.sql.SQLException;
 
 
 public final class Main extends JavaPlugin{
 
+    public MySQL SQL;
     public SQLUtils sqlUtils;
     public RankUtils rankUtils;
-    public SQLite sqLite;
 
     @Override
     public void onEnable() {
@@ -32,18 +33,9 @@ public final class Main extends JavaPlugin{
         warps.saveDefaultConfig();
 
         //init utils
+        sqlUtils = new SQLUtils(this);
+        SQL = new MySQL();
         rankUtils = new RankUtils();
-
-        //initialize and load db
-        sqLite = new SQLite(this);
-        sqLite.load();
-        Connection connection = sqLite.getSQLConnection();
-        sqlUtils = new SQLUtils(connection);
-
-        sqlUtils.createTable("players", "UUID");
-        sqlUtils.createRow("UUID", "test", "players");
-        String test = sqlUtils.getString("UUID", "UUID", "test", "players");
-        Bukkit.getLogger().info(test);
 
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev());
@@ -59,11 +51,27 @@ public final class Main extends JavaPlugin{
         getCommand("home").setTabCompleter(new Home());
         getCommand("rankEditor").setTabCompleter(new RankEditor());
 
+        // connects to the database:
+        //this.SQL = new MySQL(this);
+
+        try {
+            SQL.connect();
+        } catch (ClassNotFoundException | SQLException e) {
+            Bukkit.getLogger().severe("Database not connected!");
+        }
+
+        if (SQL.isConnected()) {
+            Bukkit.getLogger().info(ChatColor.BLUE + "Database is connected!");
+        }
+
         //register events:
         getServer().getPluginManager().registerEvents(new JoinLeaveEvent(), this);
         getServer().getPluginManager().registerEvents(new RankEvents(), this);
 
-        /*try {
+        try {
+            sqlUtils.createTable("players", "UUID");
+            sqlUtils.createColumn("ign", "VARCHAR(100)", "players");
+            sqlUtils.createColumn("warns", "INT", "players");
             if (config.getConfig().getBoolean("useWarp")) {
                 String database = config.getConfig().getString("databaseForTP") + "Warps";
                 sqlUtils.createTable(database, "warpID");
@@ -74,13 +82,14 @@ public final class Main extends JavaPlugin{
             }
         } catch (Exception e) {
             Bukkit.getLogger().warning("startup table creation canceled please connect database");
-        }*/
+        }
     }
 
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        SQL.disconnect();
         Bukkit.getLogger().info("Successfully disabled Indrocraft plugin!");
     }
 }
