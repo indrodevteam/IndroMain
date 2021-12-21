@@ -39,17 +39,16 @@ public final class Main extends JavaPlugin{
 
         // commands:
         getServer().getPluginCommand("dev").setExecutor(new Dev());
-        getServer().getPluginCommand("setRank").setExecutor(new SetRank());
         getServer().getPluginCommand("warn").setExecutor(new Warn());
         getServer().getPluginCommand("home").setExecutor(new Home());
         getServer().getPluginCommand("inspector").setExecutor(new Inspector());
         getServer().getPluginCommand("warp").setExecutor(new Warp());
-        getServer().getPluginCommand("rankEditor").setExecutor(new RankEditor());
+        getServer().getPluginCommand("ranks").setExecutor(new RankCommand());
 
         // tab executors:
         getCommand("warn").setTabCompleter(new Warn());
         getCommand("home").setTabCompleter(new Home());
-        getCommand("rankEditor").setTabCompleter(new RankEditor());
+        getCommand("ranks").setTabCompleter(new RankCommand());
 
         // connects to the database:
         //this.SQL = new MySQL(this);

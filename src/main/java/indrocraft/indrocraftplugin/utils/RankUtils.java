@@ -6,7 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RankUtils {
 
@@ -37,6 +38,13 @@ public class RankUtils {
         String uuid = player.getUniqueId().toString();
         String displayName = data.getString("rank", "UUID", uuid, "players");
 
+        List<String> ranks = new ArrayList<>();
+        ranks.addAll(config.getConfig().getConfigurationSection("ranks").getKeys(false));
+        if (!ranks.contains(displayName)) {
+            data.setData(ranks.get(0), "UUID", uuid, "rank", "players");
+            displayName = data.getString("rank", "UUID", uuid, "players");
+        }
+
         try {
             ChatColor pc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.primary"));
             ChatColor sc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.secondary"));
@@ -44,8 +52,7 @@ public class RankUtils {
             player.setDisplayName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
             player.setPlayerListName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
         } catch (NullPointerException e) {
-            Bukkit.getLogger().severe("must reload server for Ranks");
-            e.printStackTrace();
+            Bukkit.getLogger().severe("Could not apply default rank in rank.yml");
         }
     }
 
