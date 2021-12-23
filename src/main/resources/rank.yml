@@ -1,15 +1,15 @@
 # ranks to use this feature ranks should be structured like this:
 # ranks:
 # <name of rank for database>:
-#     - <rank display name>
-#     - <primary colour>
-#     - <secondary colour>
-#     - <name colour leave as 'null' for white>
-#     - <rank level for other features admin should be lowest>
+#     colours:
+#         primary: <colour for ranks name>
+#         secondary: <colour for square brackets>
+#     details:
+#         nextRank: <name of rank that should follow this one>
+#         nextAdvancement: <advancement the player achieves for the next rank>
+#         level: <this level is used for identifying rank privileges>
 
 useRanks: true
-
-autoRankUp: true
 
 ranks:
   default:

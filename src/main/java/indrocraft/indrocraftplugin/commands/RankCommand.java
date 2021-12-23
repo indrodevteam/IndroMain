@@ -298,7 +298,8 @@ public class RankCommand implements TabExecutor {
             completions.removeAll(completions);
             for (Iterator<Advancement> it = Bukkit.advancementIterator(); it.hasNext(); ) {
                 String advancement = "nextAdvance:" + it.next().getKey().getKey();
-                completions.add(advancement);
+                if (!(advancement.toLowerCase().startsWith("nextadvance:r")))
+                    completions.add(advancement);
             }
         }
         return completions;

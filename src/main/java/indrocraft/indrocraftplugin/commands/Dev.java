@@ -7,21 +7,48 @@ import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Dev implements CommandExecutor{
 
-    private SQLUtils data = Main.getPlugin(Main.class).sqlUtils;
-    private RankUtils rankUtils = new RankUtils();
+    private final Main main = Main.getPlugin(Main.class);
+
+    private final ConfigTools c = new ConfigTools(main, "rank.yml");
+    private FileConfiguration config = c.getConfig();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        ConfigTools config = new ConfigTools(Main.getPlugin(Main.class), "rank.yml");
 
-        Player player = (Player) sender;
+        Player player =(Player) sender;
 
-        rankUtils.setRank(player, data, "default");
-        rankUtils.LoadRank(player, data);
+        List<String> rankAdvancements = new ArrayList<>();
+        List<String> nextRanks = new ArrayList<>();
+
+        for (String rank : config.getConfigurationSection("ranks").getKeys(false)) {
+            player.sendMessage(rank);
+            String advancement = config.getString("ranks." + rank + ".details.nextAdvancement");
+            String nextRank = config.getString("ranks." + rank + ".details.nextRank");
+
+            if (advancement == null) {
+                player.sendMessage("nothing set for next advance");
+            } else {
+                player.sendMessage(advancement);
+                rankAdvancements.add(advancement);
+            }
+
+            if (nextRank == null) {
+                player.sendMessage("nothing set for next rank");
+            } else {
+                player.sendMessage(nextRank);
+                nextRanks.add(nextRank);
+            }
+
+        }
+
         return true;
     }
 }

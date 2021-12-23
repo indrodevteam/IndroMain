@@ -41,7 +41,6 @@ public final class Main extends JavaPlugin{
         getServer().getPluginCommand("dev").setExecutor(new Dev());
         getServer().getPluginCommand("warn").setExecutor(new Warn());
         getServer().getPluginCommand("home").setExecutor(new Home());
-        getServer().getPluginCommand("inspector").setExecutor(new Inspector());
         getServer().getPluginCommand("warp").setExecutor(new Warp());
         getServer().getPluginCommand("ranks").setExecutor(new RankCommand());
 
