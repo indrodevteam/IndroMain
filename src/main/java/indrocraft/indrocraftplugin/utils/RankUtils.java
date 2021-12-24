@@ -4,9 +4,12 @@ import indrocraft.indrocraftplugin.Main;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class RankUtils {
@@ -54,6 +57,33 @@ public class RankUtils {
         } catch (NullPointerException e) {
             Bukkit.getLogger().severe("Could not apply default rank in rank.yml");
         }
+    }
+
+    public boolean hasAdvancement(Player player, String name) {
+        // name should be something like minecraft:husbandry/break_diamond_hoe
+        Advancement a = getAdvancement(name);
+        if(a == null){
+            // advancement does not exists.
+            return false;
+        }
+        AdvancementProgress progress = player.getAdvancementProgress(a);
+        // getting the progress of this advancement.
+        return progress.isDone();
+        //returns true or false.
+    }
+
+    public Advancement getAdvancement(String name) {
+        Iterator<Advancement> it = Bukkit.getServer().advancementIterator();
+        // gets all 'registered' advancements on the server.
+        while (it.hasNext()) {
+            // loops through these.
+            Advancement a = it.next();
+            if (a.getKey().toString().equalsIgnoreCase(name)) {
+                //checks if one of these has the same name as the one you asked for. If so, this is the one it will return.
+                return a;
+            }
+        }
+        return null;
     }
 
     public ChatColor readColour(String color) {

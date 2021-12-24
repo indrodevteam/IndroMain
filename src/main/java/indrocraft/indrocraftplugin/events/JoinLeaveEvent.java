@@ -12,8 +12,6 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.sql.SQLSyntaxErrorException;
-
 public class JoinLeaveEvent implements Listener {
 
     private final Main main = Main.getPlugin(Main.class);
@@ -63,7 +61,7 @@ public class JoinLeaveEvent implements Listener {
             main.sqlUtils.createColumn("yaw", "Float", tpDatabase);
 
             String homeList = main.sqlUtils.getString(tpDatabase, "UUID", uuid, "players");
-            if (homeList == null) {
+            if (homeList == null || homeList.isEmpty()) {
                 main.sqlUtils.setData(" ", "UUID", uuid, tpDatabase, "players");
             }
             String homeNum = main.sqlUtils.getString(tpDatabase + "num", "UUID", uuid,
@@ -79,11 +77,11 @@ public class JoinLeaveEvent implements Listener {
             main.sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
 
             String rank = main.sqlUtils.getString("rank", "UUID", uuid, "players");
-            if (rank.isEmpty()) {
+            if (rank == null || rank.isEmpty()) {
                 main.sqlUtils.setData("default", "UUID", uuid, "`rank`", "players");
             }
             String nameColour = main.sqlUtils.getString("nameColour", "UUID", uuid, "players");
-            if (nameColour.isEmpty()) {
+            if (rank == null || nameColour.isEmpty()) {
                 main.sqlUtils.setData("WHITE", "UUID", uuid, "nameColour", "players");
             }
 

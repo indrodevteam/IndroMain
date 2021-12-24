@@ -3,10 +3,8 @@ package indrocraft.indrocraftplugin.events;
 import indrocraft.indrocraftplugin.Main;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.utils.RankUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
-import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +31,7 @@ public class RankEvents implements Listener {
         List<String> rankAdvancements = new ArrayList<>();
         List<String> nextRanks = new ArrayList<>();
 
+        //fills the 3 lists with all the ranks and their leveling information
         for (String rank : config.getConfigurationSection("ranks").getKeys(false)) {
             rankNames.add(rank);
 
@@ -51,42 +50,51 @@ public class RankEvents implements Listener {
             }
         }
 
+        //gets the players rank and checks what their current target is:
+        String playerRank = main.sqlUtils.getString("rank", "UUID", player.getUniqueId().toString(),
+                "players");
+        int i = rankNames.indexOf(playerRank);
+        String current = rankAdvancements.get(i);
+
+
+        //if statement, checks if the advancement is the one that the player is currently working towards
         NamespacedKey key = event.getAdvancement().getKey();
-        if (key.getNamespace().equals(NamespacedKey.MINECRAFT) && rankAdvancements.contains(key.getKey())) {
-            int index = rankAdvancements.indexOf(key.getKey());
-            String next = nextRanks.get(index);
+        if (key.getNamespace().equals(NamespacedKey.MINECRAFT) && current.equals(key.getKey())) {
+            String newRank = nextRanks.get(i);
 
+            //check if the player has completed any of the other ranks after this one
             boolean rankPass = true;
+            int rankCount = 0;
             while (rankPass) {
-                int index2 = rankNames.indexOf(next);
-                String nextAdvancement = rankAdvancements.get(index2);
+                //get next rank
 
-                NamespacedKey nsk = new NamespacedKey(NamespacedKey.MINECRAFT, nextAdvancement);
-                Advancement advancement = main.getServer().getAdvancement(nsk);
+                String nextRank = null;
+                int index = 0;
 
-                player.sendMessage("i");
-
-                if (advancement == null) {
-                    rankPass = false;
+                while (rankCount > 0) {
+                    index = rankNames.indexOf(newRank);
+                    nextRank = nextRanks.get(index);
+                    rankCount--;
                 }
 
-                if (player.getAdvancementProgress(advancement).isDone()) {
+                index = rankNames.indexOf(nextRank);
+                String nextAdvancement = rankAdvancements.get(index);
 
-                    int index3 = rankAdvancements.indexOf(nextAdvancement);
-                    String next2 = nextRanks.get(index3);
-                    player.sendMessage(next2 + " this is the rank");
-                    rankUtils.setRank(player, main.sqlUtils, next2);
-                    rankUtils.LoadRank(player, main.sqlUtils);
-
-                    player.sendMessage("Ranked up again!");
-                    rankPass = false;
+                //is it complete?
+                if (rankUtils.hasAdvancement(player, "minecraft:" + nextAdvancement)) {
+                    //if so increase rank repeat
+                    rankCount++;
                 } else {
-                    rankUtils.setRank(player, main.sqlUtils, next);
-                    rankUtils.LoadRank(player, main.sqlUtils);
-                    player.sendMessage("congratulations you are now rank: " + nextRanks.get(index));
+                    //if not complete or == null break from loop increase rank by 1
                     rankPass = false;
                 }
+
             }
+            player.sendMessage(String.valueOf(rankCount));
+            rankUtils.LoadRank(player, main.sqlUtils);
+
         }
     }
+
+
 }
