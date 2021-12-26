@@ -96,29 +96,35 @@ public class Warp implements TabExecutor {
                             }
                             break;
                     }
+                } else {
+                    player.sendMessage(red + "You do not have permission to do that!");
                 }
                 if (label.equalsIgnoreCase("warp")) {
-                    double x = config.getDouble("warps." + warpName + ".x");
-                    double y = config.getDouble("warps." + warpName + ".y");
-                    double z = config.getDouble("warps." + warpName + ".z");
-                    float pitch = Float.parseFloat(Objects.requireNonNull(config.get("warps." + warpName + ".pitch")).toString());
-                    float yaw = Float.parseFloat(Objects.requireNonNull(config.get("warps." + warpName + ".yaw")).toString());
-                    String targetWorld = config.getString("warps." + warpName + ".world");
+                    if (config.getStringList("locations").contains(args[0])) {
+                        double x = config.getDouble("warps." + warpName + ".x");
+                        double y = config.getDouble("warps." + warpName + ".y");
+                        double z = config.getDouble("warps." + warpName + ".z");
+                        float pitch = Float.parseFloat(Objects.requireNonNull(config.get("warps." + warpName + ".pitch")).toString());
+                        float yaw = Float.parseFloat(Objects.requireNonNull(config.get("warps." + warpName + ".yaw")).toString());
+                        String targetWorld = config.getString("warps." + warpName + ".world");
 
-                    assert targetWorld != null;
-                    World world = Bukkit.getWorld(targetWorld);
-                    Location location = new Location(world, x, y, z, yaw, pitch);
+                        assert targetWorld != null;
+                        World world = Bukkit.getWorld(targetWorld);
+                        Location location = new Location(world, x, y, z, yaw, pitch);
 
-                    Chunk chunk = player.getWorld().getChunkAt(location);
-                    player.getWorld().loadChunk(chunk);
+                        Chunk chunk = player.getWorld().getChunkAt(location);
+                        player.getWorld().loadChunk(chunk);
 
-                    try {
-                        player.teleport(location);
-                        player.sendMessage(ChatColor.BLUE + "Teleporting to " + ChatColor.GREEN + warpName + ChatColor.BLUE + " now!");
-                    } catch (IllegalArgumentException e) {
-                        player.sendMessage(red + "Must have a valid name after the command /setwarp");
-                        e.printStackTrace();
-                        return true;
+                        try {
+                            player.teleport(location);
+                            player.sendMessage(ChatColor.BLUE + "Teleporting to " + ChatColor.GREEN + warpName + ChatColor.BLUE + " now!");
+                        } catch (IllegalArgumentException e) {
+                            player.sendMessage(red + "Must have a valid name after the command /setwarp");
+                            e.printStackTrace();
+                            return true;
+                        }
+                    } else {
+                        player.sendMessage(red + "The warp location: " + ChatColor.DARK_RED + args[0] + red + "does not exist! Please check your spelling and try again.");
                     }
                 }
             } else {

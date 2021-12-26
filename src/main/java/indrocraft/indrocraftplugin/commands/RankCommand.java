@@ -34,41 +34,41 @@ public class RankCommand implements TabExecutor {
         Player target;
 
         if (player.isOp()) {
+            if (args.length > 0) {
 
-            // sets editor args:
-            boolean hasName = false;
-            String name = null;
-            String colour1 = null;
-            String colour2 = null;
-            boolean hasNextAdvancement = false;
-            String nextAdvancement = null;
-            boolean hasNextRank = false;
-            String nextRank = null;
-            boolean hasLevel = false;
-            String level = null;
+                // sets editor args:
+                boolean hasName = false;
+                String name = null;
+                String colour1 = null;
+                String colour2 = null;
+                boolean hasNextAdvancement = false;
+                String nextAdvancement = null;
+                boolean hasNextRank = false;
+                String nextRank = null;
+                boolean hasLevel = false;
+                String level = null;
 
-            for (int i = 1; i < args.length; i++) {
+                for (int i = 1; i < args.length; i++) {
 
-                if (hasArgPrefix("name:", args[i])) {
-                    name = args[i].toLowerCase().replaceFirst("name:", "");
-                    hasName = true;
-                } else if (hasArgPrefix("colour1:", args[i])) {
-                    colour1 = args[i].toLowerCase().replace("colour1:", "");
-                } else if (hasArgPrefix("colour2:", args[i])) {
-                    colour2 = args[i].toLowerCase().replace("colour2:", "");
-                } else if (hasArgPrefix("nextadvance:", args[i])) {
-                    nextAdvancement = args[i].toLowerCase().replace("nextadvance:", "");
-                    hasNextAdvancement = true;
-                } else if (hasArgPrefix("nextrank:", args[i])) {
-                    nextRank = args[i].toLowerCase().replace("nextrank:", "");
-                    hasNextRank = true;
-                } else if (hasArgPrefix("level:", args[i])) {
-                    level = args[i].toLowerCase().replace("level:", "");
-                    hasLevel = true;
+                    if (hasArgPrefix("name:", args[i])) {
+                        name = args[i].toLowerCase().replaceFirst("name:", "");
+                        hasName = true;
+                    } else if (hasArgPrefix("colour1:", args[i])) {
+                        colour1 = args[i].toLowerCase().replace("colour1:", "");
+                    } else if (hasArgPrefix("colour2:", args[i])) {
+                        colour2 = args[i].toLowerCase().replace("colour2:", "");
+                    } else if (hasArgPrefix("nextadvance:", args[i])) {
+                        nextAdvancement = args[i].toLowerCase().replace("nextadvance:", "");
+                        hasNextAdvancement = true;
+                    } else if (hasArgPrefix("nextrank:", args[i])) {
+                        nextRank = args[i].toLowerCase().replace("nextrank:", "");
+                        hasNextRank = true;
+                    } else if (hasArgPrefix("level:", args[i])) {
+                        level = args[i].toLowerCase().replace("level:", "");
+                        hasLevel = true;
+                    }
                 }
-            }
 
-            if (args.length >= 1) {
                 switch (args[0].toLowerCase()) {
 
                     //turn ranks on:
@@ -98,20 +98,36 @@ public class RankCommand implements TabExecutor {
                     //set a players rank
 
                     case "set":
-                        if (PlayerExist(args[1], player)) {
-                            target = Bukkit.getPlayer(args[1]);
-                            rankUtils.setRank(target, sqlUtils, args[2]);
-                            rankUtils.LoadRank(target, sqlUtils);
+                        if (args.length >= 3) {
+                            if (PlayerExist(args[1], player)) {
+                                target = Bukkit.getPlayer(args[1]);
+                                rankUtils.setRank(target, sqlUtils, args[2]);
+                                rankUtils.LoadRank(target, sqlUtils);
+                                player.sendMessage(ChatColor.BLUE + "Successfully set " + ChatColor.GREEN + args[1] +
+                                        "'s " + ChatColor.BLUE + "rank to: " + ChatColor.GREEN + args[2]);
+                                target.sendMessage(ChatColor.BLUE + "Successfully set your rank to: "
+                                        + ChatColor.GREEN + args[2]);
+                            }
+                        } else {
+                            player.sendMessage(red + "Arguments <Player> and <new rank> are required");
                         }
                         break;
 
                     //sets a players name colour:
 
                     case "setname":
-                        if (PlayerExist(args[1], player)) {
-                            target = Bukkit.getPlayer(args[1]);
-                            rankUtils.setNameColour(target, sqlUtils, args[2]);
-                            rankUtils.LoadRank(target, sqlUtils);
+                        if (args.length >= 3) {
+                            if (PlayerExist(args[1], player)) {
+                                target = Bukkit.getPlayer(args[1]);
+                                rankUtils.setNameColour(target, sqlUtils, args[2]);
+                                rankUtils.LoadRank(target, sqlUtils);
+                                player.sendMessage(ChatColor.BLUE + "Successfully set " + ChatColor.GREEN + args[1] +
+                                        "'s " + ChatColor.BLUE + "name colour to: " + ChatColor.GREEN + args[2]);
+                                target.sendMessage(ChatColor.BLUE + "Successfully set your name colour to: "
+                                        + ChatColor.GREEN + args[2]);
+                            }
+                        } else {
+                            player.sendMessage(red + "Arguments <Player> and <name colour> are required");
                         }
                         break;
 
@@ -160,23 +176,30 @@ public class RankCommand implements TabExecutor {
 
                         break;
                     case "delete":
-                        if (rankExists(args[1])){
-                            config.set("ranks." + args[1], null);
-                            c.saveConfig();
-                            c.reloadConfig();
-                            player.sendMessage(ChatColor.BLUE + "Successfully deleted rank: " + ChatColor.GREEN + args[1]);
+                        if (args.length >= 2) {
+                            if (rankExists(args[1])) {
+                                config.set("ranks." + args[1], null);
+                                c.saveConfig();
+                                c.reloadConfig();
+                                player.sendMessage(ChatColor.BLUE + "Successfully deleted rank: " + ChatColor.GREEN + args[1]);
+                            } else {
+                                player.sendMessage(red + "The specified rank does not exist!");
+                            }
                         } else {
-                            player.sendMessage(red + "The specified rank does not exist!");
+                            player.sendMessage(red + "Must have a valid rank name after 'delete'!");
                         }
                         break;
                     case "edit":
                         player.sendMessage(red + "unfinished please delete old rank and create new");
                         break;
                 }
+            } else {
+                player.sendMessage(red + "Must have an argument after '/ranks'");
             }
         } else {
-            player.sendMessage("ranks info");
+            player.sendMessage(red + "You do not have permission to do that");
         }
+        c.reloadConfig();
         return true;
     }
 

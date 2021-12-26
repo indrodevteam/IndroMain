@@ -102,7 +102,6 @@ public class JoinLeaveEvent implements Listener {
 
         Long time = p.getWorld().getTime();
         if (time <= 50) {
-            p.sendMessage(time.toString());
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.sendMessage(ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " went to bed sweet dreams!");
             }
