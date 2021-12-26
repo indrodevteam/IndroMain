@@ -3,8 +3,9 @@ package indrocraft.indrocraftplugin.events;
 import indrocraft.indrocraftplugin.Main;
 import indrocraft.indrocraftplugin.dataManager.ConfigTools;
 import indrocraft.indrocraftplugin.utils.RankUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
-import org.bukkit.advancement.Advancement;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -56,7 +57,6 @@ public class RankEvents implements Listener {
         int i = rankNames.indexOf(playerRank);
         String current = rankAdvancements.get(i);
 
-
         //if statement, checks if the advancement is the one that the player is currently working towards
         NamespacedKey key = event.getAdvancement().getKey();
         if (key.getNamespace().equals(NamespacedKey.MINECRAFT) && current.equals(key.getKey())) {
@@ -67,17 +67,21 @@ public class RankEvents implements Listener {
             int rankCount = 0;
             while (rankPass) {
                 //get next rank
-
-                String nextRank = null;
-                int index = 0;
-
-                while (rankCount > 0) {
+                int index;
+                int reps = rankCount;
+                while (reps > 0) {
                     index = rankNames.indexOf(newRank);
-                    nextRank = nextRanks.get(index);
-                    rankCount--;
+                    newRank = nextRanks.get(index);
+                    reps--;
                 }
 
-                index = rankNames.indexOf(nextRank);
+                //checks if there is no next rank
+                index = rankNames.indexOf(newRank);
+                if (index == -1) {
+                    player.sendMessage("exiting\n");
+
+                    break;
+                }
                 String nextAdvancement = rankAdvancements.get(index);
 
                 //is it complete?
@@ -88,13 +92,27 @@ public class RankEvents implements Listener {
                     //if not complete or == null break from loop increase rank by 1
                     rankPass = false;
                 }
-
             }
-            player.sendMessage(String.valueOf(rankCount));
+
+            // these three are used to track the iteration for multiple rank jumps
+            String finalRank = playerRank;
+            int count = rankCount + 1;
+            int finalIndex;
+            //used to count the number or ranks a person travels at a time
+            int reps = 0;
+
+            while (count > 0) {
+                finalIndex = rankNames.indexOf(finalRank);
+                finalRank = nextRanks.get(finalIndex);
+                reps++;
+                count--;
+            }
+
+            Bukkit.broadcastMessage(ChatColor.BLUE + "You have gone up " + ChatColor.GREEN + reps + ChatColor.BLUE
+                    + " ranks and are now: " + ChatColor.GREEN + finalRank);
+            rankUtils.setRank(player, main.sqlUtils, finalRank);
             rankUtils.LoadRank(player, main.sqlUtils);
 
         }
     }
-
-
 }

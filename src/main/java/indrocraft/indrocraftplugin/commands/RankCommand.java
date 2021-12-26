@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -155,14 +156,15 @@ public class RankCommand implements TabExecutor {
                         c.saveConfig();
                         c.reloadConfig();
 
-                        player.sendMessage(ChatColor.GREEN + "Successfully created rank: " + name);
+                        player.sendMessage(ChatColor.BLUE + "Successfully created rank: " + ChatColor.GREEN + name);
 
                         break;
                     case "delete":
                         if (rankExists(args[1])){
                             config.set("ranks." + args[1], null);
                             c.saveConfig();
-                            player.sendMessage(ChatColor.GREEN + "Successfully deleted rank: " + args[1]);
+                            c.reloadConfig();
+                            player.sendMessage(ChatColor.BLUE + "Successfully deleted rank: " + ChatColor.GREEN + args[1]);
                         } else {
                             player.sendMessage(red + "The specified rank does not exist!");
                         }
@@ -322,10 +324,14 @@ public class RankCommand implements TabExecutor {
 
     private boolean rankExists (String rank) {
         List<String> arg1 = new ArrayList<>();
-        for (String ranks : config.getConfigurationSection("ranks").getKeys(false))
-            arg1.add(ranks.toLowerCase(Locale.ROOT));
+        try {
+            for (String ranks : config.getConfigurationSection("ranks").getKeys(false))
+                arg1.add(ranks.toLowerCase(Locale.ROOT));
 
-        return arg1.contains(rank.toLowerCase());
+            return arg1.contains(rank.toLowerCase());
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     private boolean isNumber(String number) {
