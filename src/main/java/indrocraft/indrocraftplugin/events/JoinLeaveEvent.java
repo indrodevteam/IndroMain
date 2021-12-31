@@ -12,6 +12,9 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class JoinLeaveEvent implements Listener {
 
     private final Main main = Main.getPlugin(Main.class);
@@ -76,9 +79,12 @@ public class JoinLeaveEvent implements Listener {
             main.sqlUtils.createColumn("`rank`", "VARCHAR(100)", "players");
             main.sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
 
+            List<String> defaultRank = new ArrayList<>(
+                    ranksConfig.getConfig().getConfigurationSection("ranks").getKeys(false));
+
             String rank = main.sqlUtils.getString("rank", "UUID", uuid, "players");
             if (rank == null || rank.isEmpty()) {
-                main.sqlUtils.setData("default", "UUID", uuid, "`rank`", "players");
+                main.sqlUtils.setData(defaultRank.get(0), "UUID", uuid, "`rank`", "players");
             }
             String nameColour = main.sqlUtils.getString("nameColour", "UUID", uuid, "players");
             if (rank == null || nameColour.isEmpty()) {

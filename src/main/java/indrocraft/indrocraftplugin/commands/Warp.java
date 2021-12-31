@@ -25,80 +25,90 @@ public class Warp implements TabExecutor {
         ChatColor red = ChatColor.RED;
 
         if (label.equalsIgnoreCase("toggleWarp")) {
-            switch (args[0].toLowerCase(Locale.ROOT)) {
-                case "true":
-                    config.set("useWarp", true);
-                    c.saveConfig();
-                    player.sendMessage(ChatColor.GREEN + "/warp command enabled!");
-                    break;
-                case "false":
-                    config.set("useWarp", false);
-                    c.saveConfig();
-                    player.sendMessage(red + "/warp command enabled!");
-                    break;
-                default:
-                    player.sendMessage(red + "First argument must be 'true' or 'false'!");
+            if (player.isOp()) {
+                switch (args[0].toLowerCase(Locale.ROOT)) {
+                    case "true":
+                        config.set("useWarp", true);
+                        c.saveConfig();
+                        player.sendMessage(ChatColor.GREEN + "/warp command enabled!");
+                        break;
+                    case "false":
+                        config.set("useWarp", false);
+                        c.saveConfig();
+                        player.sendMessage(ChatColor.GREEN + "/warp command disabled!");
+                        break;
+                    default:
+                        player.sendMessage(red + "First argument must be 'true' or 'false'!");
+                }
+                return true;
+            } else {
+                player.sendMessage(red + "You do not have permission to do this!");
             }
-            return true;
+
+
         } else if (warpsEnabled) {
             if (args.length > 0) {
 
                 String warpName = args[0];
 
-                if (player.isOp()) {
                     List<String> setWarps = config.getStringList("locations");
                     switch (label.toLowerCase(Locale.ROOT)) {
                         case "setwarp":
-                            if (setWarps.contains(warpName)) {
-                                player.sendMessage(red + "This warp point already exists");
-                                return true;
+                            if (player.isOp()) {
+                                if (setWarps.contains(warpName)) {
+                                    player.sendMessage(red + "This warp point already exists");
+                                    return true;
+                                } else {
+                                    setWarps.add(warpName);
+                                    config.set("locations", setWarps);
+                                    c.saveConfig();
+
+                                    String getWorld = player.getWorld().toString();
+                                    getWorld = getWorld.substring(0, getWorld.length() - 1);
+                                    String[] world = getWorld.split("\\=");
+
+                                    //location and direction of player:
+                                    double x = player.getLocation().getX();
+                                    double y = player.getLocation().getY();
+                                    double z = player.getLocation().getZ();
+                                    float yaw = player.getLocation().getYaw();
+                                    float pitch = player.getLocation().getPitch();
+
+                                    //creates new row and fills in location data
+                                    config.set("warps." + warpName + ".x", x);
+                                    config.set("warps." + warpName + ".y", y);
+                                    config.set("warps." + warpName + ".z", z);
+                                    config.set("warps." + warpName + ".pitch", pitch);
+                                    config.set("warps." + warpName + ".yaw", yaw);
+                                    config.set("warps." + warpName + ".world", world[1]);
+                                    c.saveConfig();
+
+                                    player.sendMessage(ChatColor.BLUE + "Successfully set warp: " + ChatColor.GREEN + warpName);
+                                }
                             } else {
-                                setWarps.add(warpName);
-                                config.set("locations", setWarps);
-                                c.saveConfig();
-
-                                String getWorld = player.getWorld().toString();
-                                getWorld = getWorld.substring(0, getWorld.length() - 1);
-                                String[] world = getWorld.split("\\=");
-
-                                //location and direction of player:
-                                double x = player.getLocation().getX();
-                                double y = player.getLocation().getY();
-                                double z = player.getLocation().getZ();
-                                float yaw = player.getLocation().getYaw();
-                                float pitch = player.getLocation().getPitch();
-
-                                //creates new row and fills in location data
-                                config.set("warps." + warpName + ".x", x);
-                                config.set("warps." + warpName + ".y", y);
-                                config.set("warps." + warpName + ".z", z);
-                                config.set("warps." + warpName + ".pitch", pitch);
-                                config.set("warps." + warpName + ".yaw", yaw);
-                                config.set("warps." + warpName + ".world", world[1]);
-                                c.saveConfig();
-
-                                player.sendMessage(ChatColor.BLUE + "Successfully set warp: " + ChatColor.GREEN + warpName);
+                                player.sendMessage(red + "You do not have permission to do that!");
                             }
                             break;
                         case "delwarp":
-                            if (setWarps.contains(warpName)) {
-                                setWarps.remove(warpName);
-                                config.set("locations", setWarps);
-                                c.saveConfig();
+                            if (player.isOp()) {
+                                if (setWarps.contains(warpName)) {
+                                    setWarps.remove(warpName);
+                                    config.set("locations", setWarps);
+                                    c.saveConfig();
 
-                                config.set("warps." + warpName, null);
+                                    config.set("warps." + warpName, null);
 
-                                //main.sqlUtils.remove("warpID", warpName, table);
-                                player.sendMessage(ChatColor.BLUE + "Successfully removed warp: " + ChatColor.GREEN + warpName);
+                                    //main.sqlUtils.remove("warpID", warpName, table);
+                                    player.sendMessage(ChatColor.BLUE + "Successfully removed warp: " + ChatColor.GREEN + warpName);
+                                } else {
+                                    player.sendMessage(red + "This warp point already exists");
+                                    return true;
+                                }
                             } else {
-                                player.sendMessage(red + "This warp point already exists");
-                                return true;
+                                player.sendMessage(red + "You do not have permission to do that!");
                             }
                             break;
                     }
-                } else {
-                    player.sendMessage(red + "You do not have permission to do that!");
-                }
                 if (label.equalsIgnoreCase("warp")) {
                     if (config.getStringList("locations").contains(args[0])) {
                         double x = config.getDouble("warps." + warpName + ".x");
