@@ -38,7 +38,9 @@ public final class Main extends JavaPlugin{
         rankUtils = new RankUtils();
 
         // commands:
-        getServer().getPluginCommand("dev").setExecutor(new Dev());
+/*
+        getServer().getPluginCommand("dev").setExecutor(new Dev());             used for testing
+*/
         getServer().getPluginCommand("warn").setExecutor(new Warn());
         getServer().getPluginCommand("home").setExecutor(new Home());
         getServer().getPluginCommand("warp").setExecutor(new Warp());
