@@ -1,4 +1,4 @@
-package indrocraft.indrocraftplugin.dataManager;
+package indrocraft.indrocraftplugin.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-public class ConfigTools {
+public class ConfigUtils {
 
     private final String fileName;
     private final JavaPlugin plugin;
@@ -16,7 +16,7 @@ public class ConfigTools {
     private File configFile;
     private FileConfiguration fileConfiguration;
 
-    public ConfigTools(JavaPlugin plugin, String fileName) {
+    public ConfigUtils(JavaPlugin plugin, String fileName) {
         this.plugin = plugin;
         this.fileName = fileName;
     }

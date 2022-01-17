@@ -1,7 +1,7 @@
 package indrocraft.indrocraftplugin.utils;
 
 import indrocraft.indrocraftplugin.Main;
-import indrocraft.indrocraftplugin.dataManager.ConfigTools;
+import indrocraft.indrocraftplugin.events.ServerRankEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.advancement.Advancement;
@@ -14,9 +14,9 @@ import java.util.List;
 
 public class RankUtils {
 
-    private Main main = Main.getPlugin(Main.class);
+    private final Main main = Main.getPlugin(Main.class);
 
-    public ConfigTools config = new ConfigTools(main, "rank.yml");
+    public ConfigUtils config = new ConfigUtils(main, "rank.yml");
 
     public void levelUp(Player player, SQLUtils data, String newRank) {
         setRank(player, data, newRank);
@@ -31,6 +31,11 @@ public class RankUtils {
 
     public void setRank(Player player, SQLUtils sqlUtils, String newRank) {
         sqlUtils.setData(newRank, "UUID", player.getUniqueId().toString(), "`rank`", "players");
+
+        String advancement = config.getConfig().getString("ranks." + newRank + ".details.nextAdvancement");
+
+        ServerRankEvent rankEvent = new ServerRankEvent(player, advancement, newRank);
+        Bukkit.getPluginManager().callEvent(rankEvent);
     }
 
     public void setNameColour(Player player, SQLUtils data, String newColour) {
@@ -51,7 +56,7 @@ public class RankUtils {
         try {
             ChatColor pc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.primary"));
             ChatColor sc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.secondary"));
-            ChatColor nc = readColour(main.sqlUtils.getString("nameColour", "UUID", uuid, "players"));
+            ChatColor nc = readColour(data.getString("nameColour", "UUID", uuid, "players"));
             player.setDisplayName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
             player.setPlayerListName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
         } catch (NullPointerException e) {
@@ -87,42 +92,27 @@ public class RankUtils {
     }
 
     public ChatColor readColour(String color) {
-        if (color.equalsIgnoreCase("white")) {
-            return ChatColor.WHITE;
-        } else if (color.equalsIgnoreCase("gray")) {
-            return ChatColor.GRAY;
-        } else if (color.equalsIgnoreCase("dark_gray")) {
-            return ChatColor.DARK_GRAY;
-        } else if (color.equalsIgnoreCase("black")) {
-            return ChatColor.BLACK;
-        } else if (color.equalsIgnoreCase("dark_red")) {
-            return ChatColor.DARK_RED;
-        } else if (color.equalsIgnoreCase("red")) {
-            return ChatColor.RED;
-        } else if (color.equalsIgnoreCase("gold")) {
-            return ChatColor.GOLD;
-        } else if (color.equalsIgnoreCase("yellow")) {
-            return ChatColor.YELLOW;
-        } else if (color.equalsIgnoreCase("dark_green")) {
-            return ChatColor.DARK_GREEN;
-        } else if (color.equalsIgnoreCase("green")) {
-            return ChatColor.GREEN;
-        } else if (color.equalsIgnoreCase("aqua")) {
-            return ChatColor.AQUA;
-        } else if (color.equalsIgnoreCase("dark_aqua")) {
-            return ChatColor.DARK_AQUA;
-        } else if (color.equalsIgnoreCase("dark_blue")) {
-            return ChatColor.DARK_BLUE;
-        } else if (color.equalsIgnoreCase("blue")) {
-            return ChatColor.BLUE;
-        } else if (color.equalsIgnoreCase("light_purple")) {
-            return ChatColor.LIGHT_PURPLE;
-        } else if (color.equalsIgnoreCase("dark_purple")) {
-            return ChatColor.DARK_PURPLE;
-        } else {
-            Bukkit.getLogger().warning("'" + color + "' is an invalid colour! try reloading the plugin.");
-            Bukkit.getLogger().warning("Defaulting to white!");
-            return ChatColor.WHITE;
+        switch (color.toLowerCase()) {
+            case "dark_red": return ChatColor.DARK_RED;
+            case "red": return ChatColor.RED;
+            case "gold": return ChatColor.GOLD;
+            case "yellow": return ChatColor.YELLOW;
+            case "dark_green": return ChatColor.DARK_GREEN;
+            case "green": return ChatColor.GREEN;
+            case "aqua": return ChatColor.AQUA;
+            case "dark_aqua": return ChatColor.DARK_AQUA;
+            case "dark_blue": return ChatColor.DARK_BLUE;
+            case "blue": return ChatColor.BLUE;
+            case "light_purple": return ChatColor.LIGHT_PURPLE;
+            case "dark_purple": return ChatColor.DARK_PURPLE;
+            case "white": return ChatColor.WHITE;
+            case "gray": return ChatColor.GRAY;
+            case "dark_gray": return ChatColor.DARK_GRAY;
+            case "black": return ChatColor.BLACK;
+            default:
+                Bukkit.getLogger().warning("'" + color + "' is an invalid colour! try reloading the plugin.");
+                Bukkit.getLogger().warning("Defaulting to white!");
+                return ChatColor.WHITE;
         }
     }
 }

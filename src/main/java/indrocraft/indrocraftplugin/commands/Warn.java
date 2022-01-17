@@ -1,22 +1,33 @@
 package indrocraft.indrocraftplugin.commands;
 
 import indrocraft.indrocraftplugin.Main;
+import indrocraft.indrocraftplugin.utils.ConfigUtils;
+import indrocraft.indrocraftplugin.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public class Warn implements TabExecutor {
 
-    private Main main = Main.getPlugin(Main.class);
+    private final FileConfiguration c = new ConfigUtils(Main.getPlugin(Main.class), "config.yml").getConfig();
+    private final SQLUtils sqlUtils = new SQLUtils(c.getString("database.database"),
+            c.getString("database.host"),
+            c.getString("database.port"),
+            c.getString("database.user"),
+            c.getString("database.password"));
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.isOp()) {
+            if (args.length < 2) return false;
+
+            //get player and target
             Player player = (Player) sender;
             try {
                 Bukkit.getPlayer(args[0]);
@@ -26,21 +37,24 @@ public class Warn implements TabExecutor {
             }
             Player target = Bukkit.getPlayer(args[0]);
 
-            Integer warns = main.sqlUtils.getInt("warns", "UUID", target.getUniqueId().toString(), "players");
-            if (warns == null) {
-                warns = 1;
-            } else {
-                warns++;
-            }
-
-            Integer time = warns*3-3;
+            //get current warning
+            int warns = sqlUtils.getInt("warns", "UUID", target.getUniqueId().toString(), "players");
             String message = "";
             for (int i = 1; i < args.length; i++) {
                 message += " " + args[i];
             }
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tempban " + target.getName() + time + message);
 
-            main.sqlUtils.setData(warns.toString(), "UUID", target.getUniqueId().toString(), "warns", "players");
+            int time;
+            if (args[1].equals("1"))
+                time = warns + 3;
+            else if (args[1].equals("2"))
+                time = warns + 2;
+            else
+                time = warns + 1;
+
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tempban " + target.getName() + " " + time + "h " + message);
+
+            sqlUtils.setData(String.valueOf(time), "UUID", target.getUniqueId().toString(), "warns", "players");
         }
         return true;
     }

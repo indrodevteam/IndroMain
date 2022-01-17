@@ -1,7 +1,7 @@
 package indrocraft.indrocraftplugin.commands;
 
 import indrocraft.indrocraftplugin.Main;
-import indrocraft.indrocraftplugin.dataManager.ConfigTools;
+import indrocraft.indrocraftplugin.utils.ConfigUtils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,7 +14,7 @@ import java.util.*;
 
 public class Warp implements TabExecutor {
 
-    ConfigTools c = new ConfigTools(Main.getPlugin(Main.class), "warps.yml");
+    ConfigUtils c = new ConfigUtils(Main.getPlugin(Main.class), "warps.yml");
     FileConfiguration config = c.getConfig();
 
     @Override

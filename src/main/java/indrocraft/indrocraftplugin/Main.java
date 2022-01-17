@@ -1,40 +1,45 @@
 package indrocraft.indrocraftplugin;
 
+import indrocraft.indrocraftplugin.discord.botManager.Bot;
+import indrocraft.indrocraftplugin.discord.botManager.BotEventListener;
 import indrocraft.indrocraftplugin.commands.*;
-import indrocraft.indrocraftplugin.dataManager.ConfigTools;
-import indrocraft.indrocraftplugin.dataManager.MySQL;
+import indrocraft.indrocraftplugin.utils.ConfigUtils;
 import indrocraft.indrocraftplugin.utils.SQLUtils;
 import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
 import indrocraft.indrocraftplugin.events.RankEvents;
 import indrocraft.indrocraftplugin.utils.RankUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.sql.SQLException;
 
 
 public final class Main extends JavaPlugin{
 
-    public MySQL SQL;
     public SQLUtils sqlUtils;
     public RankUtils rankUtils;
+    public Bot bot;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
 
         //initialize config files
-        ConfigTools config = new ConfigTools(this, "config.yml");
+        ConfigUtils config = new ConfigUtils(this, "config.yml");
         config.saveDefaultConfig();
-        ConfigTools ranks = new ConfigTools(this, "rank.yml");
+        ConfigUtils ranks = new ConfigUtils(this, "rank.yml");
         ranks.saveDefaultConfig();
-        ConfigTools warps = new ConfigTools(this, "warps.yml");
+        ConfigUtils warps = new ConfigUtils(this, "warps.yml");
         warps.saveDefaultConfig();
 
+        //initialize bot:
+        bot = new Bot("OTMxMjk5NjY0NTE3NTU4MzIy.YeCaZg.hCq1KRxZMrQiXBWrispRs8Cr0GE");
+
         //init utils
-        sqlUtils = new SQLUtils(this);
-        SQL = new MySQL();
+        //sqlManager initializes connection with the database:
+        sqlUtils = new SQLUtils(config.getConfig().getString("database.database"),
+                config.getConfig().getString("database.host"),
+                config.getConfig().getString("database.port"),
+                config.getConfig().getString("database.user"),
+                config.getConfig().getString("database.password"));
         rankUtils = new RankUtils();
 
         // commands:
@@ -51,22 +56,10 @@ public final class Main extends JavaPlugin{
         getCommand("home").setTabCompleter(new Home());
         getCommand("ranks").setTabCompleter(new RankCommand());
 
-        // connects to the database:
-        //this.SQL = new MySQL(this);
-
-        try {
-            SQL.connect();
-        } catch (ClassNotFoundException | SQLException e) {
-            Bukkit.getLogger().severe("Database not connected!");
-        }
-
-        if (SQL.isConnected()) {
-            Bukkit.getLogger().info(ChatColor.BLUE + "Database is connected!");
-        }
-
         //register events:
         getServer().getPluginManager().registerEvents(new JoinLeaveEvent(), this);
         getServer().getPluginManager().registerEvents(new RankEvents(), this);
+        getServer().getPluginManager().registerEvents(new BotEventListener(), this);
 
         try {
             sqlUtils.createTable("players", "UUID");
@@ -89,7 +82,6 @@ public final class Main extends JavaPlugin{
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        SQL.disconnect();
         Bukkit.getLogger().info("Successfully disabled Indrocraft plugin!");
     }
 }

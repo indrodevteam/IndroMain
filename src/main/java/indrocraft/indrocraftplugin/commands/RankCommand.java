@@ -1,9 +1,9 @@
 package indrocraft.indrocraftplugin.commands;
 
 import indrocraft.indrocraftplugin.Main;
-import indrocraft.indrocraftplugin.dataManager.ConfigTools;
-import indrocraft.indrocraftplugin.utils.RankUtils;
+import indrocraft.indrocraftplugin.utils.ConfigUtils;
 import indrocraft.indrocraftplugin.utils.SQLUtils;
+import indrocraft.indrocraftplugin.utils.RankUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.advancement.Advancement;
@@ -19,10 +19,15 @@ import java.util.*;
 public class RankCommand implements TabExecutor {
 
     private final Main main = Main.getPlugin(Main.class);
-    private final ConfigTools c = new ConfigTools(main, "rank.yml");
+    private final ConfigUtils c = new ConfigUtils(main, "rank.yml");
+    private final ConfigUtils configx = new ConfigUtils(main, "config.yml");
     private final FileConfiguration config = c.getConfig();
     private final RankUtils rankUtils = new RankUtils();
-    private final SQLUtils sqlUtils = new SQLUtils(main);
+    private final SQLUtils sqlUtils = new SQLUtils(configx.getConfig().getString("database.database"),
+            configx.getConfig().getString("database.host"),
+            configx.getConfig().getString("database.port"),
+            configx.getConfig().getString("database.user"),
+            configx.getConfig().getString("database.password"));;
     ChatColor red = ChatColor.RED;
 
     @Override

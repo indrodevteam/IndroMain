@@ -1,7 +1,8 @@
 package indrocraft.indrocraftplugin.events;
 
 import indrocraft.indrocraftplugin.Main;
-import indrocraft.indrocraftplugin.dataManager.ConfigTools;
+import indrocraft.indrocraftplugin.utils.ConfigUtils;
+import indrocraft.indrocraftplugin.utils.SQLUtils;
 import indrocraft.indrocraftplugin.utils.RankUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,14 +15,21 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RankEvents implements Listener {
 
     private final Main main = Main.getPlugin(Main.class);
 
-    private final ConfigTools c = new ConfigTools(main, "rank.yml");
+    private final ConfigUtils c = new ConfigUtils(main, "rank.yml");
+    private final ConfigUtils configx = new ConfigUtils(main, "config.yml");
     private final FileConfiguration config = c.getConfig();
     private final RankUtils rankUtils = new RankUtils();
+    private final SQLUtils sqlUtils = new SQLUtils(configx.getConfig().getString("database.database"),
+            configx.getConfig().getString("database.host"),
+            configx.getConfig().getString("database.port"),
+            configx.getConfig().getString("database.user"),
+            configx.getConfig().getString("database.password"));
 
     @EventHandler
     public void advancementDoneEvent(PlayerAdvancementDoneEvent event) {
@@ -33,7 +41,7 @@ public class RankEvents implements Listener {
         List<String> nextRanks = new ArrayList<>();
 
         //fills the 3 lists with all the ranks and their leveling information
-        for (String rank : config.getConfigurationSection("ranks").getKeys(false)) {
+        for (String rank : Objects.requireNonNull(config.getConfigurationSection("ranks")).getKeys(false)) {
             rankNames.add(rank);
 
             String advancement = config.getString("ranks." + rank + ".details.nextAdvancement");
@@ -52,7 +60,7 @@ public class RankEvents implements Listener {
         }
 
         //gets the players rank and checks what their current target is:
-        String playerRank = main.sqlUtils.getString("rank", "UUID", player.getUniqueId().toString(),
+        String playerRank = sqlUtils.getString("rank", "UUID", player.getUniqueId().toString(),
                 "players");
         int i = rankNames.indexOf(playerRank);
         String current = rankAdvancements.get(i);
@@ -110,8 +118,10 @@ public class RankEvents implements Listener {
 
             Bukkit.broadcastMessage(ChatColor.BLUE + "You have gone up " + ChatColor.GREEN + reps + ChatColor.BLUE
                     + " ranks and are now: " + ChatColor.GREEN + finalRank);
-            rankUtils.setRank(player, main.sqlUtils, finalRank);
-            rankUtils.LoadRank(player, main.sqlUtils);
+            rankUtils.setRank(player, sqlUtils, finalRank);
+            rankUtils.LoadRank(player, sqlUtils);
+            ServerRankEvent rankEvent = new ServerRankEvent(player, event.getAdvancement(), finalRank);
+            Bukkit.getPluginManager().callEvent(rankEvent);
 
         }
     }

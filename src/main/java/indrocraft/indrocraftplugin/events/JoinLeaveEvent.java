@@ -1,7 +1,8 @@
 package indrocraft.indrocraftplugin.events;
 
 import indrocraft.indrocraftplugin.Main;
-import indrocraft.indrocraftplugin.dataManager.ConfigTools;
+import indrocraft.indrocraftplugin.utils.ConfigUtils;
+import indrocraft.indrocraftplugin.utils.SQLUtils;
 import indrocraft.indrocraftplugin.utils.RankUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,9 +20,14 @@ public class JoinLeaveEvent implements Listener {
 
     private final Main main = Main.getPlugin(Main.class);
 
-    ConfigTools config = new ConfigTools(main, "config.yml");
-    ConfigTools ranksConfig = new ConfigTools(main, "rank.yml");
+    ConfigUtils config = new ConfigUtils(main, "config.yml");
+    ConfigUtils ranksConfig = new ConfigUtils(main, "rank.yml");
     RankUtils rankUtils = new RankUtils();
+    SQLUtils sqlUtils = new SQLUtils(config.getConfig().getString("database.database"),
+                config.getConfig().getString("database.host"),
+                config.getConfig().getString("database.port"),
+                config.getConfig().getString("database.user"),
+                config.getConfig().getString("database.password"));
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -36,62 +42,62 @@ public class JoinLeaveEvent implements Listener {
         String uuid = player.getUniqueId().toString();
         String name = player.getDisplayName();
 
-        main.sqlUtils.createRow("UUID", uuid, "players");
+        sqlUtils.createRow("UUID", uuid, "players");
 
-        String ign = main.sqlUtils.getString("ign", "UUID", uuid, "players");
+        String ign = sqlUtils.getString("ign", "UUID", uuid, "players");
         if (ign != name) {
-            main.sqlUtils.setData(name, "UUID", uuid, "ign", "players");
+            sqlUtils.setData(name, "UUID", uuid, "ign", "players");
         }
-        String warns = main.sqlUtils.getString("ign", "UUID", uuid, "players");
+        String warns = sqlUtils.getString("ign", "UUID", uuid, "players");
         if (warns == null) {
-            main.sqlUtils.setData("0", "UUID", uuid, "warns", "players");
+            sqlUtils.setData("0", "UUID", uuid, "warns", "players");
         }
 
         //columns for homes:
         if (config.getConfig().getBoolean("homes")) {
             String tpDatabase = config.getConfig().getString("databaseForTP");
             //players columns:
-            main.sqlUtils.createColumn(tpDatabase, "VARCHAR(100)", "players");
-            main.sqlUtils.createColumn(tpDatabase + "num", "INT(100)", "players");
+            sqlUtils.createColumn(tpDatabase, "VARCHAR(100)", "players");
+            sqlUtils.createColumn(tpDatabase + "num", "INT(100)", "players");
             //location Storage:
-            main.sqlUtils.createTable(tpDatabase, "homeID");
-            main.sqlUtils.createColumn("playerID", "VARCHAR(100)", tpDatabase);
-            main.sqlUtils.createColumn("world", "VARCHAR(200)", tpDatabase);
-            main.sqlUtils.createColumn("x", "DOUBLE", tpDatabase);
-            main.sqlUtils.createColumn("y", "DOUBLE", tpDatabase);
-            main.sqlUtils.createColumn("z", "DOUBLE", tpDatabase);
-            main.sqlUtils.createColumn("pitch", "Float", tpDatabase);
-            main.sqlUtils.createColumn("yaw", "Float", tpDatabase);
+            sqlUtils.createTable(tpDatabase, "homeID");
+            sqlUtils.createColumn("playerID", "VARCHAR(100)", tpDatabase);
+            sqlUtils.createColumn("world", "VARCHAR(200)", tpDatabase);
+            sqlUtils.createColumn("x", "DOUBLE", tpDatabase);
+            sqlUtils.createColumn("y", "DOUBLE", tpDatabase);
+            sqlUtils.createColumn("z", "DOUBLE", tpDatabase);
+            sqlUtils.createColumn("pitch", "Float", tpDatabase);
+            sqlUtils.createColumn("yaw", "Float", tpDatabase);
 
-            String homeList = main.sqlUtils.getString(tpDatabase, "UUID", uuid, "players");
+            String homeList = sqlUtils.getString(tpDatabase, "UUID", uuid, "players");
             if (homeList == null || homeList.isEmpty()) {
-                main.sqlUtils.setData(" ", "UUID", uuid, tpDatabase, "players");
+                sqlUtils.setData(" ", "UUID", uuid, tpDatabase, "players");
             }
-            String homeNum = main.sqlUtils.getString(tpDatabase + "num", "UUID", uuid,
+            String homeNum = sqlUtils.getString(tpDatabase + "num", "UUID", uuid,
                     "players");
             if (homeNum == null) {
-                main.sqlUtils.setData("0", "UUID", uuid, tpDatabase + "num", "players");
+                sqlUtils.setData("0", "UUID", uuid, tpDatabase + "num", "players");
             }
         }
 
         //load rank:
         if (ranksConfig.getConfig().getBoolean("useRanks")) {
-            main.sqlUtils.createColumn("`rank`", "VARCHAR(100)", "players");
-            main.sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
+            sqlUtils.createColumn("`rank`", "VARCHAR(100)", "players");
+            sqlUtils.createColumn("nameColour", "VARCHAR(100)", "players");
 
             List<String> defaultRank = new ArrayList<>(
                     ranksConfig.getConfig().getConfigurationSection("ranks").getKeys(false));
 
-            String rank = main.sqlUtils.getString("rank", "UUID", uuid, "players");
+            String rank = sqlUtils.getString("rank", "UUID", uuid, "players");
             if (rank == null || rank.isEmpty()) {
-                main.sqlUtils.setData(defaultRank.get(0), "UUID", uuid, "`rank`", "players");
+                sqlUtils.setData(defaultRank.get(0), "UUID", uuid, "`rank`", "players");
             }
-            String nameColour = main.sqlUtils.getString("nameColour", "UUID", uuid, "players");
+            String nameColour = sqlUtils.getString("nameColour", "UUID", uuid, "players");
             if (rank == null || nameColour.isEmpty()) {
-                main.sqlUtils.setData("WHITE", "UUID", uuid, "nameColour", "players");
+                sqlUtils.setData("WHITE", "UUID", uuid, "nameColour", "players");
             }
 
-            rankUtils.LoadRank(player, main.sqlUtils);
+            rankUtils.LoadRank(player, sqlUtils);
         }
     }
 
@@ -106,7 +112,7 @@ public class JoinLeaveEvent implements Listener {
     public void onPlayerSleep(PlayerBedLeaveEvent event) {
         Player p = event.getPlayer();
 
-        Long time = p.getWorld().getTime();
+        long time = p.getWorld().getTime();
         if (time <= 50) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.sendMessage(ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " went to bed sweet dreams!");

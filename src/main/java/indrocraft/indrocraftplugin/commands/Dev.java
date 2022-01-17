@@ -1,9 +1,7 @@
 package indrocraft.indrocraftplugin.commands;
 
 import indrocraft.indrocraftplugin.Main;
-import indrocraft.indrocraftplugin.dataManager.ConfigTools;
-import indrocraft.indrocraftplugin.utils.RankUtils;
-import indrocraft.indrocraftplugin.utils.SQLUtils;
+import indrocraft.indrocraftplugin.utils.ConfigUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +15,7 @@ public class Dev implements CommandExecutor{
 
     private final Main main = Main.getPlugin(Main.class);
 
-    private final ConfigTools c = new ConfigTools(main, "rank.yml");
+    private final ConfigUtils c = new ConfigUtils(main, "rank.yml");
     private FileConfiguration config = c.getConfig();
 
     @Override
