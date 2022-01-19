@@ -13,7 +13,7 @@ public class BotEventListener implements Listener {
     @EventHandler
     public void onServerRankEvent(ServerRankEvent event) {
         TextChannel textChannel = main.bot.getJda().getTextChannelById("871625773910482974");
-        textChannel.sendMessage(event.getPlayer().getDisplayName() + " just got to the rank: " + event.getRank()).queue();
+        textChannel.sendMessage(event.getPlayer().getName() + " just got to the rank: " + event.getRank()).queue();
     }
 
 }
