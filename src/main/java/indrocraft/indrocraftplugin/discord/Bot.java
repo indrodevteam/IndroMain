@@ -1,6 +1,7 @@
 package indrocraft.indrocraftplugin.discord;
 
 import indrocraft.indrocraftplugin.discord.botManager.BasicBotCommands;
+import indrocraft.indrocraftplugin.discord.whitelister.Add;
 import indrocraft.indrocraftplugin.discord.whitelister.WhitelistCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -29,6 +30,7 @@ public class Bot extends ListenerAdapter {
                     .setStatus(OnlineStatus.ONLINE)
                     .addEventListeners(new WhitelistCommand())
                     .addEventListeners(new BasicBotCommands())
+                    .addEventListeners(new Add())
                     .build();
         } catch (LoginException e) {
             Bukkit.getLogger().severe("Bot was unable to login!");

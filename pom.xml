@@ -64,7 +64,7 @@
 
         <!--discord bot repo-->
         <repository>
-            <id>dv8tion</id>
+            <id>m2-dv8tion</id>
             <name>m2-dv8tion</name>
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
@@ -82,13 +82,9 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_346</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>club.minnced</groupId>
-                    <artifactId>opus-java</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>4.4.0_352</version>
         </dependency>
+
+        <!--advanced ban dependency-->
     </dependencies>
 </project>

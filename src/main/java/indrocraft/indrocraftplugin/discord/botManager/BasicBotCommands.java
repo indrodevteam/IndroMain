@@ -7,14 +7,12 @@ import indrocraft.indrocraftplugin.utils.SQLUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Statistic;
+import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
-import java.awt.*;
+import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
@@ -41,7 +39,7 @@ public class BasicBotCommands extends ListenerAdapter {
             switch (args[0]) {
                 case "?ping":
                     event.getChannel().sendTyping().queue();
-                    event.getChannel().sendMessage("pong!").queue();
+                    event.getMessage().reply("Pong!").queue();
                     break;
                 case "?user":
                     if (args.length == 1) {
@@ -51,9 +49,6 @@ public class BasicBotCommands extends ListenerAdapter {
                         if (playerExist(args[1])) {
                             String uuid = getUUID(args[1]);
                             OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-                            //add title
-                            EmbedBuilder eb = new EmbedBuilder();
-                            eb.setTitle(args[1] + "'s user data:");
                             //get rank
                             String rank = sqlUtils.getString("rank", "UUID", uuid, "players");
                             //get server play time
@@ -63,20 +58,86 @@ public class BasicBotCommands extends ListenerAdapter {
                             DecimalFormat df = new DecimalFormat("0.00");
                             //get next advancement
                             String advance = getNextAdvancement(rank);
+                            //get diamonds mined
+                            int dMined = player.getStatistic(Statistic.MINE_BLOCK, Material.DIAMOND_ORE);
+                            int dMined2 = player.getStatistic(Statistic.MINE_BLOCK, Material.DEEPSLATE_DIAMOND_ORE);
                             //get embed colour
                             Color colour = getRankColour(rank);
 
+                            //build embed
+                            EmbedBuilder eb = new EmbedBuilder();
+                            eb.setTitle(args[1] + "'s user data:");
                             eb.addField("**RANK:**", rank, true);
                             if (!advance.equals("null"))
                                 eb.addField("**NEXT ADVANCEMENT:**", advance, false);
                             eb.addField("**PLAY TIME:**", df.format(hours) + "h", false);
                             eb.addField("**DEATHS:**", String.valueOf(s), false);
+                            eb.addField("**DIAMONDS MINED:**", "Diamond ore: " + dMined
+                                    + "\nDeepslate diamond ore: " + dMined2, false);
                             eb.setColor(colour);
                             event.getChannel().sendMessageEmbeds(eb.build()).queue();
                         } else {
                             event.getMessage().reply("I wont fall for this trickery! That player doesnt exist.").queue();
                         }
                     }
+                    break;
+                case "?players":
+                    StringBuilder result = new StringBuilder();
+                    EmbedBuilder eb = new EmbedBuilder();
+                    int count = 0;
+                    for (OfflinePlayer player : Bukkit.getWhitelistedPlayers()) {
+                        if (count % 20 == 0 && count != 0) {
+                            result.append(",");
+                        }
+                        if (result.length() > 0) {
+                            result.append("\n");
+                        }
+                        result.append(player.getName());
+                        count++;
+                    }
+
+                    String[] groups = result.toString().split(",");
+                    String[] list = result.toString().split("\n");
+
+                    //make embed:
+                    //setup
+                    eb.setTitle("Whitelisted players: " + list.length);
+                    try {
+                        eb.setFooter("Showing " + groups[Integer.parseInt(args[1]) - 1].split("\n").length + "/" + list.length);
+                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                        eb.setFooter("Showing ?/" + list.length);
+                    }
+                    eb.setColor(Color.GREEN);
+                    //content
+                    if (args.length >= 2 && isNumber(args[1]) && Integer.parseInt(args[1]) - 1 <= groups.length)
+                        eb.addField("Whitelisted", groups[Integer.parseInt(args[1]) - 1], true);
+                    else if (message.equalsIgnoreCase("?players")) {
+                        eb.addField("Whitelisted", groups[0], true);
+                        eb.setFooter("Showing " + groups[0].split("\n").length + "/" + list.length);
+                    } else
+                        eb.addField("Whitelisted", "This page hasn't been written yet! look away!", true);
+                    event.getChannel().sendMessageEmbeds(eb.build()).queue();
+                    break;
+
+                case "?online":
+                    EmbedBuilder eb2 = new EmbedBuilder();
+                    StringBuilder onlinePlayers = new StringBuilder();
+                    int counter = 0;
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (onlinePlayers.length() > 0) {
+                            onlinePlayers.append("\n");
+                        }
+                        onlinePlayers.append(player.getName());
+                        counter++;
+                    }
+
+                    eb2.setTitle("Online Players: " + Bukkit.getOnlinePlayers().size());
+                    if (counter == 0)
+                        eb2.addField("Online", "No one wants to play rn :cry:", true);
+                    else
+                        eb2.addField("Online", onlinePlayers.toString(), true);
+                    eb2.setColor(Color.green);
+                    event.getChannel().sendMessageEmbeds(eb2.build()).queue();
                     break;
             }
         }
@@ -110,10 +171,16 @@ public class BasicBotCommands extends ListenerAdapter {
         }
     }
 
+    private Color getNameColour(OfflinePlayer player) {
+        String colour = sqlUtils.getString("nameColour", "UUID", player.getUniqueId().toString(), "players");
+        return chatColorToColor(rankUtils.readColour(colour));
+    }
+
     private Color chatColorToColor(ChatColor colour) {
         switch (colour) {
-            case DARK_RED: return Color.getHSBColor(12, 32, 123);
-            case RED: return Color.RED;
+            case DARK_RED:
+            case RED:
+                return Color.RED;
             case GOLD: return Color.ORANGE;
             case YELLOW: return Color.YELLOW;
             case DARK_GREEN:
@@ -133,5 +200,14 @@ public class BasicBotCommands extends ListenerAdapter {
             case BLACK: return Color.BLACK;
         }
         return Color.white;
+    }
+
+    private boolean isNumber(String number) {
+        try {
+            Integer.parseInt(number);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -44,9 +44,7 @@ public class SQLUtils {
         this.port = port;
 
         conn = getConnection();
-        if (conn != null) {
-            Bukkit.getLogger().info("Connection successful!");
-        } else {
+        if (conn == null) {
             Bukkit.getLogger().severe("Connection unsuccessful!");
         }
     }

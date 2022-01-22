@@ -25,7 +25,6 @@ public class Warn implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.isOp()) {
-            if (args.length < 2) return false;
 
             //get player and target
             Player player = (Player) sender;
@@ -35,12 +34,17 @@ public class Warn implements TabExecutor {
                 player.sendMessage(ChatColor.RED + "You need to target a real player!");
                 return false;
             }
+
+            if (args.length < 2) {
+                player.sendMessage("must have a player name followed by a 1, 2 or 3 after that to indicate warn severity!");
+                return false;
+            }
             Player target = Bukkit.getPlayer(args[0]);
 
             //get current warning
             int warns = sqlUtils.getInt("warns", "UUID", target.getUniqueId().toString(), "players");
             String message = "";
-            for (int i = 1; i < args.length; i++) {
+            for (int i = 2; i < args.length; i++) {
                 message += " " + args[i];
             }
 
