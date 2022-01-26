@@ -31,7 +31,7 @@ public final class Main extends JavaPlugin{
         warps.saveDefaultConfig();
 
         //initialize bot:
-        bot = new Bot("OTI2OTUzOTI3OTE0NzEzMTE4.YdDLHg.zPkWoSry6wLaHidisESTP6P4Bow");
+        bot = new Bot("OTI2OTUzOTI3OTE0NzEzMTE4.YdDLHg.f3wegQXTSHLEs_SYu0U9ER6Iuvg");
 
         //init utils
         //sqlManager initializes connection with the database:
