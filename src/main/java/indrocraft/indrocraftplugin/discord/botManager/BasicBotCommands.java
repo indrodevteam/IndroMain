@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
-import java.util.UUID;
+import java.util.*;
 
 public class BasicBotCommands extends ListenerAdapter {
 
@@ -36,7 +36,7 @@ public class BasicBotCommands extends ListenerAdapter {
         String PREFIX = "?";
 
         if (args[0].startsWith(PREFIX) && !event.getAuthor().isBot()) {
-            switch (args[0]) {
+            switch (args[0].toLowerCase()) {
                 case "?ping":
                     event.getChannel().sendTyping().queue();
                     event.getMessage().reply("Pong!").queue();
@@ -54,8 +54,9 @@ public class BasicBotCommands extends ListenerAdapter {
                             //get server play time
                             float ticks = (player.getStatistic(Statistic.TOTAL_WORLD_TIME));
                             float hours = ticks / 20 / 60 / 60;
-                            int s = player.getStatistic(Statistic.DEATHS);
                             DecimalFormat df = new DecimalFormat("0.00");
+                            //get player deaths
+                            int s = player.getStatistic(Statistic.DEATHS);
                             //get next advancement
                             String advance = getNextAdvancement(rank);
                             //get diamonds mined
@@ -84,15 +85,26 @@ public class BasicBotCommands extends ListenerAdapter {
                 case "?players":
                     StringBuilder result = new StringBuilder();
                     EmbedBuilder eb = new EmbedBuilder();
-                    int count = 0;
+                    List<String> whitelisted = new ArrayList<>();
+
                     for (OfflinePlayer player : Bukkit.getWhitelistedPlayers()) {
+                        String s = getCurrentName(player.getUniqueId());
+                        if (s.equals(""))
+                            whitelisted.add(player.getName());
+                        else
+                            whitelisted.add(getCurrentName(player.getUniqueId()));
+                    }
+
+                    whitelisted.sort(Comparator.naturalOrder());
+                    int count = 0;
+                    for (String player : whitelisted) {
                         if (count % 20 == 0 && count != 0) {
                             result.append(",");
                         }
                         if (result.length() > 0) {
                             result.append("\n");
                         }
-                        result.append(player.getName());
+                        result.append(player);
                         count++;
                     }
 
@@ -103,7 +115,10 @@ public class BasicBotCommands extends ListenerAdapter {
                     //setup
                     eb.setTitle("Whitelisted players: " + list.length);
                     try {
-                        eb.setFooter("Showing " + groups[Integer.parseInt(args[1]) - 1].split("\n").length + "/" + list.length);
+                        if (Integer.parseInt(args[1]) > 1)
+                            eb.setFooter("Showing " + (groups[Integer.parseInt(args[1]) - 1].split("\n").length - 1) + "/" + list.length);
+                        else
+                            eb.setFooter("Showing " + groups[Integer.parseInt(args[1]) - 1].split("\n").length + "/" + list.length);
                     } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                         eb.setFooter("Showing ?/" + list.length);
                     }
@@ -149,6 +164,10 @@ public class BasicBotCommands extends ListenerAdapter {
 
     private String getUUID(String name) {
         return sqlUtils.getString("UUID", "ign", name, "players");
+    }
+
+    private String getCurrentName(UUID uuid) {
+        return sqlUtils.getString("ign", "UUID", uuid.toString(), "players");
     }
 
     private String getNextAdvancement(String currentRank) {
@@ -210,4 +229,6 @@ public class BasicBotCommands extends ListenerAdapter {
             return false;
         }
     }
+
+
 }

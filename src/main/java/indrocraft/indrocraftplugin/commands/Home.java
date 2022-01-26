@@ -19,7 +19,7 @@ public class Home implements TabExecutor {
 
     private final Main main = Main.getPlugin(Main.class);
 
-    ConfigUtils config = new ConfigUtils(main, "config.yml");
+    private final ConfigUtils config = new ConfigUtils(main, "config.yml");
     public String databaseName = config.getConfig().getString("databaseForTP");
 
     private final RankUtils rankUtils = new RankUtils();

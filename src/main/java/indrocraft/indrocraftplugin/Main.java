@@ -31,7 +31,7 @@ public final class Main extends JavaPlugin{
         warps.saveDefaultConfig();
 
         //initialize bot:
-        bot = new Bot("OTI2OTUzOTI3OTE0NzEzMTE4.YdDLHg.U5YB0tewVSNPWjzdVc4CYq-g6o0");
+        bot = new Bot("OTI2OTUzOTI3OTE0NzEzMTE4.YdDLHg.zPkWoSry6wLaHidisESTP6P4Bow");
 
         //init utils
         //sqlManager initializes connection with the database:
@@ -82,8 +82,7 @@ public final class Main extends JavaPlugin{
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-
-        bot.getJda().shutdownNow();
+        bot.shutdown();
         Bukkit.getLogger().info("Successfully disabled Indrocraft plugin!");
     }
 }
