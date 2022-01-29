@@ -56,7 +56,8 @@ public class Home implements TabExecutor {
                 } else if (playerLevel == 5) {
                     numOfHomes = 10;
                 }
-                if (sqlUtils.getString("nameColour", "UUID", uuid, "players").equalsIgnoreCase("gold")) {
+                if (sqlUtils.getString("nameColour", "UUID", uuid, "players")
+                        .equalsIgnoreCase("gold")) {
                     numOfHomes = numOfHomes + 2;
                 }
                 //gets number of homes using: pRank.getLevel()

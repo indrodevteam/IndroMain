@@ -2,18 +2,14 @@ package indrocraft.indrocraftplugin.discord;
 
 import indrocraft.indrocraftplugin.discord.botManager.BasicBotCommands;
 import indrocraft.indrocraftplugin.discord.botManager.Leaderboard;
-import indrocraft.indrocraftplugin.discord.whitelister.Add;
 import indrocraft.indrocraftplugin.discord.whitelister.WhitelistCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.bukkit.Bukkit;
 
@@ -25,7 +21,6 @@ import static net.dv8tion.jda.api.interactions.commands.OptionType.USER;
 public class Bot extends ListenerAdapter {
 
     private JDA jda;
-
     public Bot(String botToken) {
         try {
             jda = JDABuilder.createDefault(botToken)
@@ -33,8 +28,6 @@ public class Bot extends ListenerAdapter {
                     .setStatus(OnlineStatus.ONLINE)
                     .addEventListeners(new WhitelistCommand())
                     .addEventListeners(new BasicBotCommands())
-                    .addEventListeners(new Add())
-                    .addEventListeners(new Leaderboard())
                     .build();
         } catch (LoginException e) {
             Bukkit.getLogger().severe("Bot was unable to login!");
@@ -58,16 +51,5 @@ public class Bot extends ListenerAdapter {
 
     public JDA getJda() {
         return jda;
-    }
-
-    public void shutdown() {
-        getJda().shutdownNow();
-        while (getJda().getStatus() != JDA.Status.SHUTDOWN) {
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

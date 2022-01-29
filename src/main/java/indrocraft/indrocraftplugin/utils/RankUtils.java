@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class RankUtils {
 
@@ -46,8 +47,8 @@ public class RankUtils {
         String uuid = player.getUniqueId().toString();
         String displayName = data.getString("rank", "UUID", uuid, "players");
 
-        List<String> ranks = new ArrayList<>();
-        ranks.addAll(config.getConfig().getConfigurationSection("ranks").getKeys(false));
+        List<String> ranks = new ArrayList<>(Objects.requireNonNull(config.getConfig().
+                getConfigurationSection("ranks")).getKeys(false));
         if (!ranks.contains(displayName)) {
             data.setData(ranks.get(0), "UUID", uuid, "rank", "players");
             displayName = data.getString("rank", "UUID", uuid, "players");
@@ -57,6 +58,8 @@ public class RankUtils {
             ChatColor pc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.primary"));
             ChatColor sc = readColour(config.getConfig().getString("ranks." + displayName + ".colours.secondary"));
             ChatColor nc = readColour(data.getString("nameColour", "UUID", uuid, "players"));
+            player.setCustomName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
+            player.setCustomNameVisible(true);
             player.setDisplayName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
             player.setPlayerListName(sc + "[" + pc + displayName + sc + "] " + nc + player.getName() + ChatColor.WHITE + "");
         } catch (NullPointerException e) {
