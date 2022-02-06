@@ -86,7 +86,7 @@ public class JoinLeaveEvent implements Listener {
 
             String rank = sqlUtils.getString("rank", "UUID", uuid, "players");
             if (rank == null || rank.isEmpty()) {
-                sqlUtils.setData(defaultRank.get(0), "UUID", uuid, "`rank`", "players");
+                sqlUtils.setData(defaultRank.get(0), "UUID", uuid, "rank", "players");
             }
             String nameColour = sqlUtils.getString("nameColour", "UUID", uuid, "players");
             if (rank == null || nameColour.isEmpty()) {
