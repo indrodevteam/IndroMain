@@ -1,101 +1,108 @@
 package indrocraft.indrocraftplugin;
 
-import indrocraft.indrocraftplugin.discord.Bot;
-import indrocraft.indrocraftplugin.discord.botManager.BotEventListener;
-import indrocraft.indrocraftplugin.commands.*;
-import indrocraft.indrocraftplugin.utils.ConfigUtils;
-import indrocraft.indrocraftplugin.utils.SQLConnector;
-import indrocraft.indrocraftplugin.utils.SQLUtils;
+import indrocraft.indrocraftplugin.commands.HomeCommand;
+import indrocraft.indrocraftplugin.commands.RankCommand;
+import indrocraft.indrocraftplugin.commands.WarnCommand;
+import indrocraft.indrocraftplugin.commands.WarpCommand;
 import indrocraft.indrocraftplugin.events.JoinLeaveEvent;
 import indrocraft.indrocraftplugin.events.RankEvents;
-import indrocraft.indrocraftplugin.utils.RankUtils;
-import net.dv8tion.jda.api.JDA;
+import io.github.indroDevTeam.indroLib.MiscUtils;
+import io.github.indroDevTeam.indroLib.datamanager.ConfigUtils;
+import io.github.indroDevTeam.indroLib.datamanager.SQLConnector;
+import io.github.indroDevTeam.indroLib.datamanager.SQLUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
-
-public final class Main extends JavaPlugin{
+public final class Main extends JavaPlugin {
 
     public SQLConnector sqlconnector;
-    public RankUtils rankUtils;
-    public Bot bot;
-    public SQLUtils sqlUtils;
+    private Config CONFIG;
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
-        //initialize config files
+        //initialize Config files
         ConfigUtils config = new ConfigUtils(this, "config.yml");
         config.saveDefaultConfig();
-        ConfigUtils ranks = new ConfigUtils(this, "rank.yml");
-        ranks.saveDefaultConfig();
-        ConfigUtils warps = new ConfigUtils(this, "warps.yml");
-        warps.saveDefaultConfig();
 
-        //initialize bot:
-        //bot = new Bot("OTMxMjk5NjY0NTE3NTU4MzIy.YeCaZg.unpR0-QGsytO3eS7fKUBnQ_w-PU");
+        CONFIG = new Config(this);
 
-        //init utils
-        //sqlManager initializes connection with the database:
-        sqlconnector = new SQLConnector(config.getConfig().getString("database.database"),
-                config.getConfig().getString("database.host"),
-                config.getConfig().getString("database.port"),
-                config.getConfig().getString("database.user"),
-                config.getConfig().getString("database.password"),
-                false,
-                this);
-        sqlUtils = new SQLUtils(sqlconnector);
-        rankUtils = new RankUtils();
+        /*"indrocraft",
+                "localhost",
+                "3306",
+                "root",
+                "",*/
+
+        Bukkit.getLogger().warning(
+                CONFIG.getDatabase() + ", " +
+                CONFIG.getHost() + ", " +
+                        CONFIG.getPort() + ", " +
+                        CONFIG.getUsername() + ", " +
+                        CONFIG.getPassword() + ".");
+
+        //connect to database
+        sqlconnector = new SQLConnector(
+                CONFIG.getDatabase(),
+                CONFIG.getHost(),
+                CONFIG.getPort(),
+                CONFIG.getUsername(),
+                CONFIG.getPassword(),
+                CONFIG.isSQLite(),
+                this
+        );
+
+        SQLUtils s = new SQLUtils(sqlconnector);
+        MiscUtils.setupDatabase(s);
+
 
         // commands:
-/*
-        getServer().getPluginCommand("dev").setExecutor(new Dev());             used for testing
-*/
-        getServer().getPluginCommand("warn").setExecutor(new Warn());
-        getServer().getPluginCommand("home").setExecutor(new Home());
-        getServer().getPluginCommand("warp").setExecutor(new Warp());
+        getServer().getPluginCommand("warn").setExecutor(new WarnCommand());
+        getServer().getPluginCommand("home").setExecutor(new HomeCommand());
+        getServer().getPluginCommand("warp").setExecutor(new WarpCommand());
         getServer().getPluginCommand("ranks").setExecutor(new RankCommand());
+        getServer().getPluginCommand("config").setExecutor(new Config(this));
 
         // tab executors:
-        getCommand("warn").setTabCompleter(new Warn());
-        getCommand("home").setTabCompleter(new Home());
+        getCommand("warn").setTabCompleter(new WarnCommand());
+        getCommand("home").setTabCompleter(new HomeCommand());
         getCommand("ranks").setTabCompleter(new RankCommand());
 
         //register events:
         getServer().getPluginManager().registerEvents(new JoinLeaveEvent(), this);
         getServer().getPluginManager().registerEvents(new RankEvents(), this);
-        getServer().getPluginManager().registerEvents(new BotEventListener(), this);
 
-        try {
-            sqlUtils.createTable("players", "UUID");
-            sqlUtils.createColumn("ign", "VARCHAR(100)", "players");
-            sqlUtils.createColumn("warns", "INT", "players");
-            if (config.getConfig().getBoolean("useWarp")) {
-                String database = config.getConfig().getString("databaseForTP") + "Warps";
-                sqlUtils.createTable(database, "warpID");
-                sqlUtils.createColumn("x", "DOUBLE", database);
-                sqlUtils.createColumn("y", "DOUBLE", database);
-                sqlUtils.createColumn("z", "DOUBLE", database);
-                sqlUtils.createColumn("world", "VARCHAR(100)", database);
-            }
-        } catch (Exception e) {
-            Bukkit.getLogger().warning("startup table creation canceled please connect database");
-        }
+        //connection message:
+        String dbType = ChatColor.BLUE + "MySQL " + ChatColor.WHITE;
+        String dbStatus = ChatColor.RED + "Database not connected!" + ChatColor.WHITE;
+        String isWarps = ChatColor.RED + "false" + ChatColor.WHITE;
+        String isHomes = ChatColor.RED + "false" + ChatColor.WHITE;
+        String isRanks = ChatColor.RED + "false" + ChatColor.WHITE;
+        String isPassive = ChatColor.RED + "false" + ChatColor.WHITE;
+
+        if (sqlconnector.isUseSQLite()) dbType = ChatColor.BLUE + "SQLite" + ChatColor.WHITE;
+        if (CONFIG.isWarps()) isWarps = ChatColor.GREEN + "true " + ChatColor.WHITE;
+        if (CONFIG.isHomes()) isHomes = ChatColor.GREEN + "true " + ChatColor.WHITE;
+        if (CONFIG.isRanks()) isRanks = ChatColor.GREEN + "true " + ChatColor.WHITE;
+        if (CONFIG.isPassive()) isPassive = ChatColor.GREEN + "true " + ChatColor.WHITE;
+        if (sqlconnector.isReady())
+            dbStatus = ChatColor.GREEN + "Database Ready!        " + ChatColor.WHITE;
+
+        Bukkit.getLogger().info(
+                "Indrocraft startup info: " + ChatColor.WHITE +
+                "\n[]-------[Indrocraft Plugin]-------[]\n" +
+                "| Database: " + dbStatus + " |\n" +
+                "| DatabaseType: " + dbType + "              |\n" +
+                "| Using Ranks: " + isRanks + "                |\n" +
+                "| Using Homes: " + isHomes + "                |\n" +
+                "| Using Warps: " + isWarps + "                |\n" +
+                "| Using passive: " + isPassive + "              |\n" +
+                "[]---------------------------------[]"
+        );
     }
 
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-        /*bot.getJda().shutdownNow();
-        while (bot.getJda().getStatus() != JDA.Status.SHUTTING_DOWN) {
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
         Bukkit.getLogger().info("Successfully disabled Indrocraft plugin!");
     }
 }

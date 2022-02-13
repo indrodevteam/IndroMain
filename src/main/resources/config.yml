@@ -1,15 +1,16 @@
 # server name
 serverName: Our Server
 
-useEconomy: true
+useFeature:
+  homes: false
+  ranks: false
+  warps: false
+  passive: false
 
-# teleport home using /home command
-homes: true
-databaseForTP: tpdatabase
-
-database:
+sql:
   host: localhost # host of your database
   port: 3306 # default port for MariaDB and MySQL
   database: indrocraft # name of your database. A database server can contain multiple databases
   user: root
-  password: PasswordHere # if database has no password leave the password as 'PasswordHere'
+  password: # if database has no password leave the password as 'PasswordHere'
+  sqlite: false

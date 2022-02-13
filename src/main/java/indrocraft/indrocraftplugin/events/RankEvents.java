@@ -1,9 +1,10 @@
 package indrocraft.indrocraftplugin.events;
 
 import indrocraft.indrocraftplugin.Main;
-import indrocraft.indrocraftplugin.utils.ConfigUtils;
-import indrocraft.indrocraftplugin.utils.SQLUtils;
-import indrocraft.indrocraftplugin.utils.RankUtils;
+import io.github.indroDevTeam.indroLib.datamanager.ConfigUtils;
+import io.github.indroDevTeam.indroLib.datamanager.SQLUtils;
+import io.github.indroDevTeam.indroLib.objects.ranks.RankEvent;
+import io.github.indroDevTeam.indroLib.objects.ranks.RankUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -114,11 +115,13 @@ public class RankEvents implements Listener {
 
             Bukkit.broadcastMessage(ChatColor.BLUE + "You have gone up " + ChatColor.GREEN + reps + ChatColor.BLUE
                     + " ranks and are now: " + ChatColor.GREEN + finalRank);
-            rankUtils.setRank(player, sqlUtils, finalRank);
-            rankUtils.LoadRank(player, sqlUtils);
-            ServerRankEvent rankEvent = new ServerRankEvent(player, event.getAdvancement(), finalRank);
-            Bukkit.getPluginManager().callEvent(rankEvent);
-
+            RankUtils.setPlayerRank(player, finalRank, sqlUtils);
+            RankUtils.loadPlayerRank(player, sqlUtils);
         }
+    }
+
+    @EventHandler
+    public void advancementDoneEvent(RankEvent event) {
+        Bukkit.getLogger().severe("rankUp event");
     }
 }

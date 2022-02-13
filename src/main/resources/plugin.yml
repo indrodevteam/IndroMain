@@ -27,6 +27,10 @@ commands:
     usage: /<command>
     description: handles admin rank commands
     aliases: [r, rank]
+  config:
+    usage: /<command>
+    description: This command is used to configure the config file
+    aliases: [su]
 
 permissions:
   inspector:

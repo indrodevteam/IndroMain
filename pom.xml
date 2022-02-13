@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>indrocraft</groupId>
-    <artifactId>IndrocraftPlugin</artifactId>
+    <artifactId>IndroMain</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
@@ -68,6 +68,11 @@
             <name>m2-dv8tion</name>
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
+
+            <repository>
+                <id>jitpack.io</id>
+                <url>https://jitpack.io</url>
+            </repository>
     </repositories>
 
     <dependencies>
@@ -85,6 +90,11 @@
             <version>4.4.0_352</version>
         </dependency>
 
-        <!--advanced ban dependency-->
+        <!--IndroLib-->
+        <dependency>
+            <groupId>com.github.Indro-Dev-Team</groupId>
+            <artifactId>IndroLib</artifactId>
+            <version>639fb0ebfa</version>
+        </dependency>
     </dependencies>
 </project>
