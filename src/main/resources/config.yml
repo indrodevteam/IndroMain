@@ -5,7 +5,6 @@ useFeature:
   homes: false
   ranks: false
   warps: false
-  passive: false
 
 sql:
   host: localhost # host of your database

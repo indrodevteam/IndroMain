@@ -17,7 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Main extends JavaPlugin {
 
     public SQLConnector sqlconnector;
-    private Config CONFIG;
 
     @Override
     public void onEnable() {
@@ -25,20 +24,7 @@ public final class Main extends JavaPlugin {
         ConfigUtils config = new ConfigUtils(this, "config.yml");
         config.saveDefaultConfig();
 
-        CONFIG = new Config(this);
-
-        /*"indrocraft",
-                "localhost",
-                "3306",
-                "root",
-                "",*/
-
-        Bukkit.getLogger().warning(
-                CONFIG.getDatabase() + ", " +
-                CONFIG.getHost() + ", " +
-                        CONFIG.getPort() + ", " +
-                        CONFIG.getUsername() + ", " +
-                        CONFIG.getPassword() + ".");
+        Config CONFIG = new Config(this);
 
         //connect to database
         sqlconnector = new SQLConnector(
@@ -53,7 +39,6 @@ public final class Main extends JavaPlugin {
 
         SQLUtils s = new SQLUtils(sqlconnector);
         MiscUtils.setupDatabase(s);
-
 
         // commands:
         getServer().getPluginCommand("warn").setExecutor(new WarnCommand());
@@ -77,13 +62,10 @@ public final class Main extends JavaPlugin {
         String isWarps = ChatColor.RED + "false" + ChatColor.WHITE;
         String isHomes = ChatColor.RED + "false" + ChatColor.WHITE;
         String isRanks = ChatColor.RED + "false" + ChatColor.WHITE;
-        String isPassive = ChatColor.RED + "false" + ChatColor.WHITE;
-
         if (sqlconnector.isUseSQLite()) dbType = ChatColor.BLUE + "SQLite" + ChatColor.WHITE;
         if (CONFIG.isWarps()) isWarps = ChatColor.GREEN + "true " + ChatColor.WHITE;
         if (CONFIG.isHomes()) isHomes = ChatColor.GREEN + "true " + ChatColor.WHITE;
         if (CONFIG.isRanks()) isRanks = ChatColor.GREEN + "true " + ChatColor.WHITE;
-        if (CONFIG.isPassive()) isPassive = ChatColor.GREEN + "true " + ChatColor.WHITE;
         if (sqlconnector.isReady())
             dbStatus = ChatColor.GREEN + "Database Ready!        " + ChatColor.WHITE;
 
@@ -95,7 +77,6 @@ public final class Main extends JavaPlugin {
                 "| Using Ranks: " + isRanks + "                |\n" +
                 "| Using Homes: " + isHomes + "                |\n" +
                 "| Using Warps: " + isWarps + "                |\n" +
-                "| Using passive: " + isPassive + "              |\n" +
                 "[]---------------------------------[]"
         );
     }

@@ -24,7 +24,6 @@ public class Config implements TabExecutor {
         this.ranks = config.getConfig().getBoolean("useFeature.ranks");
         this.warps = config.getConfig().getBoolean("useFeature.warps");
         this.homes = config.getConfig().getBoolean("useFeature.homes");
-        this.passive = config.getConfig().getBoolean("useFeature.passive");
         this.useSQLite = config.getConfig().getBoolean("sql.sqlite");
 
         this.serverName = config.getConfig().getString("serverName");
@@ -46,10 +45,6 @@ public class Config implements TabExecutor {
 
     public Boolean isHomes() {
         return homes;
-    }
-
-    public Boolean isPassive() {
-        return passive;
     }
 
     public Boolean isSQLite() {
@@ -83,7 +78,6 @@ public class Config implements TabExecutor {
     private final boolean ranks;
     private final boolean warps;
     private final boolean homes;
-    private final boolean passive;
 
     private final boolean useSQLite;
     private final String database;
@@ -118,9 +112,6 @@ public class Config implements TabExecutor {
             case "warps":
                 config.getConfig().set("useFeature.warps", args[1].equalsIgnoreCase("true"));
                 break;
-            case "passive":
-                config.getConfig().set("useFeature.passive", args[1].equalsIgnoreCase("true"));
-                break;
             case "sql":
                 switch (args[1].toLowerCase()) {
                     case "database":
@@ -152,7 +143,7 @@ public class Config implements TabExecutor {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        if (args.length == 1) return new ArrayList<>(Arrays.asList("ranks", "warps", "homes", "passive", "servername", "sql"));
+        if (args.length == 1) return new ArrayList<>(Arrays.asList("ranks", "warps", "homes", "servername", "sql"));
         else if (args[0].equalsIgnoreCase("sql") && args.length == 2)
             return new ArrayList<>(Arrays.asList("database", "port", "host", "user", "password", "sqlite"));
         else if (args[0].equalsIgnoreCase("servername") ||

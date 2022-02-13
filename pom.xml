@@ -94,7 +94,7 @@
         <dependency>
             <groupId>com.github.Indro-Dev-Team</groupId>
             <artifactId>IndroLib</artifactId>
-            <version>639fb0ebfa</version>
+            <version>v1.0.0-ALPHA</version>
         </dependency>
     </dependencies>
 </project>
