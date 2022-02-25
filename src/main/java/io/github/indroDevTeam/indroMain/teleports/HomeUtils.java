@@ -4,8 +4,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class HomeUtils {
-
     public void createHome(String homeName, Player player, Location location) {
         new Point(PointType.PRIVATE_HOME, homeName, player.getUniqueId().toString(), location);
+    }
+
+    public Location warpHome(Point point) {
+        return new Location(point.getWorld(), point.getX(), point.getY(), point.getZ(), point.getYaw(), point.getPitch())
     }
 }

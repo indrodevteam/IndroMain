@@ -7,14 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class Point {
-    /* TODO: save
-    - name
-    - player
-    - id
-    - location or
-    - x, y, z, pitch, yaw, world
-     */
-
     // identification for homes
     private String homeName;
     private String owner;

@@ -10,15 +10,14 @@ import java.util.ArrayList;
 public class PointUtils {
     // CRUD: Create, Read, Update, Delete
 
-    ArrayList<Point> points = new ArrayList<>();
+    private static ArrayList<Point> points = new ArrayList<>();
 
-    public Point createPoint(PointType pointType, String homeName, Player owner, Location location, Player... extraDetail) {
-        String oof = "4.3213, 7.14423, 12.1243";
+    public Point createPoint(PointType pointType, String homeName, String ownerUUID, Location location, Player... extraDetail) {
+        Point point = new Point(pointType, homeName, ownerUUID, location);
+        points.add(poj)
+    }
 
-        String[] oofed = oof.split(", ");
-        for (String s : oofed) {
-            float coord = Float.parseFloat(s);
+    public Point findPoint(String ownerUUID, String homeName) {
 
-        }
     }
 }
