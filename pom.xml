@@ -89,12 +89,5 @@
             <artifactId>JDA</artifactId>
             <version>4.4.0_352</version>
         </dependency>
-
-        <!--IndroLib-->
-        <dependency>
-            <groupId>com.github.Indro-Dev-Team</groupId>
-            <artifactId>IndroLib</artifactId>
-            <version>v1.0.0-ALPHA</version>
-        </dependency>
     </dependencies>
 </project>
