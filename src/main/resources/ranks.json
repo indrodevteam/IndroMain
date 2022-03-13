@@ -1,0 +1,24 @@
+[
+  {
+    "rankName": "DEFAULT",
+    "format": "&e[GREMLIN]&r %player_name%",
+    "nextAdvancement": "minecraft:adventure/kill_a_mob",
+    "maxHomes": 1,
+    "chatColor": "white",
+    "nextRank": "TITAN"
+  },
+  {
+    "rankName": "TITAN",
+    "format": "&4[TITAN]&r %player_name%",
+    "nextAdvancement": null,
+    "maxHomes": 4,
+    "chatColor": "blue"
+  },
+  {
+    "rankName": "DEV",
+    "format": "&e[&rDEV&r]&e %player_name%",
+    "nextAdvancement": null,
+    "maxHomes": 10,
+    "chatColor": "blue"
+  }
+]

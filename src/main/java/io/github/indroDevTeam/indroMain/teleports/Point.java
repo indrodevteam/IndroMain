@@ -3,6 +3,7 @@ package io.github.indroDevTeam.indroMain.teleports;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -10,8 +11,7 @@ public class Point {
     // identification for homes
     private String homeName;
     private String owner;
-    private UUID homeID;
-    private PointType pointType;
+    private String pointType;
 
     // location for home
     private float x;
@@ -19,34 +19,48 @@ public class Point {
     private float z;
     private float pitch;
     private float yaw;
-    private World world;
+    private String worldName;
 
-    public Point(PointType pointType, String homeName, String owner, Location homePos) {
+    /**
+     * Creates a point using the Location datatype
+     * @param pointType the type of point used
+     * @param homeName the name of the home
+     * @param owner an identifying key that the program can identify with
+     * @param homePos the location of the point
+     * @param invitees if the point type is shared, the uuids of the users permitted
+     */
+    public Point(String pointType,
+                 String homeName,
+                 String owner,
+                 Location homePos,
+                 @Nullable UUID... invitees) {
         this.pointType = pointType;
         this.homeName = homeName;
         this.owner = owner;
-        this.homeID = UUID.nameUUIDFromBytes(homeName.getBytes(StandardCharsets.UTF_8));
 
         this.x = homePos.getBlockX();
         this.y = homePos.getBlockY();
         this.z = homePos.getBlockZ();
         this.pitch = homePos.getPitch();
         this.yaw = homePos.getYaw();
-        this.world = homePos.getWorld();
+        this.worldName = homePos.getWorld().getName();
     }
 
-    public Point(PointType pointType, String homeName, String owner, float x, float y, float z, float pitch, float yaw, World world) {
+    public Point(String pointType,
+                 String homeName,
+                 String owner,
+                 float x, float y, float z, float pitch, float yaw, String worldName,
+                 @Nullable UUID... invitees) {
         this.pointType = pointType;
         this.homeName = homeName;
         this.owner = owner;
-        this.homeID = UUID.nameUUIDFromBytes(homeName.getBytes(StandardCharsets.UTF_8));
 
         this.x = x;
         this.y = y;
         this.z = z;
         this.pitch = pitch;
         this.yaw = yaw;
-        this.world = world;
+        this.worldName = worldName;
     }
 
     // getters and setters
@@ -65,14 +79,6 @@ public class Point {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public UUID getHomeID() {
-        return homeID;
-    }
-
-    public void setHomeID(UUID homeID) {
-        this.homeID = homeID;
     }
 
     public float getX() {
@@ -115,19 +121,19 @@ public class Point {
         this.yaw = yaw;
     }
 
-    public World getWorld() {
-        return world;
+    public String getWorldName() {
+        return worldName;
     }
 
-    public void setWorld(World world) {
-        this.world = world;
+    public void setWorldName(String worldName) {
+        this.worldName = worldName;
     }
 
-    public PointType getPointType() {
+    public String getPointType() {
         return pointType;
     }
 
-    public void setPointType(PointType pointType) {
+    public void setPointType(String pointType) {
         this.pointType = pointType;
     }
 }
