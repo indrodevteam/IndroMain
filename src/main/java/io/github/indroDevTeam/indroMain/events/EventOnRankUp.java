@@ -13,7 +13,7 @@ public class EventOnRankUp extends Event{
     private final Rank oldRank;
     private final Rank newRank;
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
 
     public EventOnRankUp(Player player, Rank oldRank, Rank newRank) {
         this.player = player;
@@ -21,15 +21,14 @@ public class EventOnRankUp extends Event{
         this.newRank = newRank;
     }
 
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
+
     @Override
-    public HandlerList getHandlers() {
-        return null;
+    public @NotNull HandlerList getHandlers() {
+        return HANDLERS;
     }
-
-    public HandlerList getHandlerList() {
-        return HANDLER_LIST;
-    }
-
 
     public Player getPlayer() {
         return player;

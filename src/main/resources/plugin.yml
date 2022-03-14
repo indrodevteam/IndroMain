@@ -28,9 +28,6 @@ commands:
   info:
     usage: /<command>
     description: gets your own data
-  time:
-    usage: /<command>
-    description: gets the time (why not)
 
 permissions:
   inspector:

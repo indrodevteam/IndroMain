@@ -2,6 +2,7 @@ package io.github.indroDevTeam.indroMain.tasks;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.dataUtils.LanguageLoader;
+import io.github.indroDevTeam.indroMain.events.EventOnRankUp;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import io.github.indroDevTeam.indroMain.ranks.RankUtils;
@@ -21,6 +22,7 @@ public class TaskCheckRanks {
 
     public void run() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), () -> {
+            Bukkit.getLogger().warning("3");
             for (Player player : playerList) {
                 HashMap<UUID, Rank> rankHashMap = IndroMain.getPlayerRankList();
                 Rank rank;
@@ -44,6 +46,8 @@ public class TaskCheckRanks {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     new LanguageLoader().get("plugin-title") +
                                     ChatColor.translateAlternateColorCodes('&', new LanguageLoader().get("rank-up").replace("%rank_name%", rank.getRankName().toLowerCase(Locale.ROOT)))));
+                    EventOnRankUp event = new EventOnRankUp(player, rank, newRank);
+                    Bukkit.getPluginManager().callEvent(event);
                 }
 
                 // updates names

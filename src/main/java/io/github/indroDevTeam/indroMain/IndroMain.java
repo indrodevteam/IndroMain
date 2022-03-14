@@ -1,6 +1,6 @@
 package io.github.indroDevTeam.indroMain;
 
-import io.github.indroDevTeam.indroMain.commands.*;
+import io.github.indroDevTeam.indroMain.commands.CommandInfo;
 import io.github.indroDevTeam.indroMain.commands.home.CommandDelHome;
 import io.github.indroDevTeam.indroMain.commands.home.CommandHome;
 import io.github.indroDevTeam.indroMain.commands.home.CommandHomeList;
@@ -11,20 +11,23 @@ import io.github.indroDevTeam.indroMain.commands.rank.CommandVersion;
 import io.github.indroDevTeam.indroMain.commands.warp.CommandDelWarp;
 import io.github.indroDevTeam.indroMain.commands.warp.CommandSetWarp;
 import io.github.indroDevTeam.indroMain.commands.warp.CommandWarp;
-import io.github.indroDevTeam.indroMain.tasks.TaskCheckRanks;
-import io.github.indroDevTeam.indroMain.teleports.PointStorage;
+import io.github.indroDevTeam.indroMain.dataUtils.YamlUtils;
 import io.github.indroDevTeam.indroMain.events.EventOnPlayerJoin;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import io.github.indroDevTeam.indroMain.tasks.TaskAutoSave;
+import io.github.indroDevTeam.indroMain.tasks.TaskCheckRanks;
+import io.github.indroDevTeam.indroMain.teleports.PointStorage;
 import me.kodysimpson.simpapi.command.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class IndroMain extends JavaPlugin {
@@ -50,8 +53,8 @@ public class IndroMain extends JavaPlugin {
         }
         config = this.getConfig();
 
+        updatePlayerRankList();
         checkInvalidDataPoints();
-
         runTasks();
         registerCommands();
     }
@@ -59,6 +62,12 @@ public class IndroMain extends JavaPlugin {
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
+        YamlUtils yamlUtils = new YamlUtils("playerRankList");
+        YamlConfiguration configuration = new YamlConfiguration();
+        for (UUID uuid : playerRankList.keySet()) {
+            configuration.set(uuid.toString(), playerRankList.get(uuid));
+        }
+        yamlUtils.saveFile(yamlUtils.getConfig());
     }
 
     public void registerCommands() {
@@ -74,9 +83,6 @@ public class IndroMain extends JavaPlugin {
         Bukkit.getPluginCommand("delhome").setTabCompleter(new CommandDelHome());
         Bukkit.getPluginCommand("homelist").setExecutor(new CommandHomeList());
         Bukkit.getPluginCommand("setwarp").setExecutor(new CommandSetWarp());
-        Bukkit.getPluginCommand("time").setExecutor(new CommandTime());
-        Bukkit.getPluginCommand("time").setTabCompleter(new CommandTime());
-
         Bukkit.getPluginCommand("delwarp").setExecutor(new CommandDelWarp());
         Bukkit.getPluginCommand("delwarp").setTabCompleter(new CommandDelWarp());
 
@@ -101,6 +107,21 @@ public class IndroMain extends JavaPlugin {
             if (playerRankList.get(player.getUniqueId()) == null) {
                 playerRankList.replace(player.getUniqueId(), RankStorage.readRank("DEFAULT"));
             }
+        }
+    }
+
+    public void updatePlayerRankList() {
+        // update the player rank list
+        YamlUtils yamlUtils = new YamlUtils("playerRankList");
+        yamlUtils.loadFromFile();
+        FileConfiguration file = YamlConfiguration.loadConfiguration(yamlUtils.getFile());
+
+        List<String> stringList = file.getStringList("");
+        for (String s : stringList) {
+            UUID playerUUID = UUID.fromString(s);
+            Rank rank = (Rank) file.get(s);
+
+            playerRankList.put(playerUUID, rank);
         }
     }
 

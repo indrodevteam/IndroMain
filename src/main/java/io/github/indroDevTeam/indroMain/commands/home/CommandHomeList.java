@@ -27,7 +27,7 @@ public class CommandHomeList implements CommandExecutor {
                 int maxHomes = rank.getMaxHomes();
                 String[] playerData = new String[] {
                         ChatColor.AQUA + "======================",
-                        ChatColor.AQUA + "| You are rank " + rank.getRankName() + " and has " + currentHomes + "/" + maxHomes + " homes."
+                        ChatColor.AQUA + "| You are rank " + rank.getRankName() + " and have " + currentHomes + "/" + maxHomes + " homes."
                 };
                 List<String> stringList = new ArrayList<>(List.of(playerData));
                 for (Point point : PointStorage.findPointsWithOwner(player.getUniqueId().toString())) {
