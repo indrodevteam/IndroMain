@@ -19,7 +19,7 @@ public class RankStorage {
                                   int maxHomes,
                                   @Nullable String nextRank,
                                   @Nullable Integer discordID,
-                                  @Nullable String nextAdvancement) {
+                                  @Nullable ArrayList<String> nextAdvancement) {
         Rank rank = new Rank(rankName, format, nextAdvancement, maxHomes, nextRank, discordID);
         ranks.add(rank);
         return rank;
@@ -85,6 +85,7 @@ public class RankStorage {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "ranks.json");
         if (!file.exists()) {
+            loadFromResource();
             saveRanks();
         }
         Rank[] model = gson.fromJson(new FileReader(file), Rank[].class);

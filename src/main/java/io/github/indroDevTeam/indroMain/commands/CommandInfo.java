@@ -1,8 +1,9 @@
 package io.github.indroDevTeam.indroMain.commands;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
-import io.github.indroDevTeam.indroMain.dataUtils.LanguageLoader;
+import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
+import io.github.indroDevTeam.indroMain.ranks.RankUtils;
 import io.github.indroDevTeam.indroMain.teleports.PointStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -19,7 +20,7 @@ public class CommandInfo implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(new LanguageLoader().get("plugin-title") + new LanguageLoader().get("error-player-only"));
+            sender.sendMessage(LanguageTags.ERROR_PLAYER_ONLY.get());
         } else {
             if (label.equalsIgnoreCase("info")) {
                 Rank rank = IndroMain.getPlayerRankList().get(player.getUniqueId());
@@ -30,6 +31,7 @@ public class CommandInfo implements CommandExecutor {
                         ChatColor.AQUA + "| Hello there, " + player.getName(),
                         ChatColor.AQUA + "| There are currently " + ChatColor.RED + IndroMain.getInstance().getServer().getOnlinePlayers().size() + ChatColor.AQUA + " player/s online.",
                         ChatColor.AQUA + "| Current Rank: " + rank.getRankName(),
+                        ChatColor.AQUA + "| Rank Criteria Fulfilled: " + RankUtils.criteriaFulfilled(player, rank) + "/" + rank.getAdvancementGate().size(),
                         ChatColor.AQUA + "| Home Status: " + PointStorage.findPointsWithOwner(player.getUniqueId().toString()).size() +"/"+ rank.getMaxHomes(),
                         ChatColor.AQUA + "| The time is: " + ChatColor.RED + time.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
                         ChatColor.AQUA + "-------------------------"

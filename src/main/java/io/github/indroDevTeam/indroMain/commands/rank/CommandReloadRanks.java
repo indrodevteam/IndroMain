@@ -2,14 +2,12 @@ package io.github.indroDevTeam.indroMain.commands.rank;
 
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import io.github.indroDevTeam.indroMain.teleports.PointStorage;
-import io.github.indroDevTeam.indroMain.teleports.PointUtils;
 import me.kodysimpson.simpapi.command.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CommandReloadRanks extends SubCommand {

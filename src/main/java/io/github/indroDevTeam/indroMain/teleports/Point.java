@@ -1,139 +1,80 @@
 package io.github.indroDevTeam.indroMain.teleports;
 
-import org.bukkit.Location;
-import org.bukkit.World;
+import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
+import lombok.Data;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
-
+@Data
 public class Point {
     // identification for homes
-    private String homeName;
+    private String pointName;
     private String owner;
     private String pointType;
 
     // location for home
-    private float x;
-    private float y;
-    private float z;
+    private double x;
+    private double y;
+    private double z;
     private float pitch;
     private float yaw;
     private String worldName;
 
-    /**
-     * Creates a point using the Location datatype
-     * @param pointType the type of point used
-     * @param homeName the name of the home
-     * @param owner an identifying key that the program can identify with
-     * @param homePos the location of the point
-     * @param invitees if the point type is shared, the uuids of the users permitted
-     */
-    public Point(String pointType,
-                 String homeName,
-                 String owner,
-                 Location homePos,
-                 @Nullable UUID... invitees) {
-        this.pointType = pointType;
-        this.homeName = homeName;
+    public Point(String pointName, String owner, String pointType, Location location) {
+        this.pointName = pointName;
         this.owner = owner;
-
-        this.x = homePos.getBlockX();
-        this.y = homePos.getBlockY();
-        this.z = homePos.getBlockZ();
-        this.pitch = homePos.getPitch();
-        this.yaw = homePos.getYaw();
-        this.worldName = homePos.getWorld().getName();
-    }
-
-    public Point(String pointType,
-                 String homeName,
-                 String owner,
-                 float x, float y, float z, float pitch, float yaw, String worldName,
-                 @Nullable UUID... invitees) {
         this.pointType = pointType;
-        this.homeName = homeName;
-        this.owner = owner;
 
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.pitch = pitch;
-        this.yaw = yaw;
-        this.worldName = worldName;
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+        this.pitch = location.getPitch();
+        this.yaw = location.getYaw();
+        this.worldName = location.getWorld().getName();
     }
 
-    // getters and setters
-
-    public String getHomeName() {
-        return homeName;
+    public Location getLocation() {
+        return new Location(Bukkit.getServer().getWorld(worldName), x, y, z, pitch, yaw);
     }
 
-    public void setHomeName(String homeName) {
-        this.homeName = homeName;
+    // warp sets
+
+    public void warp(Player player) {
+        int delayWarpSeconds;
+        switch (PointType.valueOf(pointType)) {
+            case PUBLIC_WARP -> delayWarpSeconds = 5;
+            case PRIVATE_HOME -> delayWarpSeconds = 10;
+            default -> delayWarpSeconds = 3;
+        }
+
+        Location location = new Location(Bukkit.getServer().getWorld(getWorldName()), getX(), getY(), getZ(), getPitch(), getYaw());
+        
+        int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
+            double var = 0;
+            Location loc, first, second;
+
+            @Override
+            public void run() {
+                var += Math.PI / 16;
+
+                loc = player.getLocation();
+                first = loc.clone().add(Math.cos(var), Math.sin(var) + 1, Math.sin(var));
+                second = loc.clone().add(Math.cos(var + Math.PI), Math.sin(var) + 1, Math.sin(var + Math.PI));
+
+                player.getWorld().spawnParticle(Particle.TOTEM, first, 0);
+                player.getWorld().spawnParticle(Particle.TOTEM, second, 0);
+            }
+        }, 0, 1);
+
+        Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
+            Bukkit.getScheduler().cancelTask(id);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
+            player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
+            player.teleport(location);
+            player.sendMessage(LanguageTags.JUMP_SUCCESS.get());
+        }, 20L * delayWarpSeconds);
     }
 
-    public String getOwner() {
-        return owner;
-    }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public float getZ() {
-        return z;
-    }
-
-    public void setZ(float z) {
-        this.z = z;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public void setPitch(float pitch) {
-        this.pitch = pitch;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public void setYaw(float yaw) {
-        this.yaw = yaw;
-    }
-
-    public String getWorldName() {
-        return worldName;
-    }
-
-    public void setWorldName(String worldName) {
-        this.worldName = worldName;
-    }
-
-    public String getPointType() {
-        return pointType;
-    }
-
-    public void setPointType(String pointType) {
-        this.pointType = pointType;
-    }
 }

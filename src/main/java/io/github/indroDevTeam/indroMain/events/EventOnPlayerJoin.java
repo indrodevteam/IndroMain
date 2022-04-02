@@ -10,9 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -35,15 +32,12 @@ public class EventOnPlayerJoin implements Listener {
         player.setDisplayName(format);
         player.setPlayerListName(format);
 
-        int seconds = Math.toIntExact(player.getWorld().getTime() / 72);
-        LocalTime time = LocalTime.ofSecondOfDay(seconds);
         String[] playerData = new String[]{
             ChatColor.AQUA + "-------------------------",
             ChatColor.AQUA + "| Hello there, " + player.getName(),
             ChatColor.AQUA + "| There are currently " + ChatColor.RED + IndroMain.getInstance().getServer().getOnlinePlayers().size() + ChatColor.AQUA + " player/s online.",
             ChatColor.AQUA + "| Current Rank: " + rank.getRankName(),
-            ChatColor.AQUA + "| Home Status: " + PointStorage.findPointsWithOwner(player.getUniqueId().toString()).size() +"/"+ rank.getMaxHomes(),
-            ChatColor.AQUA + "| The time is: " + ChatColor.RED + time.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
+            ChatColor.AQUA + "| Home Count: " + PointStorage.findPointsWithOwner(player.getUniqueId().toString()).size() +"/"+ rank.getMaxHomes(),
             ChatColor.AQUA + "-------------------------"
         };
 

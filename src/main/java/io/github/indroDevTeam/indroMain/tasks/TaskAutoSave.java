@@ -1,6 +1,6 @@
 package io.github.indroDevTeam.indroMain.tasks;
 
-import io.github.indroDevTeam.indroMain.dataUtils.LanguageLoader;
+import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import io.github.indroDevTeam.indroMain.teleports.PointStorage;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,7 +18,7 @@ public class TaskAutoSave extends BukkitRunnable {
     @Override
     public void run() {
         try {
-            plugin.getLogger().info(new LanguageLoader().get("plugin-title") + new LanguageLoader().get("autosaving"));
+            plugin.getLogger().info(LanguageTags.AUTOSAVING.get());
             PointStorage.savePoints();
             RankStorage.saveRanks();
         } catch (IOException e) {

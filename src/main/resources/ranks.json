@@ -1,24 +1,64 @@
 [
   {
     "rankName": "DEFAULT",
-    "format": "&e[GREMLIN]&r %player_name%",
-    "nextAdvancement": "minecraft:adventure/kill_a_mob",
+    "format": "&7[GREMLIN]&r %player_name%",
+    "advancementGate": [
+      null
+    ],
     "maxHomes": 1,
-    "chatColor": "white",
+    "nextRank": "HERO"
+  },
+  {
+    "rankName": "HERO",
+    "format": "&4[HERO]&r %player_name%",
+    "advancementGate": [
+      "minecraft:story/mine_diamond"
+    ],
+    "maxHomes": 2,
     "nextRank": "TITAN"
   },
   {
     "rankName": "TITAN",
-    "format": "&4[TITAN]&r %player_name%",
-    "nextAdvancement": null,
+    "format": "&a[TITAN]&r %player_name%",
+    "advancementGate": [
+      "minecraft:nether/obtain_ancient_debris",
+      "minecraft:story/enter_the_nether"
+    ],
+    "maxHomes": 3,
+    "nextRank": "DEMIGOD"
+  },
+  {
+    "rankName": "DEMIGOD",
+    "format": "&c[DEMIGOD]&r %player_name%",
+    "advancementGate": [
+      "minecraft:end/kill_dragon"
+    ],
     "maxHomes": 4,
-    "chatColor": "blue"
+    "nextRank": "GOD"
+  },
+  {
+    "rankName": "GOD",
+    "format": "&4[GOD]&r %player_name%",
+    "advancementGate": [
+      "minecraft:end/kill_dragon",
+      "minecraft:nether/summon_wither"
+    ],
+    "maxHomes": 5
+  },
+  {
+    "rankName": "DONATOR",
+    "format": "&e[&6DONATOR&e]&6 %player_name%",
+    "advancementGate": [
+      null
+    ],
+    "maxHomes": 5
   },
   {
     "rankName": "DEV",
-    "format": "&e[&rDEV&r]&e %player_name%",
-    "nextAdvancement": null,
-    "maxHomes": 10,
-    "chatColor": "blue"
+    "format": "&d[&5DEV&d]&5 %player_name%",
+    "advancementGate": [
+      null
+    ],
+    "maxHomes": 10
   }
 ]

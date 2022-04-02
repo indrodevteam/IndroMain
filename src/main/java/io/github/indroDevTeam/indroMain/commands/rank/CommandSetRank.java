@@ -1,7 +1,7 @@
 package io.github.indroDevTeam.indroMain.commands.rank;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
-import io.github.indroDevTeam.indroMain.dataUtils.LanguageLoader;
+import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import me.kodysimpson.simpapi.command.SubCommand;
@@ -52,7 +52,7 @@ public class CommandSetRank extends SubCommand {
             rankHashMap.replace(player.getUniqueId(), newPlayerRank);
             sender.sendMessage("Changed " + playerRank.getRankName() + " to " + newPlayerRank.getRankName());
         } else {
-            sender.sendMessage(new LanguageLoader().get("plugin-title") + new LanguageLoader().get("error-syntax"));
+            sender.sendMessage(LanguageTags.ERROR_SYNTAX.get());
         }
     }
 

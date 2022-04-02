@@ -40,7 +40,7 @@ public class YamlUtils {
 
 
     public void loadFromResource() throws IOException {
-        InputStream is = IndroMain.getInstance().getResource(file.getName());
+        InputStream is = IndroMain.getInstance().getResource(file.getName() + ".yml");
         OutputStream os = new FileOutputStream(file);
         byte[] buffer = new byte[4096];
         int length;

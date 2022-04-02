@@ -4,27 +4,12 @@ main: io.github.indroDevTeam.indroMain.IndroMain
 api-version: 1.17
 
 commands:
-  sethome:
-    usage: /<command>
-    description: for developer testing
   home:
-    usage: /<command>
     description: lets players save locations then teleport to them
-  setwarp:
-    usage: /<command>
-    description: lets players save locations then teleport to them
-  homelist:
-    usage: /<command>
-    description: lets players save locations then teleport to them
-  delhome:
-    usage: /<command>
-    description: lets players save locations then teleport to them
-  delwarp:
-    usage: /<command>
-    description: lets players save locations then teleport to them
+    aliases: ["sethome", "delhome", "listhomes"]
   warp:
-    usage: /<command>
     description: sends players to a predetermined location
+    aliases: ["setwarp", "delwarp", "listwarps"]
   info:
     usage: /<command>
     description: gets your own data
