@@ -13,3 +13,7 @@ sql:
   user: root
   password: # if database has no password leave the password as 'PasswordHere'
   sqlite: false
+
+announceHowToUse: true
+
+version: ${project.version}
