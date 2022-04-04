@@ -12,7 +12,10 @@ public class YamlUtils {
     private YamlConfiguration config;
 
     public YamlUtils(String filename) {
-        this.file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + filename + ".yml");
+        if (!filename.contains(".yml")) {
+            filename += ".yml";
+        }
+        this.file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + filename);
         this.config = YamlConfiguration.loadConfiguration(file);
     }
 

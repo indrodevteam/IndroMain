@@ -3,6 +3,9 @@ package io.github.indroDevTeam.indroMain.commands.rank;
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
+import io.github.indroDevTeam.indroMain.ranks.RankUtils;
+import io.github.indroDevTeam.indroMain.ranks.UserRanks;
+import me.kodysimpson.simpapi.colors.ColorTranslator;
 import me.kodysimpson.simpapi.command.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +31,7 @@ public class CommandRankInfo extends SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/rank info (rankName)";
+        return "/rank info (RankTag)";
     }
 
     @Override
@@ -36,11 +39,7 @@ public class CommandRankInfo extends SubCommand {
         if (commandSender instanceof Player player) {
             Rank userRank = null;
             if (strings.length == 1) {
-                userRank = IndroMain.getInstance().getRank(player);
-                if (userRank == null) {
-                    IndroMain.getPlayerRankList().replace(player.getUniqueId(), RankStorage.readRank("DEFAULT"));
-                    userRank = IndroMain.getInstance().getRank(player);
-                }
+                userRank = UserRanks.getRank(player);
             } else if (strings.length == 2) {
                 userRank = RankStorage.readRank(strings[1]);
             }
@@ -51,18 +50,22 @@ public class CommandRankInfo extends SubCommand {
             }
 
             ArrayList<String> message = new ArrayList<>();
-            message.add("*** RANK DATA FOR " + userRank.getRankName() + " ***");
-            message.add("&b-&r Rank Identifier: " + userRank.getRankName());
-            message.add("&b-&r Rank Tag: " + userRank.getFormat());
+            message.add("*** RANK DATA FOR " + userRank.getRankTag() + " ***");
+            message.add("&b-&r Rank Identifier: " + userRank.getRankTag());
+            message.add("&b-&r Rank Tag: " + RankUtils.translate(userRank.getFormat().replace("%player_name%", "")));
             message.add("&b-&r Rank Home Cap: " + userRank.getMaxHomes());
             message.add("&b-&r Rank Advancements: ");
-            for (int i = 0; i < userRank.getAdvancementGate().size(); i++) {
-                message.add("  &b-&r " + userRank.getAdvancementGate().get(i));
+            if (userRank.getAdvancementGate() != null) {
+                for (int i = 0; i < userRank.getAdvancementGate().size(); i++) {
+                    message.add("  &b-&r " + userRank.getAdvancementGate().get(i));
+                }
+            } else {
+                message.add("  &b-&r No advancement requirements provided.");
             }
             message.add("*** END RANK DATA ***");
 
             for (String message1: message) {
-                player.sendMessage(message1);
+                player.sendMessage(ColorTranslator.translateColorCodes(message1));
             }
         }
     }
@@ -72,7 +75,7 @@ public class CommandRankInfo extends SubCommand {
         ArrayList<String> args = new ArrayList<>();
         if (strings.length == 2) {
             for (int i = 0; i < RankStorage.findAllRanks().size(); i++) {
-                args.add(RankStorage.findAllRanks().get(i).getRankName());
+                args.add(RankStorage.findAllRanks().get(i).getRankTag());
             }
         }
         return args;

@@ -18,7 +18,6 @@ public class TaskAutoSave extends BukkitRunnable {
     @Override
     public void run() {
         try {
-            plugin.getLogger().info(LanguageTags.AUTOSAVING.get());
             PointStorage.savePoints();
             RankStorage.saveRanks();
         } catch (IOException e) {

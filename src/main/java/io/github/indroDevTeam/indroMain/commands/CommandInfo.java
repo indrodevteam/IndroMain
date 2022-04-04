@@ -4,6 +4,7 @@ import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankUtils;
+import io.github.indroDevTeam.indroMain.ranks.UserRanks;
 import io.github.indroDevTeam.indroMain.teleports.PointStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,15 +24,14 @@ public class CommandInfo implements CommandExecutor {
             sender.sendMessage(LanguageTags.ERROR_PLAYER_ONLY.get());
         } else {
             if (label.equalsIgnoreCase("info")) {
-                Rank rank = IndroMain.getPlayerRankList().get(player.getUniqueId());
+                Rank rank = UserRanks.getRank(player);
                 int seconds = Math.toIntExact(player.getWorld().getTime() / 72);
                 LocalTime time = LocalTime.ofSecondOfDay(seconds);
                 String[] playerData = new String[]{
                         ChatColor.AQUA + "-------------------------",
                         ChatColor.AQUA + "| Hello there, " + player.getName(),
                         ChatColor.AQUA + "| There are currently " + ChatColor.RED + IndroMain.getInstance().getServer().getOnlinePlayers().size() + ChatColor.AQUA + " player/s online.",
-                        ChatColor.AQUA + "| Current Rank: " + rank.getRankName(),
-                        ChatColor.AQUA + "| Rank Criteria Fulfilled: " + RankUtils.criteriaFulfilled(player, rank) + "/" + rank.getAdvancementGate().size(),
+                        ChatColor.AQUA + "| Current Rank: " + rank.getRankTag(),
                         ChatColor.AQUA + "| Home Status: " + PointStorage.findPointsWithOwner(player.getUniqueId().toString()).size() +"/"+ rank.getMaxHomes(),
                         ChatColor.AQUA + "| The time is: " + ChatColor.RED + time.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
                         ChatColor.AQUA + "-------------------------"

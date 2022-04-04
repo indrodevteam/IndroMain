@@ -1,16 +1,14 @@
 package io.github.indroDevTeam.indroMain.commands.rank;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
+import io.github.indroDevTeam.indroMain.ranks.RankConfigTags;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import io.github.indroDevTeam.indroMain.ranks.RankUtils;
 import me.kodysimpson.simpapi.command.SubCommand;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class CommandListRanks extends SubCommand {
@@ -36,28 +34,51 @@ public class CommandListRanks extends SubCommand {
 
     @Override
     public void perform(CommandSender commandSender, String[] strings) {
-        // initialise string messages
-        final String achieved = ChatColor.GREEN + "Achieved!";
-        final String notAchieved = ChatColor.RED + "Not Achieved!";
-
         ArrayList<Rank> rankList = RankStorage.findAllRanks();
         if (commandSender instanceof Player player) {
             player.sendMessage("***** RANK LIST *****");
             for (Rank rankListOption: rankList) {
-                String result;
-                if (RankUtils.criteriaFulfilled(player, rankListOption) == 0) {
-                    result = achieved;
-                } else {
-                    result = notAchieved;
-                }
+                ArrayList<String> rankTags = rankListOption.getNextRanks();
+                if (rankTags == null) {rankTags = new ArrayList<>();}
+                ArrayList<String> tagsToRemove = new ArrayList<>();
 
-                player.sendMessage(String.format("| Rank: %s - Achieved %s", rankListOption.getRankName(), result));
+                for (int i = 0; i < rankTags.size(); i++) {
+                    Rank e = RankStorage.readRank(rankListOption.getNextRanks().get(i));
+                    if (e != null && (boolean) e.getConfigTag(RankConfigTags.SECRET)) {
+                        tagsToRemove.add(rankTags.get(i));
+                    }
+                }
+                for (String tags: tagsToRemove) {
+                    rankTags.remove(tags);
+                }
+                String nextRanks;
+                if (rankTags.isEmpty()) {
+                    nextRanks = "nothing";
+                } else {
+                    nextRanks = rankTags.toString();
+                }
+                player.sendMessage("| Rank: " + rankListOption.getRankTag() +
+                        " - Promotes to: " + nextRanks);
             }
-            player.sendMessage("*** END RANK LIST ***");
+            player.sendMessage("***** END RANK LIST *****");
         } else {
             commandSender.sendMessage("***** RANK LIST *****");
             for (Rank rankListOption: rankList) {
-                commandSender.sendMessage(String.format("| Rank: %s - Achieved %s", rankListOption.getRankName(), notAchieved));
+                ArrayList<String> rankTags = rankListOption.getNextRanks();
+                if (rankTags == null) {rankTags = new ArrayList<>();}
+                ArrayList<String> tagsToRemove = new ArrayList<>();
+
+                for (int i = 0; i < rankTags.size(); i++) {
+                    Rank e = RankStorage.readRank(rankListOption.getNextRanks().get(i));
+                    if ((e != null) && (boolean) e.getRankConfig().get(RankConfigTags.SECRET)) {
+                        tagsToRemove.add(rankTags.get(i));
+                    }
+                }
+                for (String tags: tagsToRemove) {
+                    rankTags.remove(tags);
+                }
+                commandSender.sendMessage("| Rank: " + rankListOption.getRankTag() +
+                        " - Promotes to: " + rankTags);
             }
             commandSender.sendMessage("*** END RANK LIST ***");
         }

@@ -2,6 +2,9 @@ package io.github.indroDevTeam.indroMain.teleports;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
+import io.github.indroDevTeam.indroMain.ranks.RankConfigTags;
+import io.github.indroDevTeam.indroMain.ranks.RankUtils;
+import io.github.indroDevTeam.indroMain.ranks.UserRanks;
 import lombok.Data;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -42,14 +45,9 @@ public class Point {
 
     public void warp(Player player) {
         int delayWarpSeconds;
-        switch (PointType.valueOf(pointType)) {
-            case PUBLIC_WARP -> delayWarpSeconds = 5;
-            case PRIVATE_HOME -> delayWarpSeconds = 10;
-            default -> delayWarpSeconds = 3;
-        }
+        delayWarpSeconds = (int) Double.parseDouble(UserRanks.getRank(player).getConfigTag(RankConfigTags.TIME_TO_WARP).toString());
 
         Location location = new Location(Bukkit.getServer().getWorld(getWorldName()), getX(), getY(), getZ(), getPitch(), getYaw());
-        
         int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
             double var = 0;
             Location loc, first, second;
@@ -70,6 +68,7 @@ public class Point {
         Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(id);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
+            location.getChunk().load();
             player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
             player.teleport(location);
             player.sendMessage(LanguageTags.JUMP_SUCCESS.get());

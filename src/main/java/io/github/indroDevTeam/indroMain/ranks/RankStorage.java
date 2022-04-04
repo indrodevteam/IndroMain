@@ -3,31 +3,36 @@ package io.github.indroDevTeam.indroMain.ranks;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.teleports.Point;
 
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+@SuppressWarnings("unused")
 public class RankStorage {
     // CRUD: Create, Read, Update, Delete
 
     private static ArrayList<Rank> ranks = new ArrayList<>();
 
-    public static Rank createRank(String rankName,
+    public static void createRank(String rankName,
                                   String format,
+                                  @Nullable ArrayList<String> nextRank,
                                   int maxHomes,
-                                  @Nullable String nextRank,
                                   @Nullable Integer discordID,
-                                  @Nullable ArrayList<String> nextAdvancement) {
-        Rank rank = new Rank(rankName, format, nextAdvancement, maxHomes, nextRank, discordID);
+                                  @Nullable ArrayList<String> nextAdvancement,
+                                  @Nullable HashMap<RankConfigTags, Object> rankConfig) {
+        Rank rank = new Rank(rankName, format, nextRank, maxHomes, discordID, nextAdvancement,
+                rankConfig);
         ranks.add(rank);
-        return rank;
     }
 
     public static Rank readRank(String rankName) {
         for (Rank rank : ranks) {
-            if (rank.getRankName().equalsIgnoreCase(rankName)) {
+            if (rank.getRankTag().equalsIgnoreCase(rankName)) {
                 return rank;
             }
         }
@@ -37,7 +42,7 @@ public class RankStorage {
     /**
      * remember that this is an array (starts at 0)
      * @param rankPos the number of the rank position
-     * @return null if the position doesn't exist, the rank there if otherwise
+     * @return null if the position doesn't exist, the rank saved if otherwise
      */
     public static Rank readRank(int rankPos) {
         try {
@@ -50,9 +55,8 @@ public class RankStorage {
 
     public static void updateRank(String rankName, Rank newRank) {
         for (Rank rank : ranks) {
-            if (rank.getRankName().equalsIgnoreCase(rankName)) {
-                rank.setRankName(newRank.getRankName());
-                rank.setNextRank(newRank.getNextRank());
+            if (rank.getRankTag().equalsIgnoreCase(rankName)) {
+                rank.setRankTag(newRank.getRankTag());
                 rank.setFormat(newRank.getFormat());
                 rank.setMaxHomes(newRank.getMaxHomes());
                 rank.setDiscordID(newRank.getDiscordID());
@@ -62,7 +66,7 @@ public class RankStorage {
     }
 
     public static void deleteRank(String rankName) {
-        ranks.removeIf(rank -> rank.getRankName().equalsIgnoreCase(rankName));
+        ranks.removeIf(rank -> rank.getRankTag().equalsIgnoreCase(rankName));
     }
 
     public static ArrayList<Rank> findAllRanks() {return ranks;}
@@ -86,27 +90,21 @@ public class RankStorage {
         File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "ranks.json");
         if (!file.exists()) {
             loadFromResource();
-            saveRanks();
+            return;
         }
         Rank[] model = gson.fromJson(new FileReader(file), Rank[].class);
         ranks = new ArrayList<>(Arrays.asList(model));
     }
 
-    public static void loadFromResource() throws IOException {
-        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "ranks.json");
-        if (!file.exists()) {
-            file.getParentFile().mkdir();
-            file.createNewFile();
-            
-            InputStream is = IndroMain.getInstance().getResource(file.getName());
-            OutputStream os = new FileOutputStream(file);
-            byte[] buffer = new byte[4096];
-            int length;
-            while ((length = is.read(buffer)) > 0) {
-                os.write(buffer, 0, length);
-            }
-            os.close();
-            is.close();
-        }
+    private static void loadFromResource() throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(IndroMain.getInstance().getDataFolder() + File.separator + "ranks.json");
+        if (file.exists()) {return;}
+
+        InputStream rankStream = IndroMain.getInstance().getResource("ranks.json");
+        assert rankStream != null;
+        InputStreamReader inputStreamReader = new InputStreamReader(rankStream);
+        ranks = new ArrayList<>(Arrays.asList(gson.fromJson(inputStreamReader, Rank[].class)));
+        saveRanks();
     }
 }

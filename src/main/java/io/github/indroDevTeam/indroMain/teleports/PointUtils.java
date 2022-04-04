@@ -2,6 +2,7 @@ package io.github.indroDevTeam.indroMain.teleports;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
+import io.github.indroDevTeam.indroMain.ranks.UserRanks;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,14 +12,13 @@ import java.util.List;
 
 public class PointUtils {
     public static boolean createHome(String homeName, Player player, Location location) {
-        Rank playerRank = IndroMain.getPlayerRankList().get(player.getUniqueId());
+        Rank playerRank = UserRanks.getRank(player);
         List<Point> playerPoints = PointStorage.findPointsWithOwner(player.getUniqueId());
         List<String> playerHomeNames = new ArrayList<>();
         for (Point point :
                 playerPoints) {
             playerHomeNames.add(point.getPointName());
         }
-        assert playerRank != null;
         int playerMaxHomes = playerRank.getMaxHomes();
         ArrayList<Point> points = PointStorage.findPointsWithOwner(player.getUniqueId());
 

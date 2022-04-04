@@ -28,12 +28,11 @@ public enum LanguageTags {
     ERROR_RANK_EXIST("Error: Rank selected does not exist!"),
 
     RELOAD_SUCCESS("Reload Successful!"),
-    RANK_UP("You've fulfilled all criteria! Upgrading to rank %rank_name%!"),
+    RANK_PROMOTION("You can now promote to a new rank!"),
 
     AUTOSAVING("Auto_saving...");
 
     final String defaultValue;
-    //private HashMap<LanguageTags, String> finalValue;
 
     LanguageTags(String defaultValue) {
         this.defaultValue = defaultValue;
@@ -43,49 +42,4 @@ public enum LanguageTags {
         String message = PLUGIN_TITLE.defaultValue + defaultValue;
         return ChatColor.translateAlternateColorCodes('&', message);
     }
-/*
-    public void init() {
-        YamlUtils yamlUtils = new YamlUtils("lang.yml");
-        if (yamlUtils.isFileExist()) {
-            yamlUtils.loadFromFile();
-        } else {
-            try {
-                Bukkit.getServer().getLogger().severe("Language locale does not exist, using stored file!");
-                yamlUtils.loadFromResource();
-                yamlUtils.createFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            yamlUtils.saveFile(yamlUtils.getConfig());
-        }
-        FileConfiguration resourceBundle = yamlUtils.getConfig();
-        ConfigurationSection section = resourceBundle.getConfigurationSection("");
-        if (section == null) {
-            Bukkit.getServer().getLogger().warning("Language Files incorrectly set up! Stopping plugin load!");
-            IndroMain.getInstance().getPluginLoader().disablePlugin(IndroMain.getInstance());
-            return;
-        }
-
-        // set up keys
-        for (int i = 0; i < section.getKeys(false).size(); i++) {
-            if (section.getKeys(false).contains(LanguageTags.values()[i].toString())) {
-                finalValue.put(LanguageTags.values()[i], section.getString(LanguageTags.values()[i].toString()));
-            } else {
-                Bukkit.getServer().getLogger().warning("Language Files incorrectly set up! Stopping plugin load!");
-                IndroMain.getInstance().getPluginLoader().disablePlugin(IndroMain.getInstance());
-                break;
-            }
-        }
-
-    }
-
-    public String get(String path){
-        String message = this.langTags.get(LanguageTags.valueOf(path));
-        if (message != null) {
-            return ChatColor.translateAlternateColorCodes('&', message);
-        }
-        // this realistically shouldn't fire
-        return path;
-    }
- */
 }

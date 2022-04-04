@@ -4,7 +4,9 @@ import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
+import io.github.indroDevTeam.indroMain.ranks.UserRanks;
 import me.kodysimpson.simpapi.command.SubCommand;
+import net.dv8tion.jda.api.entities.User;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -38,19 +40,21 @@ public class CommandSetRank extends SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (args.length == 3) {
-            OfflinePlayer player = Bukkit.getPlayer(args[1]);
-            HashMap<UUID, Rank> rankHashMap = IndroMain.getPlayerRankList();
+        if (args.length == 3 && sender.isOp()) {
+            Player player = Bukkit.getPlayer(args[1]);
             if (player == null) {
                 sender.sendMessage("Player does not exist!");
                 return;
             }
 
-            Rank playerRank = rankHashMap.get(player.getUniqueId());
+            Rank playerRank = UserRanks.getRank(player);
             Rank newPlayerRank = RankStorage.readRank(args[2]);
-            assert newPlayerRank != null;
-            rankHashMap.replace(player.getUniqueId(), newPlayerRank);
-            sender.sendMessage("Changed " + playerRank.getRankName() + " to " + newPlayerRank.getRankName());
+            if (newPlayerRank == null) {
+                sender.sendMessage("This rank does not exist!");
+                return;
+            }
+            UserRanks.setRank(player, newPlayerRank);
+            sender.sendMessage("Changed " + playerRank.getRankTag() + " to " + newPlayerRank.getRankTag());
         } else {
             sender.sendMessage(LanguageTags.ERROR_SYNTAX.get());
         }
@@ -68,7 +72,7 @@ public class CommandSetRank extends SubCommand {
         if (args.length == 3) {
             for (Rank rank :
                     RankStorage.findAllRanks()) {
-                arguments.add(rank.getRankName());
+                arguments.add(rank.getRankTag());
             }
         }
         return arguments;
