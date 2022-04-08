@@ -70,13 +70,11 @@ public class RankUtils {
                                   @Nullable ArrayList<String> nextRank,
                                   int maxHomes,
                                   @Nullable Integer discordID,
-                                  boolean secret,
                                   @Nullable String... advancementGates) {
         ArrayList<String> advancementsRequired = null;
         if (advancementGates != null) {
             advancementsRequired = new ArrayList<>(List.of(advancementGates));
         }
-
         RankStorage.createRank(rankName, format, nextRank, maxHomes, discordID, advancementsRequired, null);
     }
 
