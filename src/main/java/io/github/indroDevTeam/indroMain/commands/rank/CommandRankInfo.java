@@ -1,10 +1,7 @@
 package io.github.indroDevTeam.indroMain.commands.rank;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
-import io.github.indroDevTeam.indroMain.ranks.Rank;
-import io.github.indroDevTeam.indroMain.ranks.RankStorage;
-import io.github.indroDevTeam.indroMain.ranks.RankUtils;
-import io.github.indroDevTeam.indroMain.ranks.UserRanks;
+import io.github.indroDevTeam.indroMain.ranks.*;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import me.kodysimpson.simpapi.command.SubCommand;
 import org.bukkit.command.CommandSender;
@@ -54,6 +51,7 @@ public class CommandRankInfo extends SubCommand {
             message.add("&b-&r Rank Identifier: " + userRank.getRankTag());
             message.add("&b-&r Rank Tag: " + RankUtils.translate(userRank.getFormat().replace("%player_name%", "")));
             message.add("&b-&r Rank Home Cap: " + userRank.getMaxHomes());
+            message.add("&b-&r Rank Warp Time: " + userRank.getConfigTag(RankConfigTags.TIME_TO_WARP) + " seconds");
             message.add("&b-&r Rank Advancements: ");
             if (userRank.getAdvancementGate() != null) {
                 for (int i = 0; i < userRank.getAdvancementGate().size(); i++) {

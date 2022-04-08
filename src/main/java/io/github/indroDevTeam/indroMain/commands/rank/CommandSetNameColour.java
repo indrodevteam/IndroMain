@@ -37,7 +37,7 @@ public class CommandSetNameColour extends SubCommand {
                 Player target = Bukkit.getPlayer(args[1]);
                 if (Bukkit.getServer().getOnlinePlayers().contains(target)) {
                     assert target != null;
-                    UserRanks.setChatColor(player, args[2]);
+                    UserRanks.setChatColor(target, args[2]);
 
                     player.sendMessage("Set " + target.getName() + "'s name colour to " + args[2]);
                     target.sendMessage("Your name colour's been changed!");
