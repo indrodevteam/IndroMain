@@ -30,7 +30,7 @@ public class PromotionMenu extends Menu {
 
     @Override
     public int getSlots() {
-        return 54;
+        return 9;
     }
 
     @Override

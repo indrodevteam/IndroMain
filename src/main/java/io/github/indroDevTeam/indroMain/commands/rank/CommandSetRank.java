@@ -1,21 +1,16 @@
 package io.github.indroDevTeam.indroMain.commands.rank;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
 import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import io.github.indroDevTeam.indroMain.ranks.UserRanks;
 import me.kodysimpson.simpapi.command.SubCommand;
-import net.dv8tion.jda.api.entities.User;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class CommandSetRank extends SubCommand {
     @Override

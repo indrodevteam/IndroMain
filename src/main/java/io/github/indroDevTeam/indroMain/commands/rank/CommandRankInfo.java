@@ -1,10 +1,7 @@
 package io.github.indroDevTeam.indroMain.commands.rank;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
-import io.github.indroDevTeam.indroMain.ranks.Rank;
-import io.github.indroDevTeam.indroMain.ranks.RankStorage;
-import io.github.indroDevTeam.indroMain.ranks.RankUtils;
-import io.github.indroDevTeam.indroMain.ranks.UserRanks;
+import io.github.indroDevTeam.indroMain.ranks.*;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import me.kodysimpson.simpapi.command.SubCommand;
 import org.bukkit.command.CommandSender;
@@ -60,7 +57,16 @@ public class CommandRankInfo extends SubCommand {
                     message.add("  &b-&r " + userRank.getAdvancementGate().get(i));
                 }
             } else {
-                message.add("  &b-&r No advancement requirements provided.");
+                message.add("  &b-&r No advancement required.");
+            }
+
+            message.add("&b-&r Rank Details: ");
+            for (RankConfigTags config: RankConfigTags.values()) {
+                if (userRank.getRankConfig().containsKey(config.toString())) {
+                    message.add("  &b-&r " + config + ": " + userRank.getConfigTag(config));
+                    continue;
+                }
+                message.add("  &b-&r No advancement required.");
             }
             message.add("*** END RANK DATA ***");
 

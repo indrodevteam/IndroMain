@@ -1,137 +1,144 @@
 [
   {
     "rankTag": "DEFAULT",
-    "format": "#6A6A6A[GREMLIN]\u0026r %player_name%",
+    "format": "#6A6A6A[GREMLIN]&r %player_name%",
     "maxHomes": 1,
     "nextRanks": [
       "HERO"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 10,
+      "SECRET": false
     }
   },
   {
     "rankTag": "HERO",
-    "format": "#216A34[HERO]\u0026r %player_name%",
-    "maxHomes": 2,
+    "format": "#216A34[HERO]&r %player_name%",
     "advancementGate": [
       "minecraft:story/mine_diamond"
     ],
+    "maxHomes": 2,
     "nextRanks": [
       "TITAN"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 10,
+      "SECRET": false
     }
   },
   {
     "rankTag": "TITAN",
-    "format": "#00c8ff[TITAN]\u0026r %player_name%",
-    "maxHomes": 3,
+    "format": "#00c8ff[TITAN]&r %player_name%",
     "advancementGate": [
       "minecraft:end/kill_dragon"
     ],
+    "maxHomes": 3,
     "nextRanks": [
       "DEMIGOD",
       "TRAVELLER"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 9,
+      "SECRET": false
     }
   },
   {
     "rankTag": "TRAVELLER",
-    "format": "#7b4a4a[#815151T#865959R#8c6060A#916868V#976f6fE#946767L#905f5fL#8d5858E#895050R#864848]\u0026r %player_name%",
-    "maxHomes": 3,
+    "format": "#7b4a4a[#815151T#865959R#8c6060A#916868V#976f6fE#946767L#905f5fL#8d5858E#895050R#864848]&r %player_name%",
     "advancementGate": [
       "minecraft:nether/fast_travel"
     ],
+    "maxHomes": 3,
     "nextRanks": [
       "EXPLORER"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 6,
+      "SECRET": false
     }
   },
   {
     "rankTag": "EXPLORER",
-    "format": "#7b4a4a[#755347E#6f5b43X#696440P#636c3cL#5c7539O#567d35R#508632E#4a8e2eR#44972b]\u0026r %player_name%",
-    "maxHomes": 4,
+    "format": "#7b4a4a[#755347E#6f5b43X#696440P#636c3cL#5c7539O#567d35R#508632E#4a8e2eR#44972b]&r %player_name%",
     "advancementGate": [
       "minecraft:adventure/adventuring_time"
     ],
+    "maxHomes": 4,
     "nextRanks": [
       "TRACKER",
       "ASTRO"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 5,
+      "SECRET": false
     }
   },
   {
     "rankTag": "TRACKER",
-    "format": "#000000[#211212T#422423R#623635A#834846C#623635K#422423E#211212R#000000]\u0026r %player_name%",
-    "maxHomes": 5,
+    "format": "#000000[#211212T#422423R#623635A#834846C#623635K#422423E#211212R#000000]&r %player_name%",
     "advancementGate": [
       "minecraft:adventure/adventuring_time"
     ],
+    "maxHomes": 4,
     "nextRanks": [],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 3,
+      "SECRET": false
     }
   },
   {
     "rankTag": "ASTRO",
-    "format": "#0450ff[#0943f1A#0d36e3S#1229d6T#161bc8R#1b0ebaO#1f01ac]\u0026r %player_name%",
-    "maxHomes": 5,
+    "format": "#0450ff[#0943f1A#0d36e3S#1229d6T#161bc8R#1b0ebaO#1f01ac]&r %player_name%",
     "advancementGate": [
       "minecraft:adventure/trade_at_world_height",
       "minecraft:adventure/fall_from_world_height"
     ],
+    "maxHomes": 4,
     "nextRanks": [],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 5,
+      "SECRET": false
     }
   },
   {
     "rankTag": "DEMIGOD",
-    "format": "#0450ff[DEMIGOD]\u0026r %player_name%",
+    "format": "#0450ff[DEMIGOD]&r %player_name%",
+    "advancementGate": [
+      "minecraft:end/enter_end_gateway",
+      "minecraft:nether/create_beacon"
+    ],
     "maxHomes": 4,
     "nextRanks": [
-      "GOD",
-      "SPOOFER"
+      "GOD"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 10,
+      "SECRET": false
     }
   },
-
   {
     "rankTag": "SPOOFER",
     "format": "#ff0000[#ff5f00S#ffbf00P#bfff00O#00ff00O#0040bfF#2600c0E#5d0096R#9400d3]&r %player_name%",
-    "maxHomes": 4,
     "advancementGate": [
       "minecraft:end/dragon_egg"
     ],
+    "maxHomes": 4,
     "nextRanks": [
       ""
     ],
     "rankConfig": {
-      "SECRET": true,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 10,
+      "SECRET": true
     }
   },
   {
     "rankTag": "GOD",
-    "format": "#ff0000[GOD]\u0026r %player_name%",
+    "format": "#ff0000[GOD]&r %player_name%",
+    "advancementGate": [
+      "minecraft:adventure/spyglass_at_dragon",
+      "minecraft:adventure/spyglass_at_parrot",
+      "minecraft:adventure/spyglass_at_ghast"
+    ],
     "maxHomes": 5,
     "nextRanks": [
       "MERFOLK",
@@ -139,13 +146,13 @@
       "HUNTER"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 10,
+      "SECRET": false
     }
   },
   {
     "rankTag": "DONATOR",
-    "format": "#caffaf[#d1fea7D#d7fd9fO#defc96N#e5fb8eA#ebf986T#f2f87eO#f8f775R#fff66d]\u0026r %player_name%",
+    "format": "#caffaf[#d1fea7D#d7fd9fO#defc96N#e5fb8eA#ebf986T#f2f87eO#f8f775R#fff66d]&r %player_name%",
     "maxHomes": 5,
     "nextRanks": [
       "MERFOLK",
@@ -153,45 +160,45 @@
       "HUNTER"
     ],
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 10,
+      "SECRET": false
     }
   },
   {
     "rankTag": "AVIAN",
-    "format": "#14336a[#152d70A#152875V#16227bI#3b437fA#616582N#868686]\u0026r %player_name%",
+    "format": "#14336a[#152d70A#152875V#16227bI#3b437fA#616582N#868686]&r %player_name%",
     "advancementGate": [
       "minecraft:end/elytra"
     ],
     "maxHomes": 6,
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 10,
+      "SECRET": false
     }
   },
   {
     "rankTag": "MERFOLK",
-    "format": "#00fff9[#04dfe9M#07bfdaE#0b9fcaR#0f80baF#1260aaO#16409bL#19208bK#1d007b]\u0026r %player_name%",
+    "format": "#00fff9[#04dfe9M#07bfdaE#0b9fcaR#0f80baF#1260aaO#16409bL#19208bK#1d007b]&r %player_name%",
     "advancementGate": [
       "minecraft:adventure/throw_trident",
       "minecraft:adventure/very_very_frightening"
     ],
     "maxHomes": 6,
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 8,
+      "SECRET": false
     }
   },
   {
     "rankTag": "HUNTER",
-    "format": "#ff0000[#ee0009H#dd0011U#cc001aN#bb0022T#aa002bE#990033R#88003c]\u0026r %player_name%",
+    "format": "#ff0000[#ee0009H#dd0011U#cc001aN#bb0022T#aa002bE#990033R#88003c]&r %player_name%",
     "advancementGate": [
       "minecraft:adventure/two_birds_one_arrow"
     ],
     "maxHomes": 6,
     "rankConfig": {
-      "SECRET": false,
-      "TIME_TO_WARP": 10
+      "TIME_TO_WARP": 9,
+      "SECRET": false
     }
   }
 ]

@@ -22,12 +22,17 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class IndroMain extends JavaPlugin {
     private FileConfiguration config;
     private static IndroMain instance;
+
+    public static HashMap<UUID, Integer> warping = new HashMap<>();
 
     public static IndroMain getInstance() {
         return instance;
@@ -46,10 +51,6 @@ public class IndroMain extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        YamlUtils yamlUtils = new YamlUtils("playerRankList");
-        yamlUtils.createFile();
-        yamlUtils.loadFromFile();
         config = this.getConfig();
 
         UserRanks.loadUserRanks();

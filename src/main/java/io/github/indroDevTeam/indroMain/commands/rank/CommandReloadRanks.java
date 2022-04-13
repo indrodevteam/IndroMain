@@ -1,5 +1,6 @@
 package io.github.indroDevTeam.indroMain.commands.rank;
 
+import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.ranks.RankStorage;
 import io.github.indroDevTeam.indroMain.teleports.PointStorage;
 import me.kodysimpson.simpapi.command.SubCommand;

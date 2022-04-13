@@ -39,7 +39,12 @@ public enum LanguageTags {
     }
 
     public String get() {
-        String message = PLUGIN_TITLE.defaultValue + defaultValue;
+        String message;
+        if (defaultValue.equals(PLUGIN_TITLE.defaultValue)) {
+            message = defaultValue;
+            return ChatColor.translateAlternateColorCodes('&', message);
+        }
+        message = PLUGIN_TITLE.defaultValue + defaultValue;
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 }

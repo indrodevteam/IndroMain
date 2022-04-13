@@ -16,4 +16,8 @@ sql:
 
 announceHowToUse: true
 
+warp:
+  healthWarp: true # should warps be cancelled if you lose too much health?
+  healthCap: 30 # max percent of health to lose
+
 version: ${project.version}

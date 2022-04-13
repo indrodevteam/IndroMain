@@ -2,10 +2,11 @@ package io.github.indroDevTeam.indroMain.ranks;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class Rank implements ConfigurationSerializable {
     private int maxHomes;
     private Integer discordID;
     private ArrayList<String> nextRanks;
-    private HashMap<RankConfigTags, Object> rankConfig;
+    private HashMap<String, Object> rankConfig;
 
     public Rank(String rankTag,
                 String format,
@@ -27,7 +28,7 @@ public class Rank implements ConfigurationSerializable {
                 int maxHomes,
                 @Nullable Integer discordID,
                 @Nullable ArrayList<String> nextRanks,
-                @Nullable HashMap<RankConfigTags, Object> rankConfig) {
+                @Nullable HashMap<String, Object> rankConfig) {
         this.rankTag = rankTag;
         this.format = format;
         this.advancementGate = advancementGate;
@@ -35,9 +36,9 @@ public class Rank implements ConfigurationSerializable {
         this.discordID = discordID;
         this.nextRanks = nextRanks;
         if (rankConfig == null || rankConfig.isEmpty()) { //initialise rank config
-            HashMap<RankConfigTags, Object> rankInit = new HashMap<>();
+            HashMap<String, Object> rankInit = new HashMap<>();
             for (RankConfigTags configTag: RankConfigTags.values()) {
-                rankInit.put(configTag, configTag.defaultValue);
+                rankInit.put(configTag.toString(), configTag.defaultValue);
             }
             rankConfig = rankInit;
         }
@@ -70,13 +71,14 @@ public class Rank implements ConfigurationSerializable {
         @Nullable ArrayList<String> nextRanks = (ArrayList<String>) data.getOrDefault("nextRanks", null);
 
         // here on in is the config tags
-        HashMap<RankConfigTags, Object> rankConfig = (HashMap<RankConfigTags, Object>) data.getOrDefault("rankConfig", null);
+        HashMap<String, Object> rankConfig = (HashMap<String, Object>) data.getOrDefault("rankConfig", null);
 
         return new Rank(rankTag, format, advancementGate, maxHomes, discordID, nextRanks, rankConfig);
     }
 
     public Object getConfigTag(RankConfigTags tag) {
-        Object obj = this.getRankConfig().get(tag);
+        Object obj = this.getRankConfig().get(tag.toString());
+        Bukkit.getLogger().info(String.valueOf(obj));
         if (obj == null) obj = tag.defaultValue;
         return obj;
     }

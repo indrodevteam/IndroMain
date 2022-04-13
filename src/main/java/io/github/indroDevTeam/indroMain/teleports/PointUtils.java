@@ -42,7 +42,7 @@ public class PointUtils {
         PointStorage.createPoint(PointType.PUBLIC_WARP, warpName, serverName, location);
     }
 
-    public static void warp(Player player, Point point) { // assuming owner is a uuid
+    public static void warp(Player player, Point point) { // assuming owner is an uuid
         if (point.getOwner().equalsIgnoreCase(player.getUniqueId().toString()) || point.getOwner().equals("SERVER")) {
             // start a task that counts the time before firing...
             point.warp(player);

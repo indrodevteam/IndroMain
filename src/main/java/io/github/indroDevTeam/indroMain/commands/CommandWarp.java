@@ -46,7 +46,7 @@ public class CommandWarp implements TabExecutor {
                 case "delwarp" -> {
                     if (args.length == 1) {
                         if (player.isOp()) {
-                            Point point = PointStorage.findPoint(IndroMain.getInstance().getServer().getName(), args[0]);
+                            Point point = PointStorage.findPoint("SERVER", args[0]);
                             if (point != null) {
                                 PointStorage.deletePoint(point.getPointName(), "SERVER");
                                 player.sendMessage(LanguageTags.DEL_WARP_SUCCESS.get());

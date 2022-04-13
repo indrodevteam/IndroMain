@@ -1,15 +1,16 @@
 package io.github.indroDevTeam.indroMain.ranks;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.events.EventOnRankPromote;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

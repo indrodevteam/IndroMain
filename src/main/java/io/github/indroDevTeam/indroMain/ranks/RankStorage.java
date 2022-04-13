@@ -3,14 +3,12 @@ package io.github.indroDevTeam.indroMain.ranks;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.indroDevTeam.indroMain.IndroMain;
-import io.github.indroDevTeam.indroMain.teleports.Point;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 @SuppressWarnings("unused")
 public class RankStorage {
@@ -24,7 +22,7 @@ public class RankStorage {
                                   int maxHomes,
                                   @Nullable Integer discordID,
                                   @Nullable ArrayList<String> nextAdvancement,
-                                  @Nullable HashMap<RankConfigTags, Object> rankConfig) {
+                                  @Nullable HashMap<String, Object> rankConfig) {
         Rank rank = new Rank(rankName, format, nextRank, maxHomes, discordID, nextAdvancement,
                 rankConfig);
         ranks.add(rank);
@@ -58,8 +56,11 @@ public class RankStorage {
             if (rank.getRankTag().equalsIgnoreCase(rankName)) {
                 rank.setRankTag(newRank.getRankTag());
                 rank.setFormat(newRank.getFormat());
-                rank.setMaxHomes(newRank.getMaxHomes());
+                rank.setRankConfig(newRank.getRankConfig());
                 rank.setDiscordID(newRank.getDiscordID());
+                rank.setNextRanks(newRank.getNextRanks());
+                rank.setMaxHomes(newRank.getMaxHomes());
+                rank.setAdvancementGate(newRank.getAdvancementGate());
                 return;
             }
         }

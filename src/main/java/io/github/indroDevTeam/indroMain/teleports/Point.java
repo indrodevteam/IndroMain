@@ -2,12 +2,17 @@ package io.github.indroDevTeam.indroMain.teleports;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.dataUtils.LanguageTags;
+import io.github.indroDevTeam.indroMain.ranks.Rank;
 import io.github.indroDevTeam.indroMain.ranks.RankConfigTags;
-import io.github.indroDevTeam.indroMain.ranks.RankUtils;
 import io.github.indroDevTeam.indroMain.ranks.UserRanks;
 import lombok.Data;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public class Point {
@@ -44,36 +49,49 @@ public class Point {
     // warp sets
 
     public void warp(Player player) {
-        int delayWarpSeconds;
-        delayWarpSeconds = (int) Double.parseDouble(UserRanks.getRank(player).getConfigTag(RankConfigTags.TIME_TO_WARP).toString());
+        if (!IndroMain.warping.containsKey(player.getUniqueId())) {
+            int delayWarpSeconds = (int) Double.parseDouble(UserRanks.getRank(player).getConfigTag(RankConfigTags.TIME_TO_WARP).toString());
 
-        Location location = new Location(Bukkit.getServer().getWorld(getWorldName()), getX(), getY(), getZ(), getPitch(), getYaw());
-        int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
-            double var = 0;
-            Location loc, first, second;
+            int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
+                double var = 0;
+                Location loc, first, second;
 
-            @Override
-            public void run() {
-                var += Math.PI / 16;
+                @Override
+                public void run() {
+                    var += Math.PI / 16;
 
-                loc = player.getLocation();
-                first = loc.clone().add(Math.cos(var), Math.sin(var) + 1, Math.sin(var));
-                second = loc.clone().add(Math.cos(var + Math.PI), Math.sin(var) + 1, Math.sin(var + Math.PI));
+                    loc = player.getLocation();
+                    first = loc.clone().add(Math.cos(var), Math.sin(var) + 1, Math.sin(var));
+                    second = loc.clone().add(Math.cos(var + Math.PI), Math.sin(var) + 1, Math.sin(var + Math.PI));
 
-                player.getWorld().spawnParticle(Particle.TOTEM, first, 0);
-                player.getWorld().spawnParticle(Particle.TOTEM, second, 0);
-            }
-        }, 0, 1);
+                    player.getWorld().spawnParticle(Particle.TOTEM, first, 0);
+                    player.getWorld().spawnParticle(Particle.TOTEM, second, 0);
+                }
+            }, 0, 1);
+            Location location = new Location(Bukkit.getServer().getWorld(getWorldName()), getX(), getY(), getZ(), getYaw(), getPitch());
+            AtomicInteger counter = new AtomicInteger(delayWarpSeconds);
+            int warpID = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), () -> {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.AQUA + "Warping in " + counter + "..."));
+                player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.75F, 2.0F);
+                if (counter.get() == -1) {
+                    // allow warping
+                    Bukkit.getScheduler().cancelTask(IndroMain.warping.get(player.getUniqueId()));
+                    IndroMain.warping.remove(player.getUniqueId());
+                    Bukkit.getScheduler().cancelTask(id);
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
 
-        Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
-            Bukkit.getScheduler().cancelTask(id);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
-            location.getChunk().load();
-            player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
-            player.teleport(location);
-            player.sendMessage(LanguageTags.JUMP_SUCCESS.get());
-        }, 20L * delayWarpSeconds);
+                    // warp players
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
+                    location.getChunk().load();
+                    player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
+                    player.teleport(location);
+                    player.sendMessage(LanguageTags.JUMP_SUCCESS.get());
+                }
+                counter.getAndDecrement();
+            }, 0, 20);
+            IndroMain.warping.put(player.getUniqueId(), warpID);
+            return;
+        }
+        player.sendMessage(LanguageTags.PLUGIN_TITLE.get() + "You are currently warping to another spot!");
     }
-
-
 }

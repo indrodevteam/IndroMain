@@ -6,7 +6,7 @@
 
     <groupId>io.github.indroDevTeam</groupId>
     <artifactId>IndroMain</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>IndroMain</name>
@@ -57,16 +57,10 @@
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-
-        <!--discord bot repo-->
-        <repository>
-            <id>m2-dv8tion</id>
-            <name>m2-dv8tion</name>
-            <url>https://m2.dv8tion.net/releases</url>
         </repository>
 
         <repository>
@@ -90,13 +84,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--discord bot dependency-->
-        <dependency>
-            <groupId>net.dv8tion</groupId>
-            <artifactId>JDA</artifactId>
-            <version>4.4.0_352</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
