@@ -1,19 +1,2 @@
-# server name
-serverName: Our Server
-
-useFeature:
-  homes: false
-  ranks: false
-  warps: false
-
-sql:
-  host: localhost # host of your database
-  port: 3306 # default port for MariaDB and MySQL
-  database: indrocraft # name of your database. A database server can contain multiple databases
-  user: root
-  password: # if database has no password leave the password as 'PasswordHere'
-  sqlite: false
-
-announceHowToUse: true
-
-version: ${project.version}
+performance:
+  useThreads: true #
