@@ -118,7 +118,7 @@ public class SQLiteCore implements DBCore {
      */
     @Override
     public void insert(String query) {
-        if (IndroMain.getInstance().getSettingsManager().getUseThreads()) {
+        if (IndroMain.getInstance().getConfigManager().getUseThreads()) {
             executeAsync(query, "INSERT");
         } else {
             try {
@@ -139,7 +139,7 @@ public class SQLiteCore implements DBCore {
      */
     @Override
     public void update(String query) {
-        if (IndroMain.getInstance().getSettingsManager().getUseThreads()) {
+        if (IndroMain.getInstance().getConfigManager().getUseThreads()) {
             executeAsync(query, "UPDATE");
         } else {
             try {
@@ -160,7 +160,7 @@ public class SQLiteCore implements DBCore {
      */
     @Override
     public void delete(String query) {
-        if (IndroMain.getInstance().getSettingsManager().getUseThreads()) {
+        if (IndroMain.getInstance().getConfigManager().getUseThreads()) {
             executeAsync(query, "DELETE");
         } else {
             try {

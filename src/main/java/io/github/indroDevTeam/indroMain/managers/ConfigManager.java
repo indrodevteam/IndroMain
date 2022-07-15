@@ -1,26 +1,38 @@
 package io.github.indroDevTeam.indroMain.managers;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
+import lombok.Getter;
+
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 
-public class SettingsManager {
+@Getter
+public class ConfigManager {
+
+    // program protocols
     private final File main;
     private final FileConfiguration config;
     private final IndroMain plugin;
+
+    // settigns
+    private int privateWarpRange;
+
+    // messages
+    private String messageWarpedDeniedDistance;
+
+    // file logic
     private boolean useThreads;
     private boolean savePeriodically;
     private int saveInterval;
 
-    public SettingsManager() {
+    public ConfigManager() {
         plugin = IndroMain.getInstance();
         config = plugin.getConfig();
         main = new File(plugin.getDataFolder() + File.separator + "config.yml");
         load();
     }
-
 
     @SuppressWarnings({"CallToPrintStackTrace", "UseSpecificCatch"})
     public void load() {
@@ -37,9 +49,10 @@ public class SettingsManager {
             getConfig().options().copyDefaults(true);
         }
 
-        //get file settings
+        // get file settings
 
         useThreads = getConfig().getBoolean("performance.useThreads");
+        messageWarpedDeniedDistance = getConfig().getString("warp.privateWarpRadius");
 
         save();
     }
@@ -53,22 +66,18 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * Magic Value
+     * @param path
+     * @return
+     */
+    public Object getValue(String path) {
+        return getConfig().get(path);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Getters and Setters
     ///////////////////////////////////////////////////////////////////////////
-
-
-    public boolean getUseThreads() {
-        return useThreads;
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    public boolean isSavePeriodically() {
-        return savePeriodically;
-    }
 
     /**
      * Gets the interval to save the data

@@ -1,2 +1,8 @@
+warp:
+  privateWarpRadius: 750 # the maximum range a player can be before the warp fails. 
+
 performance:
   useThreads: true #
+
+lang:
+  
