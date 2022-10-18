@@ -1,9 +1,14 @@
 package io.github.indroDevTeam.indroMain.commands;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import io.github.indroDevTeam.indroMain.PointManager;
+import io.github.indroDevTeam.indroMain.ProfileAPI;
+import io.github.indroDevTeam.indroMain.data.Profile;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -16,82 +21,122 @@ import com.fasterxml.jackson.databind.type.PlaceholderForType;
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.data.Point;
 
+import javax.swing.plaf.InsetsUIResource;
+
 public class CommandHome implements TabExecutor {
-    private IndroMain plugin;
-
-    public CommandHome(IndroMain plugin) {
-        this.plugin = plugin;
-    }
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return false;
 
-        Profile profile = plugin
+        Profile profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
+
+        if (profile == null) {
+            // TODO: Add config file for profile data
+            IndroMain.getProfileAPI().add(ProfileAPI.createDefaultProfile(player));
+            profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
+            assert profile != null;
+        }
 
         switch (label.toLowerCase(Locale.ROOT)) {
-            case "home" -> {
+            case "home" -> { // warps you to a home
                 if (args.length == 1) {
-                    Point point = 
-                    player.sendMessage(// TODO: Replace this with propeer context.JUMP_FAILED.get());
+                    Point point = profile.getPoint(args[0]);
+
+                    if (point == null) {
+                        IndroMain.sendParsedMessage(player, ChatColor.RED + "Point could not be found!");
+                        return true;
+                    }
+
+                    if (point.getDistance(player) >= profile.getMaxDistance()) {
+                        IndroMain.sendParsedMessage(player, ChatColor.RED + "You're too far away to teleport there!");
+                        return true;
+                    }
+
+                    if (!profile.isCrossWorldPermitted() && player.getLocation().getWorld().getName().equals(point.getLocation().getWorld().getName())) {
+                        IndroMain.sendParsedMessage(player, ChatColor.RED + "This point is outside your dimension...");
+                        return true;
+                    }
+
+                    // teleport is cleared if the teleport is there...
+
+                    PointManager.warp(player, profile, point);
                     return true;
                 }
             }
             case "delhome" -> {
                 if (args.length == 1) {
-                    Point point = PointStorage.findPoint(player.getUniqueId().toString(), args[0]);
-                    if (point != null) {
-                        PointStorage.deletePoint(point.getPointName(), player.getUniqueId().toString());
-                        player.sendMessage(// TODO: Replace this with propeer context.DEL_HOME_SUCCESS.get()); 
+                    Point point = profile.getPoint(args[0]);
+
+                    if (point == null) {
+                        IndroMain.sendParsedMessage(player, ChatColor.RED + "Point does not exist!");
                     } else {
-                        player.sendMessage(// TODO: Replace this with propeer context.ERROR_POINT_EXIST.get());
+                        Point removedPoint = null;
+                        for (Point p: profile.getPoints()) {
+                            if (p.getName().equals(point.getName()))  {
+                                removedPoint = p;
+                            }
+                        }
+
+                        if (removedPoint != null) {
+                            profile.getPoints().remove(removedPoint);
+                            IndroMain.sendParsedMessage(player, ChatColor.YELLOW + point.getName() + " was successfully removed!");
+                        } else {
+                            IndroMain.sendParsedMessage(player, ChatColor.RED + "Point does not exist!");
+                        }
                     }
                     return true;
                 }
             }
             case "listhomes" -> {
                 LinkedList<String> points = new LinkedList<>();
-                for (Point point: PointStorage.findPointsWithOwner(player.getUniqueId().toString())) {
-                    String pointData = String.format("|| %s - Coordinates: %s, %s, %s",
-                            point.getPointName(), Math.round(point.getX()), Math.round(point.getY()), Math.round(point.getZ()));
-                    points.add(pointData);
+                points.add(ChatColor.DARK_BLUE + "++===================++");
+                if (profile.getPoints().isEmpty()) {
+                    points.add(ChatColor.DARK_BLUE + "||  HOME LIST EMPTY  ||");
+                } else {
+                    for (Point point : profile.getPoints()) {
+                        String pointData = "|| " + point.getName() + " - distance: " + Math.round(point.getDistance(player)) + "m";
+                        points.add(pointData);
+                    }
                 }
-                if (points.isEmpty()) {
-                    points.add("- HOME LIST EMPTY");
-                }
-                points.addFirst("++===================++");
-                points.add("++===================++");
-                for (String line: points) {
-                    player.sendMessage(line);
-                }
+                points.add(ChatColor.DARK_BLUE + "++===================++");
+
+                for (String line: points) {player.sendMessage(line);}
                 return true;
             }
             case "sethome" -> {
                 if (args.length == 1) {
-                    boolean result = PointUtils.createHome(args[0], player, player.getLocation());
-                    if (result) {
-                        player.sendMessage(// TODO: Replace this with propeer context.SET_HOME_SUCCESS.get());
+                    profile.getPoints().add(new Point(args[0], player.getLocation()));
+                    if (profile.getPoint(args[0]) != null) {
+                        IndroMain.sendParsedMessage(player, ChatColor.AQUA + "The point was successfully saved!");
+                    } else {
+                        IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
                     }
                     return true;
                 }
             }
         }
-        player.sendMessage(// TODO: Replace this with propeer context.ERROR_SYNTAX.get());
-    
-        return true;
+        return false;
     }
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> arguments = new ArrayList<>();
         if (sender instanceof Player player) {
+            Profile profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
+
+            if (profile == null) {
+                // TODO: Add config file for profile data
+                IndroMain.getProfileAPI().add(ProfileAPI.createDefaultProfile(player));
+                profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
+                assert profile != null;
+            }
+
             switch (alias.toLowerCase(Locale.ROOT)) {
                 case "home", "delhome" -> {
                     if (args.length == 1) {
-                        ArrayList<Point> userList = PointStorage.findPointsWithOwner(player.getUniqueId());
-                        for (Point point:
-                                userList) {
-                            arguments.add(point.getPointName());
+                        List<Point> userList = profile.getPoints();
+                        for (Point point: userList) {
+                            arguments.add(point.getName());
                         }
                     }
                 }

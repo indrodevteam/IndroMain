@@ -2,15 +2,22 @@ package io.github.indroDevTeam.indroMain;
 
 import java.io.IOException;
 
+import io.github.indroDevTeam.indroMain.commands.CommandHome;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
     private static ProfileAPI profileAPI;
+    private static PointManager pointManager;
 
     @Override
     public void onEnable() {
+        getLogger().info("Enabling Protocol");
         instance = this;
         try {
             profileAPI = new ProfileAPI();
@@ -18,19 +25,28 @@ public class IndroMain extends JavaPlugin {
             e.printStackTrace();
             this.getServer().getPluginManager().disablePlugin(this);
         }
+        pointManager = new PointManager();
 
         // load data
         loadCommands();
         loadEvents();
+
+        getLogger().info(profileAPI.list().toString());
     }
 
     @Override
     public void onDisable() {
+        try {
+            profileAPI.saveToResource();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.getServer().getScheduler().cancelTasks(this);
     }
 
     private void loadCommands() {
-        this.getCommand("");
+        this.getCommand("home").setExecutor(new CommandHome());
+        this.getCommand("home").setTabCompleter(new CommandHome());
     }
 
     private void loadEvents() {
@@ -41,11 +57,19 @@ public class IndroMain extends JavaPlugin {
     // Class-Type Methods
     ///////////////////////////////////////////////////////////////////////////
 
+    public static void sendParsedMessage(Player player, String message) {
+        player.sendMessage(ChatColor.BLUE + "[IndroMain] " + ChatColor.RESET + message);
+    }
+
     public static IndroMain getInstance() {
         return instance;
     }
 
     public static ProfileAPI getProfileAPI() {
         return profileAPI;
+    }
+
+    public static PointManager getPointManager() {
+        return pointManager;
     }
 }

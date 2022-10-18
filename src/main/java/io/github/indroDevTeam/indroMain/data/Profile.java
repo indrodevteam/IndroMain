@@ -1,23 +1,42 @@
 package io.github.indroDevTeam.indroMain.data;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public class Profile {
-    private final UUID playerId;
+public class Profile implements Serializable {
+    private UUID playerId;
     private List<Point> points;
     private int warpCap, warpDelay, warpCooldown, maxDistance;
+    private boolean crossWorldPermitted;
 
-    public Profile(UUID playerId, List<Point> points, int warpCap, int warpDelay, int warpCooldown) {
-        this.playerId = playerId;
-        this.points = points;
-        this.warpCap = warpCap;
-        this.warpDelay = warpDelay;
-        this.warpCooldown = warpCooldown;
+    public Profile() {}
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Class-based Data
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Nullable
+    public Point getPoint(String name) {
+        for (Point p: points) {
+            if (p.getName().equals(name)) {
+                return p;
+            }
+        }
+        return null;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Getters and Setters
+    ///////////////////////////////////////////////////////////////////////////
     public UUID getPlayerId() {
         return playerId;
+    }
+
+    public void setPlayerId(UUID playerId) {
+        this.playerId = playerId;
     }
 
     public List<Point> getPoints() {
@@ -60,5 +79,11 @@ public class Profile {
         this.maxDistance = maxDistance;
     }
 
-    
+    public boolean isCrossWorldPermitted() {
+        return crossWorldPermitted;
+    }
+
+    public void setCrossWorldPermitted(boolean crossWorldPermitted) {
+        this.crossWorldPermitted = crossWorldPermitted;
+    }
 }

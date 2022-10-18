@@ -3,8 +3,11 @@ package io.github.indroDevTeam.indroMain.data;
 import org.bukkit.Location;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
+import org.bukkit.entity.Player;
 
-public class Point {
+import java.io.Serializable;
+
+public class Point implements Serializable {
     /* Variables */
     private String name;
     private double x, y, z;
@@ -12,6 +15,7 @@ public class Point {
     private String worldName;
     
     /* Constructor */
+
     public Point(String name, double x, double y, double z, float pitch, float yaw, String worldName) {
         this.name = name;
         this.x = x;
@@ -21,10 +25,23 @@ public class Point {
         this.yaw = yaw;
         this.worldName = worldName;
     }
+    public Point(String name, Location location) {
+        this.name = name;
 
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+        this.pitch = location.getPitch();
+        this.yaw = location.getYaw();
+        this.worldName = location.getWorld().getName();
+    }
     /* Getters and Setters */
     public Location getLocation() {
-        return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z);
+        return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z, pitch, yaw);
+    }
+
+    public double getDistance(Player player) {
+        return player.getLocation().distance(getLocation());
     }
 
     public String getName() {
@@ -82,5 +99,4 @@ public class Point {
     public void setWorldName(String worldName) {
         this.worldName = worldName;
     }
-    
 }

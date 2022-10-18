@@ -1,25 +1,52 @@
 package io.github.indroDevTeam.indroMain;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.google.gson.*;
+import io.github.indroDevTeam.indroMain.data.Point;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.indroDevTeam.indroMain.data.Profile;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+
+import javax.naming.Name;
 
 public class ProfileAPI {
-    public LinkedList<Profile> list;
+    private LinkedList<Profile> list;
     
-    public ProfileAPI() throws FileNotFoundException, IOException, InvalidConfigurationException {
-        list = new LinkedList<>();
-        loadFromResource();
+    public ProfileAPI() throws IOException, InvalidConfigurationException {
+        this.list = new LinkedList<>();
+        this.loadFromResource();
     }
 
+    public static Profile createDefaultProfile(Player player) {
+        Profile profile = new Profile();
+        profile.setPlayerId(player.getUniqueId());
+        profile.setPoints(new LinkedList<>());
+        profile.setWarpCooldown(30);
+        profile.setWarpCap(2);
+        profile.setWarpDelay(10);
+        profile.setCrossWorldPermitted(true);
+        profile.setMaxDistance(500);
+
+        return profile;
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Data Methods
+    ///////////////////////////////////////////////////////////////////////////
     public void add(Profile profile) {
         if (!find(profile.getPlayerId())) {
             list.add(profile);
@@ -68,17 +95,25 @@ public class ProfileAPI {
     }
 
     public void saveToResource() throws IOException {
-        YamlConfiguration data = new YamlConfiguration();
-        data.set("data", list);
-
-        data.save(new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "data.yml"));
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "data.json");
+        if (!file.exists()) {
+            file.getParentFile().mkdir();
+            file.createNewFile();
+        }
+        Writer writer = new FileWriter(file, false);
+        gson.toJson(list, writer);
+        writer.flush();
+        writer.close();
     }
 
-    public void loadFromResource() throws FileNotFoundException, IOException, InvalidConfigurationException {
-        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "data.yml");
-
-        YamlConfiguration data = new YamlConfiguration();
-        data.load(file);
-        this.list = (LinkedList<Profile>) data.getList("data");
+    public void loadFromResource() throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "data.json");
+        if (!file.exists()) {
+            saveToResource();
+        }
+        Profile[] model = gson.fromJson(new FileReader(file), Profile[].class);
+        this.list = new LinkedList<>(Arrays.asList(model));
     }
 }

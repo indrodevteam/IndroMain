@@ -8,6 +8,7 @@ commands:
   home:
     description: lets players save locations then teleport to them
     aliases: ["sethome", "delhome", "listhomes"]
+    usage: "Usage: /<command> [args]"
 
 permissions:
   inspector:
