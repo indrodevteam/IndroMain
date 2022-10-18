@@ -1,10 +1,6 @@
 package io.github.indroDevTeam.indroMain.data;
 
-import java.time.LocalDate;
-
 import org.bukkit.Location;
-
-import com.iwebpp.crypto.TweetNaclFast.poly1305;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
 
@@ -28,7 +24,7 @@ public class Point {
 
     /* Getters and Setters */
     public Location getLocation() {
-        return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z)
+        return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z);
     }
 
     public String getName() {

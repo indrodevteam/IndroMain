@@ -15,6 +15,14 @@ public class IndroMain extends JavaPlugin {
         this.getServer().getScheduler().cancelTasks(this);
     }
 
+    private void loadCommands() {
+        this.getCommand("")
+    }
+
+    private void loadEvents() {
+
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Class-Type Methods
     ///////////////////////////////////////////////////////////////////////////

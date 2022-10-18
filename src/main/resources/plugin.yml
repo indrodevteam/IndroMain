@@ -8,12 +8,6 @@ commands:
   home:
     description: lets players save locations then teleport to them
     aliases: ["sethome", "delhome", "listhomes"]
-  warp:
-    description: sends players to a predetermined location
-    aliases: ["setwarp", "delwarp", "listwarps"]
-  info:
-    usage: /<command>
-    description: gets your own data
 
 permissions:
   inspector:
