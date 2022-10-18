@@ -1,13 +1,27 @@
 package io.github.indroDevTeam.indroMain;
 
+import java.io.IOException;
+
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
+    private static ProfileAPI profileAPI;
 
     @Override
     public void onEnable() {
         instance = this;
+        try {
+            profileAPI = new ProfileAPI();
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            this.getServer().getPluginManager().disablePlugin(this);
+        }
+
+        // load data
+        loadCommands();
+        loadEvents();
     }
 
     @Override
@@ -16,7 +30,7 @@ public class IndroMain extends JavaPlugin {
     }
 
     private void loadCommands() {
-        this.getCommand("")
+        this.getCommand("");
     }
 
     private void loadEvents() {
@@ -29,5 +43,9 @@ public class IndroMain extends JavaPlugin {
 
     public static IndroMain getInstance() {
         return instance;
+    }
+
+    public static ProfileAPI getProfileAPI() {
+        return profileAPI;
     }
 }
