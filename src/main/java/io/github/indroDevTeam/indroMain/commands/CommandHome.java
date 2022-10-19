@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import io.github.indroDevTeam.indroMain.PointManager;
 import io.github.indroDevTeam.indroMain.ProfileAPI;
 import io.github.indroDevTeam.indroMain.data.Profile;
 import org.bukkit.ChatColor;
@@ -13,15 +12,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager.Profession;
 import org.jetbrains.annotations.NotNull;
-
-import com.fasterxml.jackson.databind.type.PlaceholderForType;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.data.Point;
-
-import javax.swing.plaf.InsetsUIResource;
 
 public class CommandHome implements TabExecutor {
     @Override
@@ -58,8 +52,7 @@ public class CommandHome implements TabExecutor {
                     }
 
                     // teleport is cleared if the teleport is there...
-
-                    PointManager.warp(player, profile, point);
+                    profile.warp(player, point);
                     return true;
                 }
             }
@@ -89,22 +82,28 @@ public class CommandHome implements TabExecutor {
             }
             case "listhomes" -> {
                 LinkedList<String> points = new LinkedList<>();
-                points.add(ChatColor.DARK_BLUE + "++===================++");
+                points.add(ChatColor.BLUE + "+=======HOMES=======+");
                 if (profile.getPoints().isEmpty()) {
-                    points.add(ChatColor.DARK_BLUE + "||  HOME LIST EMPTY  ||");
+                    points.add(ChatColor.BLUE + "||  HOME LIST EMPTY  ||");
                 } else {
                     for (Point point : profile.getPoints()) {
-                        String pointData = "|| " + point.getName() + " - distance: " + Math.round(point.getDistance(player)) + "m";
+                        String pointData = ChatColor.BLUE + "|| " + point.getName() + " - Distance: " + Math.round(point.getDistance(player)) + "m";
                         points.add(pointData);
                     }
                 }
-                points.add(ChatColor.DARK_BLUE + "++===================++");
+                points.add(ChatColor.BLUE + "+===================+");
 
                 for (String line: points) {player.sendMessage(line);}
                 return true;
             }
             case "sethome" -> {
                 if (args.length == 1) {
+                    if (profile.getPoints().size() >= profile.getWarpCap()) {
+                        IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "You have too many warps saved, delete one to add another!");
+                        return true;
+                    }
+
+
                     profile.getPoints().add(new Point(args[0], player.getLocation()));
                     if (profile.getPoint(args[0]) != null) {
                         IndroMain.sendParsedMessage(player, ChatColor.AQUA + "The point was successfully saved!");

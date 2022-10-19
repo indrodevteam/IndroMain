@@ -13,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
     private static ProfileAPI profileAPI;
-    private static PointManager pointManager;
 
     @Override
     public void onEnable() {
@@ -25,8 +24,6 @@ public class IndroMain extends JavaPlugin {
             e.printStackTrace();
             this.getServer().getPluginManager().disablePlugin(this);
         }
-        pointManager = new PointManager();
-
         // load data
         loadCommands();
         loadEvents();
@@ -58,7 +55,7 @@ public class IndroMain extends JavaPlugin {
     ///////////////////////////////////////////////////////////////////////////
 
     public static void sendParsedMessage(Player player, String message) {
-        player.sendMessage(ChatColor.BLUE + "[IndroMain] " + ChatColor.RESET + message);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&1[&9IndroMain&1]&r " + message));
     }
 
     public static IndroMain getInstance() {
@@ -67,9 +64,5 @@ public class IndroMain extends JavaPlugin {
 
     public static ProfileAPI getProfileAPI() {
         return profileAPI;
-    }
-
-    public static PointManager getPointManager() {
-        return pointManager;
     }
 }

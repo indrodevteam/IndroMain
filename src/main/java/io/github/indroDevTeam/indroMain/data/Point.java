@@ -4,6 +4,7 @@ import org.bukkit.Location;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.io.Serializable;
 
@@ -40,8 +41,25 @@ public class Point implements Serializable {
         return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z, pitch, yaw);
     }
 
+    /**
+     * Gets the distance from the player
+     * NB: worlds that aren't the same are noted to be 4x the distance away, as they are different worlds
+     * @param player
+     * @return
+     */
     public double getDistance(Player player) {
-        return player.getLocation().distance(getLocation());
+        double val;
+
+        if (player.getLocation().getWorld().equals(getLocation().getWorld())) {
+            val = player.getLocation().distance(getLocation());
+        } else {
+            Vector playerVector = new Vector(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+            Vector destiVector = new Vector(getX(), getY(), getZ());
+
+            val = playerVector.distance(destiVector)*4;
+        }
+
+        return val;
     }
 
     public String getName() {
