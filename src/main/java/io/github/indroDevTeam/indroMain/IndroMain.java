@@ -1,4 +1,4 @@
-package io.github.indroDevTeam.indroMain;
+package io.github.indrodevteam.indroMain;
 
 import java.io.IOException;
 
@@ -7,7 +7,8 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.indroDevTeam.indroMain.commands.CommandHome;
+import me.kodysimpson.simpapi.command.CommandManager;
+import me.kodysimpson.simpapi.menu.MenuManager;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
@@ -15,7 +16,6 @@ public class IndroMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("Enabling Protocol");
         instance = this;
         try {
             profileAPI = new ProfileAPI();
@@ -23,11 +23,11 @@ public class IndroMain extends JavaPlugin {
             e.printStackTrace();
             this.getServer().getPluginManager().disablePlugin(this);
         }
+        MenuManager.setup(getServer(), this);
+
         // load data
         loadCommands();
         loadEvents();
-
-        getLogger().info(profileAPI.list().toString());
     }
 
     @Override
@@ -41,8 +41,7 @@ public class IndroMain extends JavaPlugin {
     }
 
     private void loadCommands() {
-        this.getCommand("home").setExecutor(new CommandHome());
-        this.getCommand("home").setTabCompleter(new CommandHome());
+        CommandManager.createCoreCommand(this, "home", "Allows teleportation to a home", "/home <args> [pointName]", null, );
     }
 
     private void loadEvents() {

@@ -1,4 +1,4 @@
-package io.github.indroDevTeam.indroMain;
+package io.github.indrodevteam.indroMain;
 
 import java.io.File;
 import java.io.FileReader;
@@ -10,13 +10,12 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import io.github.indroDevTeam.indroMain.data.Profile;
+import io.github.indrodevteam.indroMain.data.Profile;
 
 public class ProfileAPI {
     private LinkedList<Profile> list;
@@ -26,15 +25,18 @@ public class ProfileAPI {
         this.loadFromResource();
     }
 
-    public static Profile createDefaultProfile(Player player) {
+    public static Profile createDefaultProfile(UUID playerId) {
         Profile profile = new Profile();
-        profile.setPlayerId(player.getUniqueId());
+        profile.setPlayerId(playerId);
         profile.setPoints(new LinkedList<>());
         profile.setWarpCooldown(30);
         profile.setWarpCap(2);
         profile.setWarpDelay(10);
         profile.setCrossWorldPermitted(true);
         profile.setMaxDistance(500);
+        profile.setLevel(1);
+        profile.setCurrentXp(0);
+        profile.setNextXp(5);
 
         return profile;
     }
@@ -72,7 +74,9 @@ public class ProfileAPI {
                 return profile;
             }
         }
-        return null;
+
+        IndroMain.getProfileAPI().add(ProfileAPI.createDefaultProfile(playerId));
+        return IndroMain.getProfileAPI().findProfile(playerId);
     }
 
     

@@ -1,10 +1,10 @@
-package io.github.indroDevTeam.indroMain.data;
+package io.github.indrodevteam.indroMain.data;
 
 import org.bukkit.Location;
-
-import io.github.indroDevTeam.indroMain.IndroMain;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import io.github.indrodevteam.indroMain.IndroMain;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package io.github.indroDevTeam.indroMain.data;
+package io.github.indrodevteam.indroMain.data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -8,21 +8,21 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indrodevteam.indroMain.IndroMain;
 
 public class Profile implements Serializable {
     private UUID playerId;
+    private transient String playerName;
     private List<Point> points;
-    private int warpCap, warpDelay, warpCooldown, maxDistance;
+    private int level, currentXp, nextXp;
+    private int warpCap, warpDelay, warpCooldown, maxDistance; // warp data
     private boolean crossWorldPermitted;
     private transient LocalDateTime cooldownTime;
     private transient boolean teleportActive = false;
@@ -60,11 +60,10 @@ public class Profile implements Serializable {
                     double z = (radius * Math.cos(angle));
                     angle -= 0.1;
 
-                    DustOptions dustOptions = new DustOptions(Color.fromRGB(0, 0, 255), 0.5f);
-                    player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(y, 0, z), 5, dustOptions);
+                    player.getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getLocation().add(y, 0, z), 5);
                 }
             }
-        }, 0, 5);
+        }, 0, 1);
 
         Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(id);
@@ -74,6 +73,8 @@ public class Profile implements Serializable {
                 player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
                 player.teleport(location);
                 IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleport deployed!");
+
+                this.setCurrentXp(this.getCurrentXp() + 1);
                 return;
             }
             
@@ -159,5 +160,38 @@ public class Profile implements Serializable {
 
     public void setCooldownTime(LocalDateTime cooldownTime) {
         this.cooldownTime = cooldownTime;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getCurrentXp() {
+        return currentXp;
+    }
+
+    public void setCurrentXp(int currentXp) {
+        this.currentXp = currentXp;
+        if (currentXp >= getNextXp()) {
+            this.currentXp -= getNextXp();
+            setNextXp(getNextXp() + 5);
+            this.level += 1;
+        }
+    }
+
+    public int getNextXp() {
+        return nextXp;
+    }
+
+    public void setNextXp(int nextXp) {
+        this.nextXp = nextXp;
+    }
+
+    public String getPlayerName() {
+        return playerName;
     }
 }
