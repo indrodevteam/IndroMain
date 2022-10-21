@@ -13,9 +13,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import io.github.indrodevteam.indroMain.IndroMain;
-import io.github.indrodevteam.indroMain.ProfileAPI;
 import io.github.indrodevteam.indroMain.data.Point;
 import io.github.indrodevteam.indroMain.data.Profile;
+import io.github.indrodevteam.indroMain.menus.ProfileMenu;
+import me.kodysimpson.simpapi.exceptions.MenuManagerException;
+import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;
+import me.kodysimpson.simpapi.menu.MenuManager;
 
 public class CommandHome implements TabExecutor {
     @Override
@@ -23,14 +26,6 @@ public class CommandHome implements TabExecutor {
         if (!(sender instanceof Player player)) return false;
 
         Profile profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
-
-        if (profile == null) {
-            // TODO: Add config file for profile data
-            IndroMain.getProfileAPI().add(ProfileAPI.createDefaultProfile(player.getUniqueId()));
-            profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
-            assert profile != null;
-        }
-
         switch (label.toLowerCase(Locale.ROOT)) {
             case "home" -> { // warps you to a home
                 if (args.length == 1) {
@@ -104,6 +99,13 @@ public class CommandHome implements TabExecutor {
                         return true;
                     }
 
+                    for (Point point: profile.getPoints()) {
+                        if (point.getName().equals(args[0])) {
+                            IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "This point already exists! Pick a different name, or delete that point.");
+                            return true;
+                        }
+                    }
+
                     profile.getPoints().add(new Point(args[0], player.getLocation()));
                     if (profile.getPoint(args[0]) == null) {
                         IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
@@ -112,6 +114,14 @@ public class CommandHome implements TabExecutor {
 
                     IndroMain.sendParsedMessage(player, ChatColor.AQUA + "The point was successfully saved!");
                     return true;
+                }
+            }
+            case "profile" -> {
+                try {
+                    MenuManager.openMenu(ProfileMenu.class, player);
+                } catch (MenuManagerException | MenuManagerNotSetupException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
         }
@@ -123,13 +133,6 @@ public class CommandHome implements TabExecutor {
         List<String> arguments = new ArrayList<>();
         if (sender instanceof Player player) {
             Profile profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
-
-            if (profile == null) {
-                // TODO: Add config file for profile data
-                IndroMain.getProfileAPI().add(ProfileAPI.createDefaultProfile(player));
-                profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
-                assert profile != null;
-            }
 
             switch (alias.toLowerCase(Locale.ROOT)) {
                 case "home", "delhome" -> {
