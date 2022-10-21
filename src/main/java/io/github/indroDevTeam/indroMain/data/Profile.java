@@ -14,6 +14,7 @@ import org.bukkit.Particle;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
@@ -32,7 +33,7 @@ public class Profile implements Serializable {
     // Class-based Methods
     ///////////////////////////////////////////////////////////////////////////
 
-    public void warp(Player player, Point point) {
+    public void warp(Player player, @NotNull Point point) {
         if (teleportActive) {
             IndroMain.sendParsedMessage(player, ChatColor.BLUE + "A teleport is already queued up, please wait for that to complete before teleporting again.");
             return;
@@ -46,39 +47,24 @@ public class Profile implements Serializable {
         // conditions have been fulfilled for a teleport
         IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleporting...");
         Location location = point.getLocation();
-        assert location.getWorld() != null;
-
         teleportActive = true;
 
-
-        int ticksDelay = 5;
         int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
-            private double radius = 0.5;
+            private double radius = 0.25;
             private double angle = 360;
-
-            int ticksPassed = 0;
-
-            double tickRatio = 0;
 
             @Override
             public void run() {
-                int red = (int) (255-tickRatio*255);
-                int green = (int) ((int) 255*tickRatio);
-
                 for (int i = 0; i < 90; i++) {
                     double y = (radius * Math.sin(angle));
                     double z = (radius * Math.cos(angle));
                     angle -= 0.1;
 
-                    DustOptions dustOptions = new DustOptions(Color.fromRGB(red, green, 0), 0.5f);
+                    DustOptions dustOptions = new DustOptions(Color.fromRGB(0, 0, 255), 0.5f);
                     player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(y, 0, z), 5, dustOptions);
                 }
-                ticksPassed += ticksDelay;
-                tickRatio = ticksPassed/(20*getWarpDelay());
-
-                System.out.println(tickRatio+ " the " + red + " obj " + green);
             }
-        }, 0, ticksDelay);
+        }, 0, 5);
 
         Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(id);
@@ -87,11 +73,11 @@ public class Profile implements Serializable {
                 location.getChunk().load();
                 player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
                 player.teleport(location);
-
                 IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleport deployed!");
-            } else {
-                IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "Teleport failed!");
+                return;
             }
+            
+            IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "Teleport failed!"); 
             teleportActive = false;
         }, 20L * getWarpDelay());
 

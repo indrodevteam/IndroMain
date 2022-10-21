@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import io.github.indroDevTeam.indroMain.ProfileAPI;
-import io.github.indroDevTeam.indroMain.data.Profile;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,7 +13,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.ProfileAPI;
 import io.github.indroDevTeam.indroMain.data.Point;
+import io.github.indroDevTeam.indroMain.data.Profile;
 
 public class CommandHome implements TabExecutor {
     @Override
@@ -62,21 +62,22 @@ public class CommandHome implements TabExecutor {
 
                     if (point == null) {
                         IndroMain.sendParsedMessage(player, ChatColor.RED + "Point does not exist!");
-                    } else {
-                        Point removedPoint = null;
-                        for (Point p: profile.getPoints()) {
-                            if (p.getName().equals(point.getName()))  {
-                                removedPoint = p;
-                            }
-                        }
-
-                        if (removedPoint != null) {
-                            profile.getPoints().remove(removedPoint);
-                            IndroMain.sendParsedMessage(player, ChatColor.YELLOW + point.getName() + " was successfully removed!");
-                        } else {
-                            IndroMain.sendParsedMessage(player, ChatColor.RED + "Point does not exist!");
+                        return true;
+                    }
+                    
+                    Point removedPoint = null;
+                    for (Point p: profile.getPoints()) {
+                        if (p.getName().equals(point.getName()))  {
+                            removedPoint = p;
                         }
                     }
+
+                    if (removedPoint == null) {
+                        IndroMain.sendParsedMessage(player, ChatColor.RED + "Point does not exist!");
+                    }
+
+                    profile.getPoints().remove(removedPoint);
+                    IndroMain.sendParsedMessage(player, ChatColor.YELLOW + point.getName() + " was successfully removed!");
                     return true;
                 }
             }
@@ -103,13 +104,13 @@ public class CommandHome implements TabExecutor {
                         return true;
                     }
 
-
                     profile.getPoints().add(new Point(args[0], player.getLocation()));
-                    if (profile.getPoint(args[0]) != null) {
-                        IndroMain.sendParsedMessage(player, ChatColor.AQUA + "The point was successfully saved!");
-                    } else {
+                    if (profile.getPoint(args[0]) == null) {
                         IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
+                        return true;   
                     }
+
+                    IndroMain.sendParsedMessage(player, ChatColor.AQUA + "The point was successfully saved!");
                     return true;
                 }
             }
