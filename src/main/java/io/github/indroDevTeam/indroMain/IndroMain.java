@@ -7,6 +7,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.indrodevteam.indroMain.commands.CommandHome;
 import me.kodysimpson.simpapi.command.CommandManager;
 import me.kodysimpson.simpapi.menu.MenuManager;
 
@@ -41,7 +42,8 @@ public class IndroMain extends JavaPlugin {
     }
 
     private void loadCommands() {
-        CommandManager.createCoreCommand(this, "home", "Allows teleportation to a home", "/home <args> [pointName]", null, );
+        this.getCommand("home").setExecutor(new CommandHome());
+        this.getCommand("home").setTabCompleter(new CommandHome());
     }
 
     private void loadEvents() {
