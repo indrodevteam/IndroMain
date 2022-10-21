@@ -38,7 +38,7 @@ public class Point implements Serializable {
     }
     /* Getters and Setters */
     public Location getLocation() {
-        return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z, pitch, yaw);
+        return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z, yaw, pitch);
     }
 
     /**

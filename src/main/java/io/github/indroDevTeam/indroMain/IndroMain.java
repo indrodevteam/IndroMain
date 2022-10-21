@@ -2,13 +2,12 @@ package io.github.indroDevTeam.indroMain;
 
 import java.io.IOException;
 
-import io.github.indroDevTeam.indroMain.commands.CommandHome;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import io.github.indroDevTeam.indroMain.commands.CommandHome;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;

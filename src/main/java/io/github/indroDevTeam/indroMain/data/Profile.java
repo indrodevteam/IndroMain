@@ -1,15 +1,22 @@
 package io.github.indroDevTeam.indroMain.data;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
-import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+
+import io.github.indroDevTeam.indroMain.IndroMain;
 
 public class Profile implements Serializable {
     private UUID playerId;
@@ -42,33 +49,36 @@ public class Profile implements Serializable {
         assert location.getWorld() != null;
 
         teleportActive = true;
+
+
+        int ticksDelay = 5;
         int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
-            double var = 0;
-            Location loc, first, second;
+            private double radius = 0.5;
+            private double angle = 360;
+
+            int ticksPassed = 0;
+
+            double tickRatio = 0;
 
             @Override
             public void run() {
-                // player's location
-                var += Math.PI / 16;
+                int red = (int) (255-tickRatio*255);
+                int green = (int) ((int) 255*tickRatio);
 
-                loc = player.getLocation();
-                first = loc.clone().add(Math.cos(var), Math.sin(var) + 1, Math.sin(var));
-                second = loc.clone().add(Math.cos(var + Math.PI), Math.sin(var) + 1, Math.sin(var + Math.PI));
+                for (int i = 0; i < 90; i++) {
+                    double y = (radius * Math.sin(angle));
+                    double z = (radius * Math.cos(angle));
+                    angle -= 0.1;
 
-                player.getWorld().spawnParticle(Particle.TOTEM, first, 0);
-                player.getWorld().spawnParticle(Particle.TOTEM, second, 0);
+                    DustOptions dustOptions = new DustOptions(Color.fromRGB(red, green, 0), 0.5f);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(y, 0, z), 5, dustOptions);
+                }
+                ticksPassed += ticksDelay;
+                tickRatio = ticksPassed/(20*getWarpDelay());
 
-                // home's location
-                var += Math.PI / 16;
-
-                loc = location;
-                first = loc.clone().add(Math.cos(var), Math.sin(var) + 1, Math.sin(var));
-                second = loc.clone().add(Math.cos(var + Math.PI), Math.sin(var) + 1, Math.sin(var + Math.PI));
-
-                location.getWorld().spawnParticle(Particle.TOTEM, first, 0);
-                location.getWorld().spawnParticle(Particle.TOTEM, second, 0);
+                System.out.println(tickRatio+ " the " + red + " obj " + green);
             }
-        }, 0, 1);
+        }, 0, ticksDelay);
 
         Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(id);
