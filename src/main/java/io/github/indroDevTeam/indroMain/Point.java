@@ -1,4 +1,4 @@
-package io.github.indrodevteam.indroMain.data;
+package io.github.indrodevteam.indroMain;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

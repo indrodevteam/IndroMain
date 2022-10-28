@@ -10,8 +10,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import io.github.indrodevteam.indroMain.IndroMain;
-import io.github.indrodevteam.indroMain.data.Point;
-import io.github.indrodevteam.indroMain.data.Profile;
+import io.github.indrodevteam.indroMain.Point;
+import io.github.indrodevteam.indroMain.Profile;
 import me.kodysimpson.simpapi.exceptions.MenuManagerException;
 import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;
 import me.kodysimpson.simpapi.menu.Menu;
@@ -96,18 +96,19 @@ public class WarpMenu extends Menu {
          * 27 28 29 30 31 32 33 34 35
          */
         for (int i = 0; i < profile.getWarpCap(); i++) {
-            if (i+10 == 16) {
-                i = 19;
-                continue;
+            int j = i+10;
+            if (j+1 % 7 == 0) {
+                j += 3;
             }
+
             if (profile.getPoints().size() > i) {
-                inventory.setItem(i+10, makeItem(Material.ENDER_PEARL, profile.getPoints().get(i).getName(),
+                inventory.setItem(j, makeItem(Material.ENDER_PEARL, profile.getPoints().get(i).getName(),
                         "Left Click to Warp there",
                         "Middle Click to Reposition",
                         "Right Click to Delete"
                 ));
             } else {
-                inventory.setItem(i+10, makeItem(Material.WHITE_STAINED_GLASS_PANE,"EMPTY WARP SLOT",
+                inventory.setItem(j, makeItem(Material.WHITE_STAINED_GLASS_PANE,"EMPTY WARP SLOT",
                         "Left click to create a warp at that location!"
                 ));
             }

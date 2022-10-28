@@ -1,4 +1,4 @@
-package io.github.indrodevteam.indroMain.data;
+package io.github.indrodevteam.indroMain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,8 +14,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import io.github.indrodevteam.indroMain.IndroMain;
 
 public class Profile implements Serializable {
     private UUID playerId;
@@ -50,7 +48,7 @@ public class Profile implements Serializable {
         teleportActive = true;
 
         int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
-            private double radius = 0.25;
+            private double radius = 0.5;
             private double angle = 360;
 
             @Override
@@ -60,10 +58,10 @@ public class Profile implements Serializable {
                     double z = (radius * Math.cos(angle));
                     angle -= 0.1;
 
-                    player.getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getLocation().add(y, 0, z), 5);
+                    player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation().add(y, 2.5, z), 0, 0, -0.5, 0);
                 }
             }
-        }, 0, 1);
+        }, 0, 10);
 
         Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(id);
@@ -75,6 +73,7 @@ public class Profile implements Serializable {
                 IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleport deployed!");
 
                 this.setCurrentXp(this.getCurrentXp() + 1);
+                teleportActive = false;
                 return;
             }
             
@@ -104,6 +103,7 @@ public class Profile implements Serializable {
 
     public void setPlayerId(UUID playerId) {
         this.playerId = playerId;
+        playerName = IndroMain.getInstance().getServer().getPlayer(playerId).getName();
     }
 
     public List<Point> getPoints() {

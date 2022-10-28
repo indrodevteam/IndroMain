@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import io.github.indrodevteam.indroMain.IndroMain;
-import io.github.indrodevteam.indroMain.data.Point;
-import io.github.indrodevteam.indroMain.data.Profile;
+import io.github.indrodevteam.indroMain.Point;
+import io.github.indrodevteam.indroMain.Profile;
 import io.github.indrodevteam.indroMain.menus.ProfileMenu;
 import me.kodysimpson.simpapi.exceptions.MenuManagerException;
 import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;
@@ -123,6 +123,7 @@ public class CommandHome implements TabExecutor {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                return true;
             }
         }
         return false;

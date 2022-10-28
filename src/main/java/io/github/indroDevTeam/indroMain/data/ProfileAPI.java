@@ -1,4 +1,4 @@
-package io.github.indrodevteam.indroMain;
+package io.github.indrodevteam.indroMain.data;
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,36 +9,24 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import io.github.indrodevteam.indroMain.IndroMain;
+import io.github.indrodevteam.indroMain.Point;
+import io.github.indrodevteam.indroMain.Profile;
+import io.github.indrodevteam.indroMain.Rank;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import io.github.indrodevteam.indroMain.data.Profile;
-
 public class ProfileAPI {
-    private LinkedList<Profile> list;
+    private LinkedList<Profile> profiles;
+    private LinkedList<Point> points;
+    private LinkedList<Rank> ranks;
     
     public ProfileAPI() throws IOException, InvalidConfigurationException {
-        this.list = new LinkedList<>();
+        this.profiles = new LinkedList<>();
         this.loadFromResource();
-    }
-
-    public static Profile createDefaultProfile(UUID playerId) {
-        Profile profile = new Profile();
-        profile.setPlayerId(playerId);
-        profile.setPoints(new LinkedList<>());
-        profile.setWarpCooldown(30);
-        profile.setWarpCap(2);
-        profile.setWarpDelay(10);
-        profile.setCrossWorldPermitted(true);
-        profile.setMaxDistance(500);
-        profile.setLevel(1);
-        profile.setCurrentXp(0);
-        profile.setNextXp(5);
-
-        return profile;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -46,14 +34,14 @@ public class ProfileAPI {
     ///////////////////////////////////////////////////////////////////////////
     public void add(Profile profile) {
         if (!find(profile.getPlayerId())) {
-            list.add(profile);
+            profiles.add(profile);
         } else {
             IndroMain.getInstance().getLogger().warning(profile.getPlayerId().toString() + " already exists!");
         }
     }
 
     public boolean find(UUID playerId) {
-        for (Profile profile : list) {
+        for (Profile profile : profiles) {
             if (profile.getPlayerId().equals(playerId)) {
                 return true;
             }
@@ -65,7 +53,7 @@ public class ProfileAPI {
 
     @Nullable
     public Profile findProfile(UUID playerId) {
-        for (Profile profile : list) {
+        for (Profile profile : profiles) {
             if (profile.getPlayerId().equals(playerId)) {
                 return profile;
             }
@@ -88,31 +76,54 @@ public class ProfileAPI {
             IndroMain.getInstance().getLogger().warning(newProfile.getPlayerId().toString() + " does not exist!");
         }
     }
-
-    public LinkedList<Profile> list() {
-        return list;
-    }
-
     public void saveToResource() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "data.json");
+        
+        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "profiles.json");
         if (!file.exists()) {
             file.getParentFile().mkdir();
             file.createNewFile();
         }
         Writer writer = new FileWriter(file, false);
-        gson.toJson(list, writer);
+        gson.toJson(profiles, writer);
+        writer.flush();
+        writer.close();
+
+        file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "ranks.json");
+        if (!file.exists()) {
+            file.getParentFile().mkdir();
+            file.createNewFile();
+        }
+        writer = new FileWriter(file, false);
+        gson.toJson(ranks, writer);
+        writer.flush();
+        writer.close();
+
+
+        file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "points.json");
+        if (!file.exists()) {
+            file.getParentFile().mkdir();
+            file.createNewFile();
+        }
+        writer = new FileWriter(file, false);
+        gson.toJson(points, writer);
         writer.flush();
         writer.close();
     }
 
     public void loadFromResource() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "data.json");
-        if (!file.exists()) {
-            saveToResource();
-        }
-        Profile[] model = gson.fromJson(new FileReader(file), Profile[].class);
-        this.list = new LinkedList<>(Arrays.asList(model));
+
+        File file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "profiles.json");
+        if (!file.exists()) saveToResource();
+        Profile[] profileModel = gson.fromJson(new FileReader(file), Profile[].class);
+        this.profiles = new LinkedList<>(Arrays.asList(profileModel));
+
+        file = new File(IndroMain.getInstance().getDataFolder().getAbsolutePath() + File.separator + "ranks.json");
+        if (!file.exists()) saveToResource();
+        Rank[] rankModel = gson.fromJson(new FileReader(file), Rank[].class);
+        this.ranks = new LinkedList<>(Arrays.asList(rankModel));
+
+
     }
 }

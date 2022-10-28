@@ -7,7 +7,7 @@ author: skyQuiz
 commands:
   home:
     description: lets players save locations then teleport to them
-    aliases: ["sethome", "delhome", "listhomes"]
+    aliases: ["sethome", "delhome", "listhomes", "profile"]
     usage: "Usage: /<command> [args]"
 
 permissions:
