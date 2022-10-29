@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import io.github.indrodevteam.indroMain.IndroMain;
-import io.github.indrodevteam.indroMain.Point;
-import io.github.indrodevteam.indroMain.Profile;
+import io.github.indrodevteam.indroMain.model.Point;
+import io.github.indrodevteam.indroMain.model.Profile;
 import io.github.indrodevteam.indroMain.menus.ProfileMenu;
 import me.kodysimpson.simpapi.exceptions.MenuManagerException;
 import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;

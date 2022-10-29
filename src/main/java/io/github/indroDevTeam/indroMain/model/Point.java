@@ -1,4 +1,4 @@
-package io.github.indrodevteam.indroMain;
+package io.github.indrodevteam.indroMain.model;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -7,13 +7,16 @@ import org.bukkit.util.Vector;
 import io.github.indrodevteam.indroMain.IndroMain;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class Point implements Serializable {
     /* Variables */
-    private String name;
-    private double x, y, z;
-    private float pitch, yaw;
-    private String worldName;
+    protected String id;
+    protected UUID playerId;
+    protected String name;
+    protected double x, y, z;
+    protected float pitch, yaw;
+    protected String worldName;
     
     /* Constructor */
 
@@ -26,6 +29,7 @@ public class Point implements Serializable {
         this.yaw = yaw;
         this.worldName = worldName;
     }
+    
     public Point(String name, Location location) {
         this.name = name;
 
@@ -36,30 +40,49 @@ public class Point implements Serializable {
         this.yaw = location.getYaw();
         this.worldName = location.getWorld().getName();
     }
-    /* Getters and Setters */
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Getters and Setters
+    ///////////////////////////////////////////////////////////////////////////
     public Location getLocation() {
         return new Location(IndroMain.getInstance().getServer().getWorld(worldName), x, y, z, yaw, pitch);
     }
 
     /**
      * Gets the distance from the player
-     * NB: worlds that aren't the same are noted to be 4x the distance away, as they are different worlds
-     * @param player
-     * @return
+     * NB: worlds that aren't the same are noted to be 4x (configurable)
+     * the distance away, as they are effectively in different worlds
+     * @param player the initial location the player is
+     * @return the distance from the player to the point, including different world equations
      */
     public double getDistance(Player player) {
         double val;
-
         if (player.getLocation().getWorld().equals(getLocation().getWorld())) {
             val = player.getLocation().distance(getLocation());
         } else {
             Vector playerVector = new Vector(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
             Vector destiVector = new Vector(getX(), getY(), getZ());
 
-            val = playerVector.distance(destiVector)*4;
+            val = playerVector.distance(destiVector) * IndroMain.getInstance().getConfig().getInt("warp.crossWorldMultiplier");
         }
 
         return val;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public UUID getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(UUID playerId) {
+        this.playerId = playerId;
     }
 
     public String getName() {

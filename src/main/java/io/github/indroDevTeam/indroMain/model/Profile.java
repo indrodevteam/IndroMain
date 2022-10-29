@@ -1,11 +1,10 @@
-package io.github.indrodevteam.indroMain;
+package io.github.indrodevteam.indroMain.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.UUID;
 
+import io.github.indrodevteam.indroMain.IndroMain;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,19 +12,23 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class Profile implements Serializable {
-    private UUID playerId;
-    private transient String playerName;
-    private List<Point> points;
-    private int level, currentXp, nextXp;
-    private int warpCap, warpDelay, warpCooldown, maxDistance; // warp data
-    private boolean crossWorldPermitted;
-    private transient LocalDateTime cooldownTime;
-    private transient boolean teleportActive = false;
+public class Profile {
+    protected UUID playerId;
+    protected String rankId;
+    protected int level, currentXp, nextXp;
+    protected transient Rank rank;
+    protected transient String playerName;
+    protected transient LocalDateTime cooldownTime;
+    protected transient boolean teleportActive = false;
 
-    public Profile() {}
+    public Profile(UUID playerId, String rankId, int level, int currentXp, int nextXp) {
+        this.playerId = playerId;
+        this.rankId = rankId;
+        this.level = level;
+        this.currentXp = currentXp;
+        this.nextXp = nextXp;
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Class-based Methods
@@ -48,12 +51,12 @@ public class Profile implements Serializable {
         teleportActive = true;
 
         int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
-            private double radius = 0.5;
             private double angle = 360;
 
             @Override
             public void run() {
                 for (int i = 0; i < 90; i++) {
+                    double radius = 0.5;
                     double y = (radius * Math.sin(angle));
                     double z = (radius * Math.cos(angle));
                     angle -= 0.1;
@@ -79,87 +82,31 @@ public class Profile implements Serializable {
             
             IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "Teleport failed!"); 
             teleportActive = false;
-        }, 20L * getWarpDelay());
+        }, 20L * rank.getWarpDelay());
 
-        this.cooldownTime = LocalDateTime.now().plusSeconds(getWarpCooldown());
-    }
-
-    @Nullable
-    public Point getPoint(String name) {
-        for (Point p: points) {
-            if (p.getName().equals(name)) {
-                return p;
-            }
-        }
-        return null;
+        this.cooldownTime = LocalDateTime.now().plusSeconds(rank.getWarpCooldown());
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Getters and Setters
     ///////////////////////////////////////////////////////////////////////////
+
+
     public UUID getPlayerId() {
         return playerId;
     }
 
     public void setPlayerId(UUID playerId) {
         this.playerId = playerId;
-        playerName = IndroMain.getInstance().getServer().getPlayer(playerId).getName();
     }
 
-    public List<Point> getPoints() {
-        return points;
+    public String getRankId() {
+        return rankId;
     }
 
-    public void setPoints(List<Point> points) {
-        this.points = points;
-    }
-
-    public int getWarpCap() {
-        return warpCap;
-    }
-
-    public void setWarpCap(int warpCap) {
-        this.warpCap = warpCap;
-    }
-
-    public int getWarpDelay() {
-        return warpDelay;
-    }
-
-    public void setWarpDelay(int warpDelay) {
-        this.warpDelay = warpDelay;
-    }
-
-    public int getWarpCooldown() {
-        return warpCooldown;
-    }
-
-    public void setWarpCooldown(int warpCooldown) {
-        this.warpCooldown = warpCooldown;
-    }
-
-    public int getMaxDistance() {
-        return maxDistance;
-    }
-
-    public void setMaxDistance(int maxDistance) {
-        this.maxDistance = maxDistance;
-    }
-
-    public boolean isCrossWorldPermitted() {
-        return crossWorldPermitted;
-    }
-
-    public void setCrossWorldPermitted(boolean crossWorldPermitted) {
-        this.crossWorldPermitted = crossWorldPermitted;
-    }
-
-    public LocalDateTime getCooldownTime() {
-        return cooldownTime;
-    }
-
-    public void setCooldownTime(LocalDateTime cooldownTime) {
-        this.cooldownTime = cooldownTime;
+    public void setRankId(String rankId) {
+        this.rankId = rankId;
+        //todo: get rank from RankDao
     }
 
     public int getLevel() {
@@ -176,11 +123,6 @@ public class Profile implements Serializable {
 
     public void setCurrentXp(int currentXp) {
         this.currentXp = currentXp;
-        if (currentXp >= getNextXp()) {
-            this.currentXp -= getNextXp();
-            setNextXp(getNextXp() + 5);
-            this.level += 1;
-        }
     }
 
     public int getNextXp() {
@@ -191,7 +133,35 @@ public class Profile implements Serializable {
         this.nextXp = nextXp;
     }
 
+    public Rank getRank() {
+        return rank;
+    }
+
+    public void setRank(Rank rank) {
+        this.rank = rank;
+    }
+
     public String getPlayerName() {
         return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public LocalDateTime getCooldownTime() {
+        return cooldownTime;
+    }
+
+    public void setCooldownTime(LocalDateTime cooldownTime) {
+        this.cooldownTime = cooldownTime;
+    }
+
+    public boolean isTeleportActive() {
+        return teleportActive;
+    }
+
+    public void setTeleportActive(boolean teleportActive) {
+        this.teleportActive = teleportActive;
     }
 }
