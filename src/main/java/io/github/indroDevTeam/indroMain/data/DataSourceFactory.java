@@ -1,15 +1,12 @@
-package io.github.indrodevteam.indroMain.data;
+package io.github.indroDevTeam.indroMain.data;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
-import io.github.indrodevteam.indroMain.IndroMain;
-import org.bukkit.configuration.file.FileConfiguration;
+import io.github.indroDevTeam.indroMain.IndroMain;
+import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.logging.Logger;
 
 public class DataSourceFactory {
@@ -17,14 +14,9 @@ public class DataSourceFactory {
     private static final Logger LOGGER = IndroMain.getInstance().getLogger();
 
     DataSourceFactory() {
-        MysqlDataSource daso = new MysqlDataSource();
-        FileConfiguration config = IndroMain.getInstance().getConfig();
-
-        daso.setDatabaseName(config.getString("mysql.database"));
-        daso.setServerName(config.getString("mysql.serverName"));
-        daso.setPort(config.getInt("mysql.port"));
-        daso.setUser(config.getString("mysql.user"));
-        daso.setPassword(config.getString("mysql.password"));
+        SQLiteDataSource daso = new SQLiteDataSource();
+        File file = new File(IndroMain.getInstance().getDataFolder() + File.separator + "data.db");
+        daso.setUrl("jdbc:sqlite:" + file.getAbsolutePath());
 
         this.daso = daso;
     }

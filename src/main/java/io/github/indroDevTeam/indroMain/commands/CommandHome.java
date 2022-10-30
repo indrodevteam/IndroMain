@@ -1,9 +1,7 @@
-package io.github.indrodevteam.indroMain.commands;
+package io.github.indroDevTeam.indroMain.commands;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.sql.SQLException;
+import java.util.*;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,10 +10,10 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import io.github.indrodevteam.indroMain.IndroMain;
-import io.github.indrodevteam.indroMain.model.Point;
-import io.github.indrodevteam.indroMain.model.Profile;
-import io.github.indrodevteam.indroMain.menus.ProfileMenu;
+import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.model.Point;
+import io.github.indroDevTeam.indroMain.model.Profile;
+import io.github.indroDevTeam.indroMain.menus.ProfileMenu;
 import me.kodysimpson.simpapi.exceptions.MenuManagerException;
 import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;
 import me.kodysimpson.simpapi.menu.MenuManager;
@@ -24,24 +22,39 @@ public class CommandHome implements TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return false;
+        Profile profile;
+        try {
+            if (IndroMain.getDataController().getDaoProfile().find(player.getUniqueId()).isPresent()) {
+                profile = IndroMain.getDataController().getDaoProfile().find(player.getUniqueId()).get();
+            } else {
+                throw new SQLException("Null Value Exception");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-        Profile profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
+
         switch (label.toLowerCase(Locale.ROOT)) {
             case "home" -> { // warps you to a home
                 if (args.length == 1) {
-                    Point point = profile.getPoint(args[0]);
+                    Point point;
 
-                    if (point == null) {
-                        IndroMain.sendParsedMessage(player, ChatColor.RED + "Point could not be found!");
-                        return true;
+                    try {
+                        if (IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).isPresent()) {
+                            point = IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).get();
+                        } else {
+                            throw new SQLException("Null Value Exception");
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
 
-                    if (point.getDistance(player) >= profile.getMaxDistance()) {
+                    if (point.getDistance(player) >= profile.getRank().getMaxDistance()) {
                         IndroMain.sendParsedMessage(player, ChatColor.RED + "You're too far away to teleport there!");
                         return true;
                     }
 
-                    if (!profile.isCrossWorldPermitted() && player.getLocation().getWorld().getName().equals(point.getLocation().getWorld().getName())) {
+                    if (!profile.getRank().isCrossWorldPermitted() && player.getLocation().getWorld().getName().equals(point.getLocation().getWorld().getName())) {
                         IndroMain.sendParsedMessage(player, ChatColor.RED + "This point is outside your dimension...");
                         return true;
                     }
@@ -53,36 +66,37 @@ public class CommandHome implements TabExecutor {
             }
             case "delhome" -> {
                 if (args.length == 1) {
-                    Point point = profile.getPoint(args[0]);
+                    Point point;
 
-                    if (point == null) {
-                        IndroMain.sendParsedMessage(player, ChatColor.RED + "Point does not exist!");
-                        return true;
-                    }
-
-                    Point removedPoint = null;
-                    for (Point p: profile.getPoints()) {
-                        if (p.getName().equals(point.getName()))  {
-                            removedPoint = p;
+                    try {
+                        if (IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).isPresent()) {
+                            point = IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).get();
+                            IndroMain.getDataController().getDaoPoint().delete(point);
+                        } else {
+                            throw new SQLException("Null Value Exception");
                         }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
 
-                    if (removedPoint == null) {
-                        IndroMain.sendParsedMessage(player, ChatColor.RED + "Point does not exist!");
-                    }
-
-                    profile.getPoints().remove(removedPoint);
                     IndroMain.sendParsedMessage(player, ChatColor.YELLOW + point.getName() + " was successfully removed!");
                     return true;
                 }
             }
             case "listhomes" -> {
+                List<Point> pointList;
+                try {
+                    pointList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
                 LinkedList<String> points = new LinkedList<>();
                 points.add(ChatColor.BLUE + "+=======HOMES=======+");
-                if (profile.getPoints().isEmpty()) {
+                if (pointList.isEmpty()) {
                     points.add(ChatColor.BLUE + "||  HOME LIST EMPTY  ||");
                 } else {
-                    for (Point point : profile.getPoints()) {
+                    for (Point point : pointList) {
                         String pointData = ChatColor.BLUE + "|| " + point.getName() + " - Distance: " + Math.round(point.getDistance(player)) + "m";
                         points.add(pointData);
                     }
@@ -94,22 +108,34 @@ public class CommandHome implements TabExecutor {
             }
             case "sethome" -> {
                 if (args.length == 1) {
-                    if (profile.getPoints().size() >= profile.getWarpCap()) {
+                    List<Point> pointList;
+                    try {
+                        pointList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if (pointList.size() >= profile.getRank().getWarpCap()) {
                         IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "You have too many warps saved, delete one to add another!");
                         return true;
                     }
 
-                    for (Point point: profile.getPoints()) {
+                    for (Point point: pointList) {
                         if (point.getName().equals(args[0])) {
                             IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "This point already exists! Pick a different name, or delete that point.");
                             return true;
                         }
                     }
 
-                    profile.getPoints().add(new Point(args[0], player.getLocation()));
-                    if (profile.getPoint(args[0]) == null) {
-                        IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
-                        return true;   
+                    String id = UUID.randomUUID().toString();
+                    try {
+                        IndroMain.getDataController().getDaoPoint().update(new Point(id, player.getUniqueId(), args[0], player.getLocation()));
+                        if (IndroMain.getDataController().getDaoPoint().find(UUID.fromString(id), args[0]).isEmpty()) {
+                            IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
+                            return true;
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
 
                     IndroMain.sendParsedMessage(player, ChatColor.AQUA + "The point was successfully saved!");
@@ -133,12 +159,15 @@ public class CommandHome implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> arguments = new ArrayList<>();
         if (sender instanceof Player player) {
-            Profile profile = IndroMain.getProfileAPI().findProfile(player.getUniqueId());
-
             switch (alias.toLowerCase(Locale.ROOT)) {
                 case "home", "delhome" -> {
                     if (args.length == 1) {
-                        List<Point> userList = profile.getPoints();
+                        List<Point> userList;
+                        try {
+                            userList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
                         for (Point point: userList) {
                             arguments.add(point.getName());
                         }

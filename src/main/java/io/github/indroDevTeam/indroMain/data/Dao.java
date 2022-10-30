@@ -1,4 +1,4 @@
-package io.github.indrodevteam.indroMain.data;
+package io.github.indroDevTeam.indroMain.data;
 
 import java.sql.SQLException;
 import java.util.List;

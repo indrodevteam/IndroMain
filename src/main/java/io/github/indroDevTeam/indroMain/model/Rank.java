@@ -1,4 +1,4 @@
-package io.github.indrodevteam.indroMain.model;
+package io.github.indroDevTeam.indroMain.model;
 
 public class Rank {
     protected String id;

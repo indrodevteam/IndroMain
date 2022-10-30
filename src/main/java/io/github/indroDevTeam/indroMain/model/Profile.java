@@ -1,10 +1,10 @@
-package io.github.indrodevteam.indroMain.model;
+package io.github.indroDevTeam.indroMain.model;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-import io.github.indrodevteam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.IndroMain;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -25,6 +25,7 @@ public class Profile {
     public Profile(UUID playerId, String rankId, int level, int currentXp, int nextXp) {
         this.playerId = playerId;
         this.rankId = rankId;
+        this.rank = new Rank("Program", "<Test Chat Role> ", "[Test Tab Role] ", 2, 5, 30, 50, false); // TODO: Program the RankDao.
         this.level = level;
         this.currentXp = currentXp;
         this.nextXp = nextXp;

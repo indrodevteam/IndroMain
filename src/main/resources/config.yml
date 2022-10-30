@@ -3,7 +3,7 @@ mysql:
   database: indroMain
   serverName: localhost
   port: 3306
-  username: root #STOPSHIP: Remove this when uploading to server
+  user: root #STOPSHIP: Remove this when uploading to server
   password: password
 
 warp:

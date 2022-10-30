@@ -1,18 +1,17 @@
-package io.github.indrodevteam.indroMain.model;
+package io.github.indroDevTeam.indroMain.model;
 
+import io.github.indroDevTeam.indroMain.IndroMain;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
-import io.github.indrodevteam.indroMain.IndroMain;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 public class Point implements Serializable {
     /* Variables */
-    protected String id;
-    protected UUID playerId;
+    protected String pointId;
+    protected UUID ownerId;
     protected String name;
     protected double x, y, z;
     protected float pitch, yaw;
@@ -20,8 +19,11 @@ public class Point implements Serializable {
     
     /* Constructor */
 
-    public Point(String name, double x, double y, double z, float pitch, float yaw, String worldName) {
+    public Point(String pointId, UUID ownerId, String name, double x, double y, double z, float pitch, float yaw, String worldName) {
+        this.pointId = pointId;
+        this.ownerId = ownerId;
         this.name = name;
+
         this.x = x;
         this.y = y;
         this.z = z;
@@ -30,7 +32,9 @@ public class Point implements Serializable {
         this.worldName = worldName;
     }
     
-    public Point(String name, Location location) {
+    public Point(String pointId, UUID ownerId, String name, Location location) {
+        this.pointId = pointId;
+        this.ownerId = ownerId;
         this.name = name;
 
         this.x = location.getX();
@@ -69,20 +73,20 @@ public class Point implements Serializable {
         return val;
     }
 
-    public String getId() {
-        return id;
+    public String getPointId() {
+        return pointId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPointId(String pointId) {
+        this.pointId = pointId;
     }
 
-    public UUID getPlayerId() {
-        return playerId;
+    public UUID getOwnerId() {
+        return ownerId;
     }
 
-    public void setPlayerId(UUID playerId) {
-        this.playerId = playerId;
+    public void setOwnerId(UUID ownerId) {
+        this.ownerId = ownerId;
     }
 
     public String getName() {

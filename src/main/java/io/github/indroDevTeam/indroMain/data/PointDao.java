@@ -1,5 +1,5 @@
-package io.github.indrodevteam.indroMain.data;
+package io.github.indroDevTeam.indroMain.data;
 
-import io.github.indrodevteam.indroMain.model.Point;
+import io.github.indroDevTeam.indroMain.model.Point;
 
 public interface PointDao extends Dao<Point, String> {}

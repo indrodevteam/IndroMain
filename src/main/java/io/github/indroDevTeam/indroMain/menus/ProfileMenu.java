@@ -1,12 +1,12 @@
-package io.github.indrodevteam.indroMain.menus;
+package io.github.indroDevTeam.indroMain.menus;
 
+import io.github.indroDevTeam.indroMain.IndroMain;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import io.github.indrodevteam.indroMain.IndroMain;
-import io.github.indrodevteam.indroMain.model.Profile;
+import io.github.indroDevTeam.indroMain.model.Profile;
 import me.kodysimpson.simpapi.exceptions.MenuManagerException;
 import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;
 import me.kodysimpson.simpapi.menu.Menu;
@@ -14,12 +14,20 @@ import me.kodysimpson.simpapi.menu.MenuManager;
 import me.kodysimpson.simpapi.menu.PlayerMenuUtility;
 import net.md_5.bungee.api.ChatColor;
 
+import java.sql.SQLException;
+
 public class ProfileMenu extends Menu {
     private Profile profile;
 
     public ProfileMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
-        profile = IndroMain.getProfileAPI().findProfile(playerMenuUtility.getOwner().getUniqueId());
+        try {
+            if (IndroMain.getDataController().getDaoProfile().find(playerMenuUtility.getOwner().getUniqueId()).isPresent()) {
+                profile = IndroMain.getDataController().getDaoProfile().find(playerMenuUtility.getOwner().getUniqueId()).get();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -39,9 +47,9 @@ public class ProfileMenu extends Menu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) throws MenuManagerNotSetupException, MenuManagerException {
-        if (e.getCurrentItem().getType().equals(Material.BLUE_BANNER)) {
-            MenuManager.openMenu(WarpMenu.class, (Player) e.getWhoClicked());
-        }
+        //if (e.getCurrentItem().getType().equals(Material.BLUE_BANNER)) {
+        //    MenuManager.openMenu(WarpMenu.class, (Player) e.getWhoClicked());
+        //}
     }
 
     @Override

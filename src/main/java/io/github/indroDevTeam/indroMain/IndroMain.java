@@ -1,31 +1,34 @@
-package io.github.indrodevteam.indroMain;
+package io.github.indroDevTeam.indroMain;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
+import io.github.indroDevTeam.indroMain.commands.CommandHome;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.indrodevteam.indroMain.commands.CommandHome;
 import me.kodysimpson.simpapi.menu.MenuManager;
-import org.jetbrains.annotations.NotNull;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
-    private static ProfileAPI profileAPI;
+    private static DataController dataController;
 
     @Override
     public void onEnable() {
         instance = this;
+        this.saveDefaultConfig();
+
         try {
-            profileAPI = new ProfileAPI();
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-            this.getServer().getPluginManager().disablePlugin(this);
+            dataController = new DataController();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         MenuManager.setup(getServer(), this);
+
+
 
         // load data
         loadCommands();
@@ -34,12 +37,8 @@ public class IndroMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        try {
-            profileAPI.saveToResource();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         this.getServer().getScheduler().cancelTasks(this);
+
     }
 
     private void loadCommands() {
@@ -63,7 +62,7 @@ public class IndroMain extends JavaPlugin {
         return instance;
     }
 
-    public static ProfileAPI getProfileAPI() {
-        return profileAPI;
+    public static DataController getDataController() {
+        return dataController;
     }
 }
