@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import io.github.indroDevTeam.indroMain.commands.CommandHome;
+import io.github.indroDevTeam.indroMain.data.DataSourceFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -12,23 +13,37 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.kodysimpson.simpapi.menu.MenuManager;
 
+import javax.xml.crypto.Data;
+
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
-    private static DataController dataController;
+    public static DataSourceFactory daso;
 
     @Override
     public void onEnable() {
         instance = this;
-        this.saveDefaultConfig();
+        daso = new DataSourceFactory();
 
+        // init database
         try {
-            dataController = new DataController();
+            daso.initDatabase();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        if (!getDataFolder().exists()) {
+            if (getDataFolder().mkdir()) {
+                getLogger().info("Config folder created successfully!");
+                saveDefaultConfig();
+            } else {
+                getLogger().severe("Could not create config folder");
+                getPluginLoader().disablePlugin(this);
+                return;
+            }
+        }
+
+        // pre-render SimpAPI menu manager
         MenuManager.setup(getServer(), this);
-
-
 
         // load data
         loadCommands();
@@ -60,9 +75,5 @@ public class IndroMain extends JavaPlugin {
 
     public static IndroMain getInstance() {
         return instance;
-    }
-
-    public static DataController getDataController() {
-        return dataController;
     }
 }

@@ -1,6 +1,7 @@
 package io.github.indroDevTeam.indroMain.menus;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.model.DaoProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,8 +23,8 @@ public class ProfileMenu extends Menu {
     public ProfileMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
         try {
-            if (IndroMain.getDataController().getDaoProfile().find(playerMenuUtility.getOwner().getUniqueId()).isPresent()) {
-                profile = IndroMain.getDataController().getDaoProfile().find(playerMenuUtility.getOwner().getUniqueId()).get();
+            if (DaoProfile.getInstance().find(playerMenuUtility.getOwner().getUniqueId()).isPresent()) {
+                profile = DaoProfile.getInstance().find(playerMenuUtility.getOwner().getUniqueId()).get();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

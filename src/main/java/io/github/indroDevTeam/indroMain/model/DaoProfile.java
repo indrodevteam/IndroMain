@@ -1,5 +1,6 @@
 package io.github.indroDevTeam.indroMain.model;
 
+import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.data.DataSourceFactory;
 import io.github.indroDevTeam.indroMain.data.ProfileDao;
 
@@ -32,7 +33,7 @@ public class DaoProfile implements ProfileDao {
         int level = 0;
         int currentXp = 0;
         int nextXp = 0;
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, uuid.toString());
@@ -53,7 +54,7 @@ public class DaoProfile implements ProfileDao {
         List<Profile> profileList = new ArrayList<>();
         String sql = "SELECT player_id, rank_id, level, current_xp, next_xp FROM profiles;";
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
@@ -75,7 +76,7 @@ public class DaoProfile implements ProfileDao {
     public boolean save(Profile o) throws SQLException {
         String sql = "INSERT INTO profiles (player_id, rank_id, level, current_xp, next_xp) VALUES (?, ?, ?, ?, ?);";
         boolean rowInserted;
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, o.getPlayerId().toString());
@@ -93,7 +94,7 @@ public class DaoProfile implements ProfileDao {
         String sql = "UPDATE profiles SET (rank_id = ?, level = ?, current_xp = ?, next_xp = ?) WHERE player_id = ?;";
         boolean rowUpdated;
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, o.getRankId());
@@ -111,7 +112,7 @@ public class DaoProfile implements ProfileDao {
         String sql = "DELETE FROM profiles WHERE player_id = ?;";
         boolean rowDeleted;
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, o.getPlayerId().toString());
 

@@ -3,6 +3,8 @@ package io.github.indroDevTeam.indroMain.commands;
 import java.sql.SQLException;
 import java.util.*;
 
+import io.github.indroDevTeam.indroMain.model.DaoPoint;
+import io.github.indroDevTeam.indroMain.model.DaoProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,8 +26,8 @@ public class CommandHome implements TabExecutor {
         if (!(sender instanceof Player player)) return false;
         Profile profile;
         try {
-            if (IndroMain.getDataController().getDaoProfile().find(player.getUniqueId()).isPresent()) {
-                profile = IndroMain.getDataController().getDaoProfile().find(player.getUniqueId()).get();
+            if (DaoProfile.getInstance().find(player.getUniqueId()).isPresent()) {
+                profile = DaoProfile.getInstance().find(player.getUniqueId()).get();
             } else {
                 throw new SQLException("Null Value Exception");
             }
@@ -40,8 +42,8 @@ public class CommandHome implements TabExecutor {
                     Point point;
 
                     try {
-                        if (IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).isPresent()) {
-                            point = IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).get();
+                        if (DaoPoint.getInstance().find(player.getUniqueId(), args[0]).isPresent()) {
+                            point = DaoPoint.getInstance().find(player.getUniqueId(), args[0]).get();
                         } else {
                             throw new SQLException("Null Value Exception");
                         }
@@ -69,9 +71,9 @@ public class CommandHome implements TabExecutor {
                     Point point;
 
                     try {
-                        if (IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).isPresent()) {
-                            point = IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).get();
-                            IndroMain.getDataController().getDaoPoint().delete(point);
+                        if (DaoPoint.getInstance().find(player.getUniqueId(), args[0]).isPresent()) {
+                            point = DaoPoint.getInstance().find(player.getUniqueId(), args[0]).get();
+                            DaoPoint.getInstance().delete(point);
                         } else {
                             throw new SQLException("Null Value Exception");
                         }
@@ -86,7 +88,7 @@ public class CommandHome implements TabExecutor {
             case "listhomes" -> {
                 List<Point> pointList;
                 try {
-                    pointList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
+                    pointList = DaoPoint.getInstance().findAll(player.getUniqueId());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -110,7 +112,7 @@ public class CommandHome implements TabExecutor {
                 if (args.length == 1) {
                     List<Point> pointList;
                     try {
-                        pointList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
+                        pointList = DaoPoint.getInstance().findAll(player.getUniqueId());
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -129,8 +131,8 @@ public class CommandHome implements TabExecutor {
 
                     String id = UUID.randomUUID().toString();
                     try {
-                        IndroMain.getDataController().getDaoPoint().update(new Point(id, player.getUniqueId(), args[0], player.getLocation()));
-                        if (IndroMain.getDataController().getDaoPoint().find(UUID.fromString(id), args[0]).isEmpty()) {
+                        DaoPoint.getInstance().update(new Point(id, player.getUniqueId(), args[0], player.getLocation()));
+                        if (DaoPoint.getInstance().find(UUID.fromString(id), args[0]).isEmpty()) {
                             IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
                             return true;
                         }
@@ -164,7 +166,7 @@ public class CommandHome implements TabExecutor {
                     if (args.length == 1) {
                         List<Point> userList;
                         try {
-                            userList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
+                            userList = DaoPoint.getInstance().findAll(player.getUniqueId());
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }

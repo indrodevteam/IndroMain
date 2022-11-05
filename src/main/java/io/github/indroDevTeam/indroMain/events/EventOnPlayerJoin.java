@@ -1,7 +1,8 @@
 package io.github.indroDevTeam.indroMain.events;
 
-import io.github.indroDevTeam.indroMain.DataController;
 import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.model.DaoPoint;
+import io.github.indroDevTeam.indroMain.model.DaoProfile;
 import io.github.indroDevTeam.indroMain.model.Profile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,13 +14,12 @@ import java.sql.SQLException;
 public class EventOnPlayerJoin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        DataController controller = IndroMain.getDataController();
         Player player = e.getPlayer();
 
         Profile profile;
         try {
-            if (controller.getDaoProfile().find(player.getUniqueId()).isPresent()) {
-                profile = controller.getDaoProfile().find(player.getUniqueId()).get();
+            if (DaoProfile.getInstance().find(player.getUniqueId()).isPresent()) {
+                profile = DaoProfile.getInstance().find(player.getUniqueId()).get();
             } else {
                 throw new SQLException("Null Value Exception");
             }

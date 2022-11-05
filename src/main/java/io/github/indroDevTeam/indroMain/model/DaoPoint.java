@@ -1,5 +1,6 @@
 package io.github.indroDevTeam.indroMain.model;
 
+import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.data.DataSourceFactory;
 import io.github.indroDevTeam.indroMain.data.PointDao;
 
@@ -38,7 +39,7 @@ public class DaoPoint implements PointDao {
         float yaw = 0;
         String worldName = "";
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, id);
@@ -72,7 +73,7 @@ public class DaoPoint implements PointDao {
         float yaw = 0;
         String worldName = "";
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, ownerId.toString());
@@ -98,7 +99,7 @@ public class DaoPoint implements PointDao {
         List<Point> pointList = new ArrayList<>();
         String sql = "SELECT point_id, owner_id, name, x, y, z, pitch, yaw, world_name FROM points WHERE owner_id = ?;";
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, playerId.toString());
@@ -126,7 +127,7 @@ public class DaoPoint implements PointDao {
         List<Point> pointList = new ArrayList<>();
         String sql = "SELECT point_id, owner_id, name, x, y, z, pitch, yaw, world_name FROM points;";
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
@@ -152,7 +153,7 @@ public class DaoPoint implements PointDao {
     public boolean save(Point o) throws SQLException {
         String sql = "INSERT INTO points (point_id, owner_id, name, x, y, z, pitch, yaw, world_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         boolean rowInserted;
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, o.getPointId());
@@ -174,7 +175,7 @@ public class DaoPoint implements PointDao {
         String sql = "UPDATE points SET point_id = ?, owner_id = ?, name = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, world_name = ? WHERE point_id = ?;";
         boolean rowUpdated;
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
 
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, o.getOwnerId().toString());
@@ -196,7 +197,7 @@ public class DaoPoint implements PointDao {
         String sql = "DELETE FROM points WHERE point_id = ?;";
         boolean rowDeleted;
 
-        Connection conn = DataSourceFactory.getConnection();
+        Connection conn = IndroMain.daso.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setString(1, o.getPointId());
 
