@@ -1,8 +1,5 @@
 package io.github.indroDevTeam.indroMain.events;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
-import io.github.indroDevTeam.indroMain.model.DaoPoint;
-import io.github.indroDevTeam.indroMain.model.DaoProfile;
 import io.github.indroDevTeam.indroMain.model.Profile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

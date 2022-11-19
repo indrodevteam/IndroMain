@@ -3,8 +3,6 @@ package io.github.indroDevTeam.indroMain.commands;
 import java.sql.SQLException;
 import java.util.*;
 
-import io.github.indroDevTeam.indroMain.model.DaoPoint;
-import io.github.indroDevTeam.indroMain.model.DaoProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

@@ -1,35 +1,27 @@
 package io.github.indroDevTeam.indroMain;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import io.github.indroDevTeam.indroMain.commands.CommandHome;
-import io.github.indroDevTeam.indroMain.data.DataSourceFactory;
+import io.github.indroDevTeam.indroMain.model.Profile;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.kodysimpson.simpapi.menu.MenuManager;
-
-import javax.xml.crypto.Data;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
-    public static DataSourceFactory daso;
+    private static SessionFactory factory;
 
     @Override
     public void onEnable() {
         instance = this;
-        daso = new DataSourceFactory();
-
-        // init database
-        try {
-            daso.initDatabase();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         if (!getDataFolder().exists()) {
             if (getDataFolder().mkdir()) {
@@ -41,6 +33,20 @@ public class IndroMain extends JavaPlugin {
                 return;
             }
         }
+
+        // Hibernate specific configuration class
+        StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+                .configure()
+                .build();
+
+        // Here we tell Hibernate that we annotated our User class
+        MetadataSources sources = new MetadataSources(standardRegistry);
+        sources.addAnnotatedClass( Profile.class );
+        Metadata metadata = sources.buildMetadata();
+
+        // This is what we want, a SessionFactory!
+        factory = metadata.buildSessionFactory();
+
 
         // pre-render SimpAPI menu manager
         MenuManager.setup(getServer(), this);
@@ -71,6 +77,10 @@ public class IndroMain extends JavaPlugin {
 
     public static void sendParsedMessage(Player player, String message) {
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&1[&9IndroMain&1]&r " + message));
+    }
+
+    public static SessionFactory getFactory() {
+        return factory;
     }
 
     public static IndroMain getInstance() {

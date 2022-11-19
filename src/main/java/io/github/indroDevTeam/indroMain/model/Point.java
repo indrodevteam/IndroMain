@@ -8,19 +8,20 @@ import org.bukkit.util.Vector;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class Point implements Serializable {
+public class Point {
     /* Variables */
-    protected String pointId;
-    protected UUID ownerId;
-    protected String name;
-    protected double x, y, z;
-    protected float pitch, yaw;
-    protected String worldName;
+    private int id;
+    private UUID ownerId;
+    private String name;
+    private double x, y, z;
+    private float pitch, yaw;
+    private String worldName;
     
     /* Constructor */
 
-    public Point(String pointId, UUID ownerId, String name, double x, double y, double z, float pitch, float yaw, String worldName) {
-        this.pointId = pointId;
+    public Point() {}
+
+    public Point(UUID ownerId, String name, double x, double y, double z, float pitch, float yaw, String worldName) {
         this.ownerId = ownerId;
         this.name = name;
 
@@ -32,8 +33,7 @@ public class Point implements Serializable {
         this.worldName = worldName;
     }
     
-    public Point(String pointId, UUID ownerId, String name, Location location) {
-        this.pointId = pointId;
+    public Point(UUID ownerId, String name, Location location) {
         this.ownerId = ownerId;
         this.name = name;
 
@@ -73,12 +73,12 @@ public class Point implements Serializable {
         return val;
     }
 
-    public String getPointId() {
-        return pointId;
+    public int getId() {
+        return id;
     }
 
-    public void setPointId(String pointId) {
-        this.pointId = pointId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public UUID getOwnerId() {

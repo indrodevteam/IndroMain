@@ -1,31 +1,51 @@
 package io.github.indroDevTeam.indroMain.model;
 
+import io.github.indroDevTeam.indroMain.IndroMain;
+import lombok.*;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "profiles")
 public class Profile {
-    protected UUID playerId;
-    protected String rankId;
-    protected int level, currentXp, nextXp;
-    protected transient Rank rank;
-    protected transient String playerName;
-    protected transient LocalDateTime cooldownTime;
-    protected transient boolean teleportActive = false;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
-    public Profile(UUID playerId, String rankId, int level, int currentXp, int nextXp) {
+    @Column(name = "player_id")
+    private UUID playerId;
+
+    @Column(name = "rank_id")
+    private String rankId;
+
+    @Column(name = "level")
+    private int level;
+
+    @Column(name = "current_xp")
+    private int currentXp;
+
+    @Column(name = "next_xp")
+    private int nextXp;
+
+    private transient Rank rank;
+    private transient LocalDateTime cooldownTime = null;
+    private transient boolean teleportActive = false;
+
+    public Profile(UUID playerId, Rank rank, int level, int currentXp, int nextXp) {
         this.playerId = playerId;
-        this.rankId = rankId;
-        this.rank = new Rank("Program", "<Test Chat Role> ", "[Test Tab Role] ", 2, 5, 30, 50, false); // TODO: Program the RankDao.
+        this.rank = rank;
+        this.rankId = rank.getId();
         this.level = level;
         this.currentXp = currentXp;
         this.nextXp = nextXp;
@@ -88,81 +108,4 @@ public class Profile {
         this.cooldownTime = LocalDateTime.now().plusSeconds(rank.getWarpCooldown());
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Getters and Setters
-    ///////////////////////////////////////////////////////////////////////////
-
-
-    public UUID getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(UUID playerId) {
-        this.playerId = playerId;
-    }
-
-    public String getRankId() {
-        return rankId;
-    }
-
-    public void setRankId(String rankId) {
-        this.rankId = rankId;
-        //todo: get rank from RankDao
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public int getCurrentXp() {
-        return currentXp;
-    }
-
-    public void setCurrentXp(int currentXp) {
-        this.currentXp = currentXp;
-    }
-
-    public int getNextXp() {
-        return nextXp;
-    }
-
-    public void setNextXp(int nextXp) {
-        this.nextXp = nextXp;
-    }
-
-    public Rank getRank() {
-        return rank;
-    }
-
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-    }
-
-    public LocalDateTime getCooldownTime() {
-        return cooldownTime;
-    }
-
-    public void setCooldownTime(LocalDateTime cooldownTime) {
-        this.cooldownTime = cooldownTime;
-    }
-
-    public boolean isTeleportActive() {
-        return teleportActive;
-    }
-
-    public void setTeleportActive(boolean teleportActive) {
-        this.teleportActive = teleportActive;
-    }
 }
