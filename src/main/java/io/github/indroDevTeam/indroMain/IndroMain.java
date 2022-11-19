@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import io.github.indroDevTeam.indroMain.commands.CommandHome;
 import io.github.indroDevTeam.indroMain.model.Profile;
 import org.bukkit.ChatColor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
