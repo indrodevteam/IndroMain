@@ -6,11 +6,25 @@ author: skyQuiz
 
 commands:
   home:
-    description: lets players save locations then teleport to them
-    aliases: ["sethome", "delhome", "listhomes", "profile"]
-    usage: "Usage: /<command> [args]"
+    description: Teleports a player to their home
+    usage: /<command> <home_name>
+    aliases:
+      - h
+  sethome:
+    description: Sets a player's home at their current location,
+    usage: /<command> <home_name> [desc]
+  delhome:
+    description: Deletes a player's home from the list of homes
+    usage: /<command> <home_name>
+  homes:
+    description: Lists all of the player's homes
+    usage: /<command>
+  profile:
+    description: Displays the player's profile
+    usage: /<command>
 
-permissions:
-  inspector:
-    description: switches player into inspector mode for checking for hackers
-    default: op
+  #Admin commands here
+  home-a:
+    description: lets players save locations then teleport to them
+    aliases: [ "sethome", "delhome", "listhomes", "profile" ]
+    usage: "Usage: /<command> [args]"

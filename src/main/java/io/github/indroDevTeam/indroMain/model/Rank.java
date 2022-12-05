@@ -1,7 +1,6 @@
 package io.github.indroDevTeam.indroMain.model;
 
 public class Rank {
-    protected String id;
 
     protected String name;
     protected String chatTag;
@@ -13,15 +12,6 @@ public class Rank {
     protected int warpCooldown;
     protected int maxDistance;
     protected boolean crossWorldPermitted;
-
-    public Rank(String id) {
-        this.id = id;
-    }
-
-    public Rank(String id, String name, String chatTag, String tabTag, int warpCap, int warpDelay, int warpCooldown, int maxDistance, boolean crossWorldPermitted) {
-        this(name, chatTag, tabTag, warpCap, warpDelay, warpCooldown, maxDistance, crossWorldPermitted);
-        this.id = id;
-    }
 
     public Rank(String name, String chatTag, String tabTag, int warpCap, int warpDelay, int warpCooldown, int maxDistance, boolean crossWorldPermitted) {
         this.name = name;
@@ -37,15 +27,6 @@ public class Rank {
     ///////////////////////////////////////////////////////////////////////////
     // Getters and Setters
     ///////////////////////////////////////////////////////////////////////////
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }

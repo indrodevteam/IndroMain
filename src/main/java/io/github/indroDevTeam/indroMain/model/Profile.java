@@ -1,51 +1,41 @@
 package io.github.indroDevTeam.indroMain.model;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.utils.ChatUtils;
 import lombok.*;
 import org.bukkit.*;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
+import javax.sql.rowset.serial.SerialArray;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "profiles")
-public class Profile {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-
-    @Column(name = "player_id")
+public class Profile implements ConfigurationSerializable {
     private UUID playerId;
-
-    @Column(name = "rank_id")
-    private String rankId;
-
-    @Column(name = "level")
+    //private String rankId;
     private int level;
-
-    @Column(name = "current_xp")
     private int currentXp;
-
-    @Column(name = "next_xp")
     private int nextXp;
 
     private transient Rank rank;
     private transient LocalDateTime cooldownTime = null;
     private transient boolean teleportActive = false;
 
-    public Profile(UUID playerId, Rank rank, int level, int currentXp, int nextXp) {
+    public Profile(UUID playerId,
+                   //Rank rank,
+                   int level, int currentXp, int nextXp) {
         this.playerId = playerId;
-        this.rank = rank;
-        this.rankId = rank.getId();
+        this.rank = new Rank("Test", "{TEST}", "[TEST]", 2, 10, 15, 100, true);
+        //this.rankId = rank.getId();
         this.level = level;
         this.currentXp = currentXp;
         this.nextXp = nextXp;
@@ -55,20 +45,20 @@ public class Profile {
     // Class-based Methods
     ///////////////////////////////////////////////////////////////////////////
 
-    public void warp(Player player, @NotNull Point point) {
+    public void warp(Player player, @NotNull Home home) {
         if (teleportActive) {
-            IndroMain.sendParsedMessage(player, ChatColor.BLUE + "A teleport is already queued up, please wait for that to complete before teleporting again.");
+            ChatUtils.sendFailure(player, ChatColor.BLUE + "A teleport is already queued up, please wait for that to complete before teleporting again.");
             return;
         }
 
         if (cooldownTime != null && LocalDateTime.now().isBefore(cooldownTime)) {
-            IndroMain.sendParsedMessage(player, ChatColor.BLUE + "You've recently warped, wait " + (cooldownTime.toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) + " seconds!");
+            ChatUtils.sendFailure(player, "You've recently warped, wait " + (cooldownTime.toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) + " seconds!");
             return;
         }
 
         // conditions have been fulfilled for a teleport
-        IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleporting...");
-        Location location = point.getLocation();
+        ChatUtils.sendInfo(player, "Teleporting...");
+        Location location = home.getLocation();
         teleportActive = true;
 
         int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
@@ -94,18 +84,55 @@ public class Profile {
                 location.getChunk().load();
                 player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
                 player.teleport(location);
-                IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleport deployed!");
+                ChatUtils.sendSuccess(player, "Teleport deployed!");
 
                 this.setCurrentXp(this.getCurrentXp() + 1);
                 teleportActive = false;
                 return;
             }
             
-            IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "Teleport failed!"); 
+            ChatUtils.sendInfo(player, "Teleport failed!");
             teleportActive = false;
         }, 20L * rank.getWarpDelay());
 
         this.cooldownTime = LocalDateTime.now().plusSeconds(rank.getWarpCooldown());
     }
 
+    @NotNull
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("playerId", playerId);
+        map.put("level", level);
+        map.put("currentXp", currentXp);
+        map.put("nextXp", nextXp);
+
+        return map;
+    }
+
+    public static Profile deserialize(Map<String, Object> map) {
+        UUID playerId = null;
+        String rankId = null;
+        int level = 1;
+        int currentXp = 0;
+        int nextXp = 5;
+
+        if (map.containsKey("playerId")) {
+            playerId = ((UUID) map.get("playerId"));
+        }
+
+        if (map.containsKey("level")) {
+            level = ((int) map.get("level"));
+        }
+
+        if (map.containsKey("currentXp")) {
+            currentXp = ((int) map.get("currentXp"));
+        }
+
+        if (map.containsKey("nextXp")) {
+            nextXp = ((int) map.get("nextXp"));
+        }
+
+        return new Profile(playerId, level, currentXp, nextXp);
+    }
 }

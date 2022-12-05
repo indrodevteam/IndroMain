@@ -1,12 +1,9 @@
 package io.github.indroDevTeam.indroMain;
 
-import java.sql.SQLException;
-
-import io.github.indroDevTeam.indroMain.commands.CommandHome;
+import io.github.indroDevTeam.indroMain.commands.Command;
+import io.github.indroDevTeam.indroMain.configs.Homes;
+import io.github.indroDevTeam.indroMain.configs.Profiles;
 import io.github.indroDevTeam.indroMain.model.Profile;
-import org.bukkit.ChatColor;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.kodysimpson.simpapi.menu.MenuManager;
@@ -18,7 +15,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
-    private static SessionFactory factory;
+    private final Homes homes = new Homes(this);
+    private final Profiles profiles = new Profiles(this);
 
     @Override
     public void onEnable() {
@@ -34,19 +32,6 @@ public class IndroMain extends JavaPlugin {
                 return;
             }
         }
-
-        // Hibernate specific configuration class
-        StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
-                .configure()
-                .build();
-
-        // Here we tell Hibernate that we annotated our User class
-        MetadataSources sources = new MetadataSources(standardRegistry);
-        sources.addAnnotatedClass( Profile.class );
-        Metadata metadata = sources.buildMetadata();
-
-        // This is what we want, a SessionFactory!
-        factory = metadata.buildSessionFactory();
 
 
         // pre-render SimpAPI menu manager
@@ -64,8 +49,8 @@ public class IndroMain extends JavaPlugin {
     }
 
     private void loadCommands() {
-        this.getCommand("home").setExecutor(new CommandHome());
-        this.getCommand("home").setTabCompleter(new CommandHome());
+        this.getCommand("home").setExecutor(new Command());
+        this.getCommand("home").setTabCompleter(new Command());
     }
 
     private void loadEvents() {
@@ -76,12 +61,13 @@ public class IndroMain extends JavaPlugin {
     // Class-Type Methods
     ///////////////////////////////////////////////////////////////////////////
 
-    public static void sendParsedMessage(Player player, String message) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&1[&9IndroMain&1]&r " + message));
+
+    public Homes getHomes() {
+        return homes;
     }
 
-    public static SessionFactory getFactory() {
-        return factory;
+    public Profiles getProfiles() {
+        return profiles;
     }
 
     public static IndroMain getInstance() {
