@@ -4,11 +4,10 @@ import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.model.Point;
 import io.github.indroDevTeam.indroMain.model.Profile;
 import io.github.indroDevTeam.indroMain.model.Rank;
-import io.github.indroDevTeam.indroMain.utils.ChatUtils;
 
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.sql.*;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +25,7 @@ public class SqliteDataApi implements DataAPI {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
-            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS points (ownerId varchar(36), name varchar(16), desc varchar(255), x varchar(255), y varchar(255), z varchar(255), pitch varchar(255), yaw varcharZ(255), worldName varchar(255)");
+            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS points (ownerId varchar(36), name varchar(16), desc varchar(255), x varchar(255), y varchar(255), z varchar(255), pitch varchar(255), yaw varchar(255), worldName varchar(255)");
             conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS profiles (userId varchar(36), rankId varchar(255), level int, currentXp int, nextXp int);");
         } catch (SQLException e) {
             plugin.getLogger().severe(e.getMessage());
@@ -151,7 +150,7 @@ public class SqliteDataApi implements DataAPI {
 
     @Override
     public Optional<Point> getPoint(UUID ownerId, String name) {
-        String sql = "SELECT * FROM points WHERE (ownerId = ?, name = ?)";
+        String sql = "SELECT * FROM points WHERE (ownerId = ?, name = ?);";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -172,31 +171,115 @@ public class SqliteDataApi implements DataAPI {
             float yaw = Float.parseFloat(rs.getString("yaw"));
             String worldName = rs.getString("worldName");
 
-            return Optional.of(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName);
+            return Optional.of(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return Optional.empty();
     }
 
     @Override
     public List<Point> getPointByOwner(UUID ownerId) {
-        return null;
+        List<Point> points = new LinkedList<>();
+        String sql = "SELECT * FROM points WHERE (ownerId = ?);";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, ownerId.toString());
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) { // return the first row in the SQL query
+                UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
+                String name1 = rs.getString("name");
+                String desc = rs.getString("desc");
+                double x = Double.parseDouble(rs.getString("x"));
+                double y = Double.parseDouble(rs.getString("y"));
+                double z = Double.parseDouble(rs.getString("z"));
+                float pitch = Float.parseFloat(rs.getString("pitch"));
+                float yaw = Float.parseFloat(rs.getString("yaw"));
+                String worldName = rs.getString("worldName");
+
+                points.add(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return points;
     }
 
     @Override
     public List<Point> getAllPoints() {
-        return null;
+        List<Point> points = new LinkedList<>();
+        String sql = "SELECT * FROM points;";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) { // return the first row in the SQL query
+                UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
+                String name1 = rs.getString("name");
+                String desc = rs.getString("desc");
+                double x = Double.parseDouble(rs.getString("x"));
+                double y = Double.parseDouble(rs.getString("y"));
+                double z = Double.parseDouble(rs.getString("z"));
+                float pitch = Float.parseFloat(rs.getString("pitch"));
+                float yaw = Float.parseFloat(rs.getString("yaw"));
+                String worldName = rs.getString("worldName");
+
+                points.add(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return points;
     }
 
     @Override
     public boolean updatePoint(UUID ownerId, String name, Point newPoint) {
-        return false;
+        int updateStatus;
+        String sql = "UPDATE points SET ownerId = ?, name = ?, desc = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, worldName = ? WHERE ownerId = ?, name = ?;";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, newPoint.getOwnerId().toString());
+            stmt.setString(2, newPoint.getName());
+            stmt.setString(3, newPoint.getDesc());
+            stmt.setString(4, String.valueOf(newPoint.getX()));
+            stmt.setString(5, String.valueOf(newPoint.getY()));
+            stmt.setString(6, String.valueOf(newPoint.getPitch()));
+            stmt.setString(7, String.valueOf(newPoint.getYaw()));
+            stmt.setString(8, newPoint.getWorldName());
+
+            stmt.setString(9, ownerId.toString());
+            stmt.setString(10, name);
+
+            updateStatus = stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return updateStatus != 0;
     }
 
     @Override
     public boolean deletePoint(UUID ownerId, String name) {
-        return false;
+        int updateStatus;
+        String sql = "DELETE FROM profiles WHERE userId = ?, name = ?";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, ownerId.toString());
+            stmt.setString(2, name);
+
+            updateStatus = stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return updateStatus != 0;
     }
 
     @Override
