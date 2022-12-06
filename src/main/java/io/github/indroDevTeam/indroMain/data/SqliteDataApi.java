@@ -6,6 +6,7 @@ import io.github.indroDevTeam.indroMain.model.Profile;
 import io.github.indroDevTeam.indroMain.model.Rank;
 import io.github.indroDevTeam.indroMain.utils.ChatUtils;
 
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.sql.*;
 import java.util.List;
@@ -125,12 +126,56 @@ public class SqliteDataApi implements DataAPI {
     @Override
     public boolean createPoint(Point point) {
         int updateStatus;
-        String sql = ""
-        return false;
+        String sql = "INSERT INTO points VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, point.getOwnerId().toString());
+            stmt.setString(2, point.getName());
+            stmt.setString(3, point.getDesc());
+            stmt.setString(4, String.valueOf(point.getX()));
+            stmt.setString(5, String.valueOf(point.getY()));
+            stmt.setString(6, String.valueOf(point.getZ()));
+            stmt.setString(7, String.valueOf(point.getPitch()));
+            stmt.setString(8, String.valueOf(point.getYaw()));
+            stmt.setString(9, String.valueOf(point.getWorldName()));
+
+            updateStatus = stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return updateStatus != 0;
     }
 
     @Override
     public Optional<Point> getPoint(UUID ownerId, String name) {
+        String sql = "SELECT * FROM points WHERE (ownerId = ?, name = ?)";
+
+        try (Connection conn = this.connect()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, ownerId.toString());
+            stmt.setString(2, name);
+
+            ResultSet rs = stmt.executeQuery();
+            rs.next(); // return the first row in the SQL query
+
+            UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
+            String name1 = rs.getString("name");
+            String desc = rs.getString("desc");
+            double x = Double.parseDouble(rs.getString("x"));
+            double y = Double.parseDouble(rs.getString("y"));
+            double z = Double.parseDouble(rs.getString("z"));
+            float pitch = Float.parseFloat(rs.getString("pitch"));
+            float yaw = Float.parseFloat(rs.getString("yaw"));
+            String worldName = rs.getString("worldName");
+
+            return Optional.of(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return Optional.empty();
     }
 
