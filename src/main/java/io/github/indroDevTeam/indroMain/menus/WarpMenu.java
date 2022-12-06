@@ -1,24 +1,5 @@
 package io.github.indroDevTeam.indroMain.menus;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-
-import io.github.indroDevTeam.indroMain.IndroMain;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-
-import io.github.indroDevTeam.indroMain.model.Point;
-import io.github.indroDevTeam.indroMain.model.Profile;
-import me.kodysimpson.simpapi.exceptions.MenuManagerException;
-import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;
-import me.kodysimpson.simpapi.menu.Menu;
-import me.kodysimpson.simpapi.menu.MenuManager;
-import me.kodysimpson.simpapi.menu.PlayerMenuUtility;
-
 public class WarpMenu /*extends Menu*/ {
     /*
     private Profile profile;
