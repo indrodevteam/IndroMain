@@ -1,34 +1,40 @@
 package io.github.indroDevTeam.indroMain.model;
 
+import io.github.indroDevTeam.indroMain.IndroMain;
+import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-import io.github.indroDevTeam.indroMain.IndroMain;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-
+@Getter
+@Setter
 public class Profile {
-    protected UUID playerId;
-    protected String rankId;
-    protected int level, currentXp, nextXp;
-    protected transient Rank rank;
-    protected transient String playerName;
-    protected transient LocalDateTime cooldownTime;
-    protected transient boolean teleportActive = false;
+    private UUID userId;
+    private String rankId;
+    private int level, currentXp, nextXp;
+    
+    private transient Rank rank;
+    private transient LocalDateTime cooldownTime;
+    private transient boolean teleportActive = false;
 
-    public Profile(UUID playerId, String rankId, int level, int currentXp, int nextXp) {
-        this.playerId = playerId;
+    public Profile(UUID userId, String rankId, int level, int currentXp, int nextXp) {
+        this.userId = userId;
         this.rankId = rankId;
-        this.rank = new Rank("Program", "<Test Chat Role> ", "[Test Tab Role] ", 2, 5, 30, 50, false); // TODO: Program the RankDao.
         this.level = level;
         this.currentXp = currentXp;
         this.nextXp = nextXp;
+
+        //TODO: Modify this to take from ranks data
+        this.rank = new Rank("Test", "{TEST}", "[TEST]", 2, 10, 15, 250, true);
+    }
+
+    public static Profile getNewProfile(Player player, String rankId) {
+        return new Profile(player.getUniqueId(), rankId, 1, 0, 10);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -58,11 +64,11 @@ public class Profile {
             public void run() {
                 for (int i = 0; i < 90; i++) {
                     double radius = 0.5;
-                    double y = (radius * Math.sin(angle));
+                    double x = (radius * Math.sin(angle));
                     double z = (radius * Math.cos(angle));
                     angle -= 0.1;
 
-                    player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation().add(y, 2.5, z), 0, 0, -0.5, 0);
+                    player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation().add(x, 2.5, z), 0, 0, -0.5, 0);
                 }
             }
         }, 0, 10);
@@ -86,83 +92,5 @@ public class Profile {
         }, 20L * rank.getWarpDelay());
 
         this.cooldownTime = LocalDateTime.now().plusSeconds(rank.getWarpCooldown());
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Getters and Setters
-    ///////////////////////////////////////////////////////////////////////////
-
-
-    public UUID getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(UUID playerId) {
-        this.playerId = playerId;
-    }
-
-    public String getRankId() {
-        return rankId;
-    }
-
-    public void setRankId(String rankId) {
-        this.rankId = rankId;
-        //todo: get rank from RankDao
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public int getCurrentXp() {
-        return currentXp;
-    }
-
-    public void setCurrentXp(int currentXp) {
-        this.currentXp = currentXp;
-    }
-
-    public int getNextXp() {
-        return nextXp;
-    }
-
-    public void setNextXp(int nextXp) {
-        this.nextXp = nextXp;
-    }
-
-    public Rank getRank() {
-        return rank;
-    }
-
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-    }
-
-    public LocalDateTime getCooldownTime() {
-        return cooldownTime;
-    }
-
-    public void setCooldownTime(LocalDateTime cooldownTime) {
-        this.cooldownTime = cooldownTime;
-    }
-
-    public boolean isTeleportActive() {
-        return teleportActive;
-    }
-
-    public void setTeleportActive(boolean teleportActive) {
-        this.teleportActive = teleportActive;
     }
 }

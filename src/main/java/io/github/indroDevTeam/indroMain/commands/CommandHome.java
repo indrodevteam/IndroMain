@@ -23,30 +23,21 @@ public class CommandHome implements TabExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return false;
         Profile profile;
-        try {
-            if (IndroMain.getDataController().getDaoProfile().find(player.getUniqueId()).isPresent()) {
-                profile = IndroMain.getDataController().getDaoProfile().find(player.getUniqueId()).get();
-            } else {
-                throw new SQLException("Null Value Exception");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (IndroMain.getDataManager().getProfileDao().get(player.getUniqueId()).isEmpty()) {
+            IndroMain.getDataManager().getProfileDao().insert(Profile.getNewProfile(player, "default"));
         }
-
+        profile = IndroMain.getDataManager().getProfileDao().get(player.getUniqueId()).get();
 
         switch (label.toLowerCase(Locale.ROOT)) {
             case "home" -> { // warps you to a home
                 if (args.length == 1) {
                     Point point;
 
-                    try {
-                        if (IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).isPresent()) {
-                            point = IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).get();
-                        } else {
-                            throw new SQLException("Null Value Exception");
-                        }
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
+                    if (IndroMain.getDataManager().getPointDao().getByOwnerAndName(player.getUniqueId(), args[0]).isPresent()) {
+                        point = IndroMain.getDataManager().getPointDao().getByOwnerAndName(player.getUniqueId(), args[0]).get();
+                    } else {
+                        IndroMain.sendParsedMessage(player, "You don't have any points! Save one with /sethome <name>");
+                        return true;
                     }
 
                     if (point.getDistance(player) >= profile.getRank().getMaxDistance()) {
@@ -69,9 +60,9 @@ public class CommandHome implements TabExecutor {
                     Point point;
 
                     try {
-                        if (IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).isPresent()) {
-                            point = IndroMain.getDataController().getDaoPoint().find(player.getUniqueId(), args[0]).get();
-                            IndroMain.getDataController().getDaoPoint().delete(point);
+                        if (IndroMain.getDataManager().getPointDao().getByOwnerAndName(player.getUniqueId(), args[0]).isPresent()) {
+                            point = IndroMain.getDataManager().getPointDao().getByOwnerAndName(player.getUniqueId(), args[0]).get();
+                            IndroMain.getDataManager().getPointDao().delete(point);
                         } else {
                             throw new SQLException("Null Value Exception");
                         }
@@ -84,12 +75,7 @@ public class CommandHome implements TabExecutor {
                 }
             }
             case "listhomes" -> {
-                List<Point> pointList;
-                try {
-                    pointList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+                List<Point> pointList = IndroMain.getDataManager().getPointDao().getAllByOwner(player.getUniqueId());
 
                 LinkedList<String> points = new LinkedList<>();
                 points.add(ChatColor.BLUE + "+=======HOMES=======+");
@@ -108,12 +94,7 @@ public class CommandHome implements TabExecutor {
             }
             case "sethome" -> {
                 if (args.length == 1) {
-                    List<Point> pointList;
-                    try {
-                        pointList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
+                    List<Point> pointList = IndroMain.getDataManager().getPointDao().getAllByOwner(player.getUniqueId());
 
                     if (pointList.size() >= profile.getRank().getWarpCap()) {
                         IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "You have too many warps saved, delete one to add another!");
@@ -128,14 +109,10 @@ public class CommandHome implements TabExecutor {
                     }
 
                     String id = UUID.randomUUID().toString();
-                    try {
-                        IndroMain.getDataController().getDaoPoint().update(new Point(id, player.getUniqueId(), args[0], player.getLocation()));
-                        if (IndroMain.getDataController().getDaoPoint().find(UUID.fromString(id), args[0]).isEmpty()) {
-                            IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
-                            return true;
-                        }
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
+                    IndroMain.getDataManager().getPointDao().update(new Point(id, player.getUniqueId(), args[0], player.getLocation()));
+                    if (IndroMain.getDataManager().getPointDao().get(id).isEmpty()) {
+                        IndroMain.sendParsedMessage(player, ChatColor.RED + "The point couldn't be saved!");
+                        return true;
                     }
 
                     IndroMain.sendParsedMessage(player, ChatColor.AQUA + "The point was successfully saved!");
@@ -158,16 +135,11 @@ public class CommandHome implements TabExecutor {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> arguments = new ArrayList<>();
-        if (sender instanceof Player player) {
+        if (sender instanceof Player) {
             switch (alias.toLowerCase(Locale.ROOT)) {
                 case "home", "delhome" -> {
                     if (args.length == 1) {
-                        List<Point> userList;
-                        try {
-                            userList = IndroMain.getDataController().getDaoPoint().findAll(player.getUniqueId());
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
+                        List<Point> userList = IndroMain.getDataManager().getPointDao().getAll();
                         for (Point point: userList) {
                             arguments.add(point.getName());
                         }

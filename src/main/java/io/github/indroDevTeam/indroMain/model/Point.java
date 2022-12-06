@@ -1,6 +1,8 @@
 package io.github.indroDevTeam.indroMain.model;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -8,21 +10,23 @@ import org.bukkit.util.Vector;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class Point implements Serializable {
+@Getter
+@Setter
+public class Point {
     /* Variables */
-    protected String pointId;
-    protected UUID ownerId;
-    protected String name;
-    protected double x, y, z;
-    protected float pitch, yaw;
-    protected String worldName;
+    private UUID ownerId;
+    private String name;
+    private String desc;
+    private double x, y, z;
+    private float pitch, yaw;
+    private String worldName;
     
     /* Constructor */
 
-    public Point(String pointId, UUID ownerId, String name, double x, double y, double z, float pitch, float yaw, String worldName) {
-        this.pointId = pointId;
+    public Point(UUID ownerId, String name, String desc, double x, double y, double z, float pitch, float yaw, String worldName) {
         this.ownerId = ownerId;
         this.name = name;
+        this.desc = desc;
 
         this.x = x;
         this.y = y;
@@ -31,11 +35,11 @@ public class Point implements Serializable {
         this.yaw = yaw;
         this.worldName = worldName;
     }
-    
-    public Point(String pointId, UUID ownerId, String name, Location location) {
-        this.pointId = pointId;
+
+    public Point(UUID ownerId, String name, String desc, Location location) {
         this.ownerId = ownerId;
         this.name = name;
+        this.desc = desc;
 
         this.x = location.getX();
         this.y = location.getY();
@@ -69,79 +73,6 @@ public class Point implements Serializable {
 
             val = playerVector.distance(destiVector) * IndroMain.getInstance().getConfig().getInt("warp.crossWorldMultiplier");
         }
-
         return val;
-    }
-
-    public String getPointId() {
-        return pointId;
-    }
-
-    public void setPointId(String pointId) {
-        this.pointId = pointId;
-    }
-
-    public UUID getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(UUID ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    public void setZ(double z) {
-        this.z = z;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public void setPitch(float pitch) {
-        this.pitch = pitch;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public void setYaw(float yaw) {
-        this.yaw = yaw;
-    }
-
-    public String getWorldName() {
-        return worldName;
-    }
-
-    public void setWorldName(String worldName) {
-        this.worldName = worldName;
     }
 }

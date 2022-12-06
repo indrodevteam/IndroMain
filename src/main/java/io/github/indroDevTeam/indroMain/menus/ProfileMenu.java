@@ -1,32 +1,23 @@
 package io.github.indroDevTeam.indroMain.menus;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
 import io.github.indroDevTeam.indroMain.model.Profile;
 import me.kodysimpson.simpapi.exceptions.MenuManagerException;
 import me.kodysimpson.simpapi.exceptions.MenuManagerNotSetupException;
 import me.kodysimpson.simpapi.menu.Menu;
-import me.kodysimpson.simpapi.menu.MenuManager;
 import me.kodysimpson.simpapi.menu.PlayerMenuUtility;
 import net.md_5.bungee.api.ChatColor;
-
-import java.sql.SQLException;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class ProfileMenu extends Menu {
     private Profile profile;
 
     public ProfileMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
-        try {
-            if (IndroMain.getDataController().getDaoProfile().find(playerMenuUtility.getOwner().getUniqueId()).isPresent()) {
-                profile = IndroMain.getDataController().getDaoProfile().find(playerMenuUtility.getOwner().getUniqueId()).get();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (IndroMain.getDataManager().getProfileDao().get(playerMenuUtility.getOwner().getUniqueId()).isPresent()) {
+            profile = IndroMain.getDataManager().getProfileDao().get(playerMenuUtility.getOwner().getUniqueId()).get();
         }
     }
 
@@ -42,7 +33,7 @@ public class ProfileMenu extends Menu {
 
     @Override
     public int getSlots() {
-        return 27;
+        return 9;
     }
 
     @Override
