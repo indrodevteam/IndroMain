@@ -13,10 +13,10 @@ public class EventOnPlayerJoin implements Listener {
         Player player = e.getPlayer();
 
         Profile profile = Profile.getNewProfile(player, "default");
-        if (IndroMain.getDataManager().getProfileDao().get(player.getUniqueId()).isPresent()) {
-            profile = IndroMain.getDataManager().getProfileDao().get(player.getUniqueId()).get();
+        if (IndroMain.getDataManager().getProfile(player.getUniqueId()).isPresent()) {
+            profile = IndroMain.getDataManager().getProfile(player.getUniqueId()).get();
         } else {
-            IndroMain.getDataManager().getProfileDao().insert(profile);
+            IndroMain.getDataManager().createProfile(profile);
         }
 
         player.setDisplayName(profile.getRank().getChatTag() + player.getName());

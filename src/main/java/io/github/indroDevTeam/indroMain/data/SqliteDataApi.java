@@ -15,23 +15,36 @@ import java.util.UUID;
 public class SqliteDataApi implements DataAPI {
     private final IndroMain plugin;
 
-    public SqliteDataApi(IndroMain plugin) {
+    public SqliteDataApi(IndroMain plugin) throws SQLException {
         this.plugin = plugin;
+
+        File file = new File(plugin.getDataFolder(),"data.db");
+        if(!file.exists()) new File(plugin.getDataFolder().getPath()).mkdir();
+        createTables();
+    }
+
+    private void createTables() {
+        try (Connection conn = this.connect()) {
+            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS points (ownerId varchar(36), name varchar(16), desc varchar(255), x varchar(255), y varchar(255), z varchar(255), pitch varchar(255), yaw varchar(255), worldName varchar(255));");
+            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS profiles (userId varchar(36), rankId varchar(255), level int, currentXp int, nextXp int);");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private Connection connect() {
         // SQLite connection string
         String url = "jdbc:sqlite:" + plugin.getDataFolder().getAbsolutePath() + File.separator + "data.db";
         Connection conn = null;
+
         try {
             conn = DriverManager.getConnection(url);
-            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS points (ownerId varchar(36), name varchar(16), desc varchar(255), x varchar(255), y varchar(255), z varchar(255), pitch varchar(255), yaw varchar(255), worldName varchar(255)");
-            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS profiles (userId varchar(36), rankId varchar(255), level int, currentXp int, nextXp int);");
         } catch (SQLException e) {
             plugin.getLogger().severe(e.getMessage());
         }
         return conn;
     }
+
 
 
     @Override
@@ -58,11 +71,10 @@ public class SqliteDataApi implements DataAPI {
 
     @Override
     public Optional<Profile> getProfile(UUID userId) {
-        String sql = "SELECT * FROM profiles WHERE (userId = ?);";
+        String sql = "SELECT * FROM profiles WHERE userId = ?;";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
-
             stmt.setString(1, userId.toString());
 
             ResultSet rs = stmt.executeQuery();
@@ -150,7 +162,7 @@ public class SqliteDataApi implements DataAPI {
 
     @Override
     public Optional<Point> getPoint(UUID ownerId, String name) {
-        String sql = "SELECT * FROM points WHERE (ownerId = ?, name = ?);";
+        String sql = "SELECT * FROM points WHERE ownerId = ? AND name = ?;";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -159,7 +171,6 @@ public class SqliteDataApi implements DataAPI {
             stmt.setString(2, name);
 
             ResultSet rs = stmt.executeQuery();
-            rs.next(); // return the first row in the SQL query
 
             UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
             String name1 = rs.getString("name");
@@ -180,7 +191,7 @@ public class SqliteDataApi implements DataAPI {
     @Override
     public List<Point> getPointByOwner(UUID ownerId) {
         List<Point> points = new LinkedList<>();
-        String sql = "SELECT * FROM points WHERE (ownerId = ?);";
+        String sql = "SELECT * FROM points WHERE ownerId = ?;";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -238,7 +249,7 @@ public class SqliteDataApi implements DataAPI {
     @Override
     public boolean updatePoint(UUID ownerId, String name, Point newPoint) {
         int updateStatus;
-        String sql = "UPDATE points SET ownerId = ?, name = ?, desc = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, worldName = ? WHERE ownerId = ?, name = ?;";
+        String sql = "UPDATE points SET ownerId = ?, name = ?, desc = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, worldName = ? WHERE ownerId = ? AND name = ?;";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -266,7 +277,7 @@ public class SqliteDataApi implements DataAPI {
     @Override
     public boolean deletePoint(UUID ownerId, String name) {
         int updateStatus;
-        String sql = "DELETE FROM profiles WHERE userId = ?, name = ?";
+        String sql = "DELETE FROM points WHERE ownerId = ? AND name = ?";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);

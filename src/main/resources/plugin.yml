@@ -24,7 +24,3 @@ commands:
     usage: /<command>
 
   #Admin commands here
-  home-a:
-    description: lets players save locations then teleport to them
-    aliases: [ "sethome", "delhome", "listhomes", "profile" ]
-    usage: "Usage: /<command> [args]"

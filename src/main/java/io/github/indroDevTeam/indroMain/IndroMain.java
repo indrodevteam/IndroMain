@@ -1,15 +1,15 @@
 package io.github.indroDevTeam.indroMain;
 
-import io.github.indroDevTeam.indroMain.commands.CommandHome;
+import io.github.indroDevTeam.indroMain.commands.*;
 import io.github.indroDevTeam.indroMain.data.DataAPI;
+import io.github.indroDevTeam.indroMain.data.SqliteDataApi;
 import io.github.indroDevTeam.indroMain.events.EventOnPlayerJoin;
+import me.kodysimpson.simpapi.menu.MenuManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.kodysimpson.simpapi.menu.MenuManager;
-
-import java.io.IOException;
+import java.sql.SQLException;
 
 public class IndroMain extends JavaPlugin {
     private static IndroMain instance;
@@ -18,7 +18,13 @@ public class IndroMain extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        dataManager = ();
+        try {
+            dataManager = new SqliteDataApi(this);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
 
         if (!getDataFolder().exists()) {
             if (getDataFolder().mkdir()) {
@@ -46,6 +52,15 @@ public class IndroMain extends JavaPlugin {
     private void loadCommands() {
         this.getCommand("home").setExecutor(new CommandHome());
         this.getCommand("home").setTabCompleter(new CommandHome());
+
+        this.getCommand("sethome").setExecutor(new CommandSetHome());
+
+        this.getCommand("delhome").setExecutor(new CommandDelHome());
+        this.getCommand("delhome").setTabCompleter(new CommandDelHome());
+
+        this.getCommand("homes").setExecutor(new CommandHomes());
+
+        this.getCommand("profile").setExecutor(new CommandProfile());
     }
 
     private void loadEvents() {
