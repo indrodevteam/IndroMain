@@ -61,6 +61,7 @@ public class IndroMain extends JavaPlugin {
         this.getCommand("homes").setExecutor(new CommandHomes());
 
         this.getCommand("profile").setExecutor(new CommandProfile());
+        this.getCommand("profile").setExecutor(new CommandProfile());
     }
 
     private void loadEvents() {

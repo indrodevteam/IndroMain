@@ -28,13 +28,12 @@ public class CommandHome implements TabExecutor {
         profile = IndroMain.getDataManager().getProfile(player.getUniqueId()).get();
 
         if (args.length == 1) {
-            Point point;
-
             if (IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).isEmpty()) {
-                ChatUtils.sendFailure(player, "You don't have any points! Save one with /sethome <name>");
+                ChatUtils.sendFailure(player, "This point does not exist! Create one with /sethome <name> <desc...>");
                 return true;
             }
-            point = IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).get();
+            Point point = IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).get();
+
 
             if (point.getDistance(player) >= profile.getRank().getMaxDistance()) {
                 ChatUtils.sendFailure(player, "You're too far away to teleport there!");
