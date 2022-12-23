@@ -74,21 +74,28 @@ public class SqliteDataApi implements DataAPI {
         String sql = "SELECT * FROM profiles WHERE userId = ?;";
 
         try (Connection conn = this.connect()) {
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, userId.toString());
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, userId.toString());
 
-                ResultSet rs = stmt.executeQuery();
-
-                UUID userId1 = UUID.fromString(rs.getString("userId"));
-                String rankId = rs.getString("rankId");
-                int level = rs.getInt("level");
-                int currentXp = rs.getInt("currentXp");
-                int nextXp = rs.getInt("nextXp");
-
-                return Optional.of(new Profile(userId1, rankId, level, currentXp, nextXp));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.isClosed() || !rs.next()) {
+                return Optional.empty();
             }
+
+            UUID userId1 = UUID.fromString(rs.getString("userId"));
+            String rankId = rs.getString("rankId");
+            int level = rs.getInt("level");
+            int currentXp = rs.getInt("currentXp");
+            int nextXp = rs.getInt("nextXp");
+
+            // close files
+            rs.close();
+            stmt.close();
+
+            return Optional.of(new Profile(userId1, rankId, level, currentXp, nextXp));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return Optional.empty();
         }
     }
 

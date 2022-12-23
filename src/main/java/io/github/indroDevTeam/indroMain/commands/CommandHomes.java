@@ -30,7 +30,7 @@ public class CommandHomes implements CommandExecutor {
         profile = IndroMain.getDataManager().getProfile(player.getUniqueId()).get();
 
         /* Run checks for validity */
-        if (args.length != 1) {
+        if (args.length > 0) {
             ChatUtils.syntaxError(sender);
             return false;
         }
