@@ -40,9 +40,11 @@ public class CommandSetHome implements CommandExecutor {
             return true;
         }
 
+        /* Validation check passed */
         Point point = new Point(player.getUniqueId(), args[0], player.getLocation());
 
-
+        IndroMain.getDataManager().createPoint(point);
+        ChatUtils.sendSuccess(player, args[0] + " was successfully created!");
         return true;
     }
 }

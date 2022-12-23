@@ -1,6 +1,7 @@
 package io.github.indroDevTeam.indroMain.model;
 
 import io.github.indroDevTeam.indroMain.IndroMain;
+import io.github.indroDevTeam.indroMain.utils.ChatUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
@@ -40,6 +41,15 @@ public class Profile {
     ///////////////////////////////////////////////////////////////////////////
     // Class-based Methods
     ///////////////////////////////////////////////////////////////////////////
+
+    public void teleportXp(Player player) {
+        currentXp++;
+        if (currentXp >= nextXp) {
+            currentXp -= nextXp;
+            level++;
+            ChatUtils.sendSuccess(player, "You've been promoted to Lv" + level);
+        }
+    }
 
     public void warp(Player player, @NotNull Point point) {
         if (teleportActive) {

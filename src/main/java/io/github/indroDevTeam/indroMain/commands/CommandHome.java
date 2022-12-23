@@ -34,7 +34,7 @@ public class CommandHome implements TabExecutor {
         }
 
         if (IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).isEmpty()) {
-            ChatUtils.sendFailure(player, "This point does not exist! Create one with /sethome <name> <desc...>");
+            ChatUtils.sendFailure(player, "This point does not exist!");
             return true;
         }
         Point point = IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).get();
@@ -55,6 +55,9 @@ public class CommandHome implements TabExecutor {
 
         // teleport is cleared if it reaches here
         profile.warp(player, point);
+        profile.teleportXp(player);
+
+        IndroMain.getDataManager().updateProfile(player.getUniqueId(), profile);
         return true;
     }
 

@@ -151,12 +151,12 @@ public class SqliteDataApi implements DataAPI {
 
             stmt.setString(1, point.getOwnerId().toString());
             stmt.setString(2, point.getName());
-            stmt.setString(4, String.valueOf(point.getX()));
-            stmt.setString(5, String.valueOf(point.getY()));
-            stmt.setString(6, String.valueOf(point.getZ()));
-            stmt.setString(7, String.valueOf(point.getPitch()));
-            stmt.setString(8, String.valueOf(point.getYaw()));
-            stmt.setString(9, String.valueOf(point.getWorldName()));
+            stmt.setString(3, String.valueOf(point.getX()));
+            stmt.setString(4, String.valueOf(point.getY()));
+            stmt.setString(5, String.valueOf(point.getZ()));
+            stmt.setString(6, String.valueOf(point.getPitch()));
+            stmt.setString(7, String.valueOf(point.getYaw()));
+            stmt.setString(8, String.valueOf(point.getWorldName()));
 
             updateStatus = stmt.executeUpdate();
         } catch (SQLException e) {
@@ -177,6 +177,9 @@ public class SqliteDataApi implements DataAPI {
             stmt.setString(2, name);
 
             ResultSet rs = stmt.executeQuery();
+            if (rs.isClosed() || !rs.next()) {
+                return Optional.empty();
+            }
 
             UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
             String name1 = rs.getString("name");
@@ -231,7 +234,7 @@ public class SqliteDataApi implements DataAPI {
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) { // return the first row in the SQL query
+            while (rs.next() && !rs.isClosed()) { // return the first row in the SQL query
                 UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
                 String name1 = rs.getString("name");
                 double x = Double.parseDouble(rs.getString("x"));
@@ -259,14 +262,14 @@ public class SqliteDataApi implements DataAPI {
 
             stmt.setString(1, newPoint.getOwnerId().toString());
             stmt.setString(2, newPoint.getName());
-            stmt.setString(4, String.valueOf(newPoint.getX()));
-            stmt.setString(5, String.valueOf(newPoint.getY()));
-            stmt.setString(6, String.valueOf(newPoint.getPitch()));
-            stmt.setString(7, String.valueOf(newPoint.getYaw()));
-            stmt.setString(8, newPoint.getWorldName());
+            stmt.setString(3, String.valueOf(newPoint.getX()));
+            stmt.setString(4, String.valueOf(newPoint.getY()));
+            stmt.setString(5, String.valueOf(newPoint.getPitch()));
+            stmt.setString(6, String.valueOf(newPoint.getYaw()));
+            stmt.setString(7, newPoint.getWorldName());
 
-            stmt.setString(9, ownerId.toString());
-            stmt.setString(10, name);
+            stmt.setString(8, ownerId.toString());
+            stmt.setString(9, name);
 
             updateStatus = stmt.executeUpdate();
         } catch (SQLException e) {
