@@ -12,7 +12,7 @@ commands:
       - h
   sethome:
     description: Sets a player's home at their current location,
-    usage: /<command> <home_name> [desc]
+    usage: /<command> <home_name>
   delhome:
     description: Deletes a player's home from the list of homes
     usage: /<command> <home_name>

@@ -27,36 +27,35 @@ public class CommandHome implements TabExecutor {
         }
         profile = IndroMain.getDataManager().getProfile(player.getUniqueId()).get();
 
-        if (args.length == 1) {
-            if (IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).isEmpty()) {
-                ChatUtils.sendFailure(player, "This point does not exist! Create one with /sethome <name> <desc...>");
-                return true;
-            }
-            Point point = IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).get();
+        /* Run checks for validity */
+        if (args.length != 1) {
+            ChatUtils.syntaxError(sender);
+            return false;
+        }
 
-
-            if (point.getDistance(player) >= profile.getRank().getMaxDistance()) {
-                ChatUtils.sendFailure(player, "You're too far away to teleport there!");
-                return true;
-            }
-
-            if (!profile.getRank().isCrossWorldPermitted() || !player.getLocation().getWorld().getName().equals(point.getLocation().getWorld().getName())) {
-                ChatUtils.sendFailure(player, "This point is outside your dimension...");
-                return true;
-            }
-
-            if (profile.isTeleportActive()) {
-                ChatUtils.sendFailure(player, "You're already teleporting to somewhere else!");
-                return true;
-            }
-
-            // teleport is cleared if the teleport is there...
-            profile.warp(player, point);
+        if (IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).isEmpty()) {
+            ChatUtils.sendFailure(player, "This point does not exist! Create one with /sethome <name> <desc...>");
+            return true;
+        }
+        Point point = IndroMain.getDataManager().getPoint(player.getUniqueId(), args[0]).get();
+        if (point.getDistance(player) >= profile.getRank().getMaxDistance()) {
+            ChatUtils.sendFailure(player, "You're too far away to teleport there!");
             return true;
         }
 
-        ChatUtils.syntaxError(sender);
-        return false;
+        if (!profile.getRank().isCrossWorldPermitted() || !player.getLocation().getWorld().getName().equals(point.getLocation().getWorld().getName())) {
+            ChatUtils.sendFailure(player, "This point is outside your dimension...");
+            return true;
+        }
+
+        if (profile.isTeleportActive()) {
+            ChatUtils.sendFailure(player, "You're already teleporting to somewhere else!");
+            return true;
+        }
+
+        // teleport is cleared if it reaches here
+        profile.warp(player, point);
+        return true;
     }
 
     @Override

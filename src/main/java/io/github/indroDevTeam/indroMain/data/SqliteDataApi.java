@@ -25,7 +25,7 @@ public class SqliteDataApi implements DataAPI {
 
     private void createTables() {
         try (Connection conn = this.connect()) {
-            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS points (ownerId varchar(36), name varchar(16), desc text, x varchar(255), y varchar(255), z varchar(255), pitch varchar(255), yaw varchar(255), worldName varchar(255));");
+            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS points (ownerId varchar(36), name varchar(16), x varchar(255), y varchar(255), z varchar(255), pitch varchar(255), yaw varchar(255), worldName varchar(255));");
             conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS profiles (userId varchar(36), rankId varchar(255), level int, currentXp int, nextXp int);");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,19 +74,19 @@ public class SqliteDataApi implements DataAPI {
         String sql = "SELECT * FROM profiles WHERE userId = ?;";
 
         try (Connection conn = this.connect()) {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, userId.toString());
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, userId.toString());
 
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
+                ResultSet rs = stmt.executeQuery();
 
-            UUID userId1 = UUID.fromString(rs.getString("userId"));
-            String rankId = rs.getString("rankId");
-            int level = rs.getInt("level");
-            int currentXp = rs.getInt("currentXp");
-            int nextXp = rs.getInt("nextXp");
+                UUID userId1 = UUID.fromString(rs.getString("userId"));
+                String rankId = rs.getString("rankId");
+                int level = rs.getInt("level");
+                int currentXp = rs.getInt("currentXp");
+                int nextXp = rs.getInt("nextXp");
 
-            return Optional.of(new Profile(userId1, rankId, level, currentXp, nextXp));
+                return Optional.of(new Profile(userId1, rankId, level, currentXp, nextXp));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -137,14 +137,13 @@ public class SqliteDataApi implements DataAPI {
     @Override
     public boolean createPoint(Point point) {
         int updateStatus;
-        String sql = "INSERT INTO points VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO points VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, point.getOwnerId().toString());
             stmt.setString(2, point.getName());
-            stmt.setString(3, point.getDesc());
             stmt.setString(4, String.valueOf(point.getX()));
             stmt.setString(5, String.valueOf(point.getY()));
             stmt.setString(6, String.valueOf(point.getZ()));
@@ -174,7 +173,6 @@ public class SqliteDataApi implements DataAPI {
 
             UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
             String name1 = rs.getString("name");
-            String desc = rs.getString("desc");
             double x = Double.parseDouble(rs.getString("x"));
             double y = Double.parseDouble(rs.getString("y"));
             double z = Double.parseDouble(rs.getString("z"));
@@ -182,7 +180,7 @@ public class SqliteDataApi implements DataAPI {
             float yaw = Float.parseFloat(rs.getString("yaw"));
             String worldName = rs.getString("worldName");
 
-            return Optional.of(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName));
+            return Optional.of(new Point(ownerId1, name1, x, y, z, pitch, yaw, worldName));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -202,7 +200,6 @@ public class SqliteDataApi implements DataAPI {
             while (rs.next()) { // return the first row in the SQL query
                 UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
                 String name1 = rs.getString("name");
-                String desc = rs.getString("desc");
                 double x = Double.parseDouble(rs.getString("x"));
                 double y = Double.parseDouble(rs.getString("y"));
                 double z = Double.parseDouble(rs.getString("z"));
@@ -210,7 +207,7 @@ public class SqliteDataApi implements DataAPI {
                 float yaw = Float.parseFloat(rs.getString("yaw"));
                 String worldName = rs.getString("worldName");
 
-                points.add(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName));
+                points.add(new Point(ownerId1, name1, x, y, z, pitch, yaw, worldName));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -230,7 +227,6 @@ public class SqliteDataApi implements DataAPI {
             while (rs.next()) { // return the first row in the SQL query
                 UUID ownerId1 = UUID.fromString(rs.getString("ownerId"));
                 String name1 = rs.getString("name");
-                String desc = rs.getString("desc");
                 double x = Double.parseDouble(rs.getString("x"));
                 double y = Double.parseDouble(rs.getString("y"));
                 double z = Double.parseDouble(rs.getString("z"));
@@ -238,7 +234,7 @@ public class SqliteDataApi implements DataAPI {
                 float yaw = Float.parseFloat(rs.getString("yaw"));
                 String worldName = rs.getString("worldName");
 
-                points.add(new Point(ownerId1, name1, desc, x, y, z, pitch, yaw, worldName));
+                points.add(new Point(ownerId1, name1, x, y, z, pitch, yaw, worldName));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -249,14 +245,13 @@ public class SqliteDataApi implements DataAPI {
     @Override
     public boolean updatePoint(UUID ownerId, String name, Point newPoint) {
         int updateStatus;
-        String sql = "UPDATE points SET ownerId = ?, name = ?, desc = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, worldName = ? WHERE ownerId = ? AND name = ?;";
+        String sql = "UPDATE points SET ownerId = ?, name = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, worldName = ? WHERE ownerId = ? AND name = ?;";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, newPoint.getOwnerId().toString());
             stmt.setString(2, newPoint.getName());
-            stmt.setString(3, newPoint.getDesc());
             stmt.setString(4, String.valueOf(newPoint.getX()));
             stmt.setString(5, String.valueOf(newPoint.getY()));
             stmt.setString(6, String.valueOf(newPoint.getPitch()));
@@ -293,6 +288,7 @@ public class SqliteDataApi implements DataAPI {
         return updateStatus != 0;
     }
 
+    //TODO: Implement Rank System...
     @Override
     public boolean createRank(Rank rank) {
         return false;

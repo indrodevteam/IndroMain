@@ -7,19 +7,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.Optional;
+import java.util.PriorityQueue;
+
 public class EventOnPlayerJoin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
 
-        Profile profile = Profile.getNewProfile(player, "default");
-        if (IndroMain.getDataManager().getProfile(player.getUniqueId()).isPresent()) {
-            profile = IndroMain.getDataManager().getProfile(player.getUniqueId()).get();
-        } else {
-            IndroMain.getDataManager().createProfile(profile);
+        Optional<Profile> profile = IndroMain.getDataManager().getProfile(player.getUniqueId());
+        if (profile.isEmpty()) {
+            profile = Optional.of(Profile.getNewProfile(player, "default"));
+            IndroMain.getDataManager().createProfile(profile.get());
         }
 
-        player.setDisplayName(profile.getRank().getChatTag() + player.getName());
-        player.setPlayerListName(profile.getRank().getTabTag() + player.getName());
+        player.setDisplayName(profile.get().getRank().getChatTag() + player.getName());
+        player.setPlayerListName(profile.get().getRank().getTabTag() + player.getName());
     }
 }

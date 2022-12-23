@@ -16,17 +16,15 @@ public class Point {
     /* Variables */
     private UUID ownerId;
     private String name;
-    private String desc;
     private double x, y, z;
     private float pitch, yaw;
     private String worldName;
     
     /* Constructor */
 
-    public Point(UUID ownerId, String name, String desc, double x, double y, double z, float pitch, float yaw, String worldName) {
+    public Point(UUID ownerId, String name, double x, double y, double z, float pitch, float yaw, String worldName) {
         this.ownerId = ownerId;
         this.name = name;
-        this.desc = desc;
 
         this.x = x;
         this.y = y;
@@ -36,10 +34,9 @@ public class Point {
         this.worldName = worldName;
     }
 
-    public Point(UUID ownerId, String name, String desc, Location location) {
+    public Point(UUID ownerId, String name, Location location) {
         this.ownerId = ownerId;
         this.name = name;
-        this.desc = desc;
 
         this.x = location.getX();
         this.y = location.getY();
