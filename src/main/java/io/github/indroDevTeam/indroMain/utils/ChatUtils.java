@@ -1,5 +1,6 @@
 package io.github.indroDevTeam.indroMain.utils;
 
+import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -30,5 +31,9 @@ public class ChatUtils {
 
     public static void syntaxError(CommandSender s) {
         sendError(s, "ERROR: Syntax Error!");
+    }
+
+    public static String format(String message) {
+        return ColorTranslator.translateColorCodes(message);
     }
 }

@@ -1,6 +1,7 @@
 package io.github.indroDevTeam.indroMain;
 
 import io.github.indroDevTeam.indroMain.commands.*;
+import io.github.indroDevTeam.indroMain.commands.ranks.CommandRankInfo;
 import io.github.indroDevTeam.indroMain.data.DataAPI;
 import io.github.indroDevTeam.indroMain.data.SqliteDataApi;
 import io.github.indroDevTeam.indroMain.events.EventOnPlayerJoin;
@@ -66,7 +67,18 @@ public class IndroMain extends JavaPlugin {
         this.getCommand("profile").setExecutor(new CommandProfile());
         this.getCommand("profile").setExecutor(new CommandProfile());
 
-        CommandManager.createCoreCommand(this, "rank", "Handles the rank section of the plugin",);
+        try {
+            CommandManager.createCoreCommand(
+                    this,
+                    "rank",
+                    "Handles the rank section of the plugin",
+                    "/<command> <args>",
+                    null,
+                    CommandRankInfo.class
+            );
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadEvents() {

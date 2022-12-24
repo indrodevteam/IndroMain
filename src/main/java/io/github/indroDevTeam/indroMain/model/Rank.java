@@ -3,8 +3,11 @@ package io.github.indroDevTeam.indroMain.model;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.advancement.Advancement;
+import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -39,5 +42,12 @@ public class Rank {
         this.warpCooldown = warpCooldown;
         this.maxDistance = maxDistance;
         this.crossWorldPermitted = crossWorldPermitted;
+    }
+
+    public Map<Advancement, Boolean> isPlayerPromotable(Player player) {
+        Map<Advancement, Boolean> map = new HashMap<>();
+        for (Advancement ad: advanceRequired) map.put(ad, player.getAdvancementProgress(ad).isDone());
+
+        return map;
     }
 }
