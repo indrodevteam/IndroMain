@@ -1,7 +1,7 @@
 name: IndroMain
 version: ${project.version}
 main: io.github.indroDevTeam.indroMain.IndroMain
-api-version: 1.17
+api-version: 1.19
 author: skyQuiz
 
 commands:
