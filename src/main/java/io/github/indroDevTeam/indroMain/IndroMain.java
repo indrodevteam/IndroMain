@@ -4,11 +4,13 @@ import io.github.indroDevTeam.indroMain.commands.*;
 import io.github.indroDevTeam.indroMain.data.DataAPI;
 import io.github.indroDevTeam.indroMain.data.SqliteDataApi;
 import io.github.indroDevTeam.indroMain.events.EventOnPlayerJoin;
+import me.kodysimpson.simpapi.command.CommandManager;
 import me.kodysimpson.simpapi.menu.MenuManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class IndroMain extends JavaPlugin {
@@ -18,14 +20,6 @@ public class IndroMain extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        try {
-            dataManager = new SqliteDataApi(this);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            getPluginLoader().disablePlugin(this);
-            return;
-        }
-
         if (!getDataFolder().exists()) {
             if (getDataFolder().mkdir()) {
                 getLogger().info("Config folder created successfully!");
@@ -36,6 +30,15 @@ public class IndroMain extends JavaPlugin {
                 return;
             }
         }
+
+        try {
+            dataManager = new SqliteDataApi(this);
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
+
 
         MenuManager.setup(getServer(), this);
 
@@ -62,6 +65,8 @@ public class IndroMain extends JavaPlugin {
 
         this.getCommand("profile").setExecutor(new CommandProfile());
         this.getCommand("profile").setExecutor(new CommandProfile());
+
+        CommandManager.createCoreCommand(this, "rank", "Handles the rank section of the plugin",);
     }
 
     private void loadEvents() {

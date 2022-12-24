@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface DataAPI {
+    void deinit();
+
 
     /* Profile */
     // create
@@ -45,6 +47,8 @@ public interface DataAPI {
     
     // read
     Optional<Rank> getRank(String name);
+
+    List<Rank> getAllRanks();
     
     // update
     boolean updateRank(String name, Rank newRank);

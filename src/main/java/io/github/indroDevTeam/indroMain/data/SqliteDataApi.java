@@ -1,32 +1,36 @@
 package io.github.indroDevTeam.indroMain.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.github.indroDevTeam.indroMain.IndroMain;
 import io.github.indroDevTeam.indroMain.model.Point;
 import io.github.indroDevTeam.indroMain.model.Profile;
 import io.github.indroDevTeam.indroMain.model.Rank;
 
-import java.io.File;
+import java.io.*;
 import java.sql.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class SqliteDataApi implements DataAPI {
     private final IndroMain plugin;
+    private List<Rank> ranks;
 
-    public SqliteDataApi(IndroMain plugin) throws SQLException {
+    public SqliteDataApi(IndroMain plugin) throws SQLException, IOException {
         this.plugin = plugin;
 
         File file = new File(plugin.getDataFolder(),"data.db");
         if(!file.exists()) new File(plugin.getDataFolder().getPath()).mkdir();
         createTables();
+
+        // create ranks here
+        ranks = new ArrayList<>();
+        loadRanks();
     }
 
     private void createTables() {
         try (Connection conn = this.connect()) {
             conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS points (ownerId varchar(36), name varchar(16), x varchar(255), y varchar(255), z varchar(255), pitch varchar(255), yaw varchar(255), worldName varchar(255));");
-            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS profiles (userId varchar(36), rankId varchar(255), level int, currentXp int, nextXp int);");
+            conn.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS profiles (userId varchar(36), rankName varchar(255), level int, currentXp int, nextXp int);");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,6 +50,14 @@ public class SqliteDataApi implements DataAPI {
     }
 
 
+    @Override
+    public void deinit() {
+        try {
+            saveRanks();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public boolean createProfile(Profile profile) {
@@ -56,7 +68,7 @@ public class SqliteDataApi implements DataAPI {
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, profile.getUserId().toString());
-            stmt.setString(2, profile.getRankId());
+            stmt.setString(2, profile.getRankName());
             stmt.setInt(3, profile.getLevel());
             stmt.setInt(4, profile.getCurrentXp());
             stmt.setInt(5, profile.getNextXp());
@@ -83,7 +95,7 @@ public class SqliteDataApi implements DataAPI {
             }
 
             UUID userId1 = UUID.fromString(rs.getString("userId"));
-            String rankId = rs.getString("rankId");
+            String rankName = rs.getString("rankName");
             int level = rs.getInt("level");
             int currentXp = rs.getInt("currentXp");
             int nextXp = rs.getInt("nextXp");
@@ -92,7 +104,12 @@ public class SqliteDataApi implements DataAPI {
             rs.close();
             stmt.close();
 
-            return Optional.of(new Profile(userId1, rankId, level, currentXp, nextXp));
+
+            Rank rank = getRank(rankName).isPresent() ? getRank(rankName).get() : null;
+            if (rank == null) {
+                return Optional.empty();
+            }
+            return Optional.of(new Profile(userId1, rank, level, currentXp, nextXp));
         } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();
@@ -102,13 +119,13 @@ public class SqliteDataApi implements DataAPI {
     @Override
     public boolean updateProfile(UUID userId, Profile newProfile) {
         int updateStatus;
-        String sql = "UPDATE profiles SET userId = ?, rankId = ?, level = ?, currentXp = ?, nextXp = ? WHERE userId = ?;";
+        String sql = "UPDATE profiles SET userId = ?, rankName = ?, level = ?, currentXp = ?, nextXp = ? WHERE userId = ?;";
 
         try (Connection conn = this.connect()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, newProfile.getUserId().toString());
-            stmt.setString(2, newProfile.getRankId());
+            stmt.setString(2, newProfile.getRankName());
             stmt.setInt(3, newProfile.getLevel());
             stmt.setInt(4, newProfile.getCurrentXp());
             stmt.setInt(5, newProfile.getNextXp());
@@ -301,21 +318,86 @@ public class SqliteDataApi implements DataAPI {
     //TODO: Implement Rank System...
     @Override
     public boolean createRank(Rank rank) {
-        return false;
+        ranks.add(rank);
+        return true;
     }
 
     @Override
     public Optional<Rank> getRank(String name) {
+        for (Rank rank : ranks) {
+            if (rank.getName().equals(name)) {
+                return Optional.of(rank);
+            }
+        }
         return Optional.empty();
     }
 
     @Override
     public boolean updateRank(String name, Rank newRank) {
+        for (Rank rank : ranks) {
+            if (rank.getName().equals(name)) {
+                rank.setName(newRank.getName());
+                rank.setChatTag(newRank.getChatTag());
+                rank.setTabTag(newRank.getTabTag());
+
+                rank.setWarpCap(newRank.getWarpCap());
+                rank.setWarpDelay(newRank.getWarpDelay());
+                rank.setWarpCooldown(newRank.getWarpCooldown());
+                rank.setMaxDistance(newRank.getMaxDistance());
+                rank.setCrossWorldPermitted(newRank.isCrossWorldPermitted());
+
+                rank.setAdvanceRequired(newRank.getAdvanceRequired());
+                rank.setNextRanks(newRank.getNextRanks());
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean deleteRank(String name) {
-        return false;
+        return ranks.removeIf(rank -> rank.getName().equalsIgnoreCase(name));
+    }
+
+    @Override
+    public List<Rank> getAllRanks() {
+        return ranks;
+    }
+
+    public void saveRanks() throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(plugin.getDataFolder(),"ranks.json");
+        if (!file.exists()) {
+            file.getParentFile().mkdir();
+            file.createNewFile();
+        }
+
+        Writer writer = new FileWriter(file, false);
+        gson.toJson(ranks, writer);
+        writer.flush();
+        writer.close();
+    }
+
+    public void loadRanks() throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(plugin.getDataFolder(),"ranks.json");
+        if (!file.exists()) {
+            loadFromResource();
+            return;
+        }
+        Rank[] model = gson.fromJson(new FileReader(file), Rank[].class);
+        ranks = new ArrayList<>(Arrays.asList(model));
+    }
+
+    private void loadFromResource() throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(IndroMain.getInstance().getDataFolder() + File.separator + "ranks.json");
+        if (file.exists()) {return;}
+
+        InputStream rankStream = IndroMain.getInstance().getResource("ranks.json");
+        assert rankStream != null;
+        InputStreamReader inputStreamReader = new InputStreamReader(rankStream);
+        ranks = new ArrayList<>(Arrays.asList(gson.fromJson(inputStreamReader, Rank[].class)));
+        saveRanks();
     }
 }

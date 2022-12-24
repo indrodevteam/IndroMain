@@ -2,6 +2,9 @@ package io.github.indroDevTeam.indroMain.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.advancement.Advancement;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -10,6 +13,10 @@ public class Rank {
     private String name;
     private String chatTag;
     private String tabTag;
+
+    // rank promotions
+    private List<String> nextRanks;
+    private List<Advancement> advanceRequired;
 
     // warp data
     private int warpCap;
@@ -20,10 +27,13 @@ public class Rank {
 
     /* Constructors */
     public Rank(String name, String chatTag, String tabTag,
+                List<String> nextRanks, List<Advancement> advanceRequired,
                 int warpCap, int warpDelay, int warpCooldown, int maxDistance, boolean crossWorldPermitted) {
         this.name = name;
         this.chatTag = chatTag;
         this.tabTag = tabTag;
+        this.nextRanks = nextRanks;
+        this.advanceRequired = advanceRequired;
         this.warpCap = warpCap;
         this.warpDelay = warpDelay;
         this.warpCooldown = warpCooldown;

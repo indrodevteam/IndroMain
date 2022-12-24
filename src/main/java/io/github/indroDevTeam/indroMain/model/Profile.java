@@ -16,26 +16,28 @@ import java.util.UUID;
 @Setter
 public class Profile {
     private UUID userId;
-    private String rankId;
+    private String rankName;
     private int level, currentXp, nextXp;
     
     private transient Rank rank;
     private transient LocalDateTime cooldownTime;
     private transient boolean teleportActive = false;
 
-    public Profile(UUID userId, String rankId, int level, int currentXp, int nextXp) {
+    public Profile(UUID userId, Rank rank, int level, int currentXp, int nextXp) {
         this.userId = userId;
-        this.rankId = rankId;
         this.level = level;
         this.currentXp = currentXp;
         this.nextXp = nextXp;
 
-        //TODO: Modify this to take from ranks data
-        this.rank = new Rank("Test", "{TEST}", "[TEST]", 2, 10, 15, 250, true);
+        this.rank = rank;
+        this.rankName = rank.getName();
     }
 
-    public static Profile getNewProfile(Player player, String rankId) {
-        return new Profile(player.getUniqueId(), rankId, 1, 0, 10);
+    public static Profile getNewProfile(Player player, String rankName) {
+        Rank rank = IndroMain.getDataManager().getRank(rankName).isPresent() ? IndroMain.getDataManager().getRank(rankName).get() : null;
+        if (rank == null) throw new RuntimeException("This rank doesn't exist!");
+
+        return new Profile(player.getUniqueId(), rank, 1, 0, 10);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -78,26 +80,25 @@ public class Profile {
                     double z = (radius * Math.cos(angle));
                     angle -= 0.1;
 
-                    player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation().add(x, 2.5, z), 0, 0, -0.5, 0);
+                    player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, player.getLocation().add(x, 2, z), 0, 0, -0.5, 0);
                 }
             }
         }, 0, 10);
 
         Bukkit.getScheduler().runTaskLater(IndroMain.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(id);
-            if (player.getType().isAlive()) {
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
-                location.getChunk().load();
-                player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
-                player.teleport(location);
-                IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleport deployed!");
-
-                this.setCurrentXp(this.getCurrentXp() + 1);
+            if (!player.getType().isAlive()) {
+                IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "Teleport failed!");
                 teleportActive = false;
                 return;
             }
-            
-            IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "Teleport failed!"); 
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
+            location.getChunk().load();
+            player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
+            player.teleport(location);
+            IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleport deployed!");
+
+            this.setCurrentXp(this.getCurrentXp() + 1);
             teleportActive = false;
         }, 20L * rank.getWarpDelay());
 
