@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class CommandRankInfo extends SubCommand {
     @Override
@@ -55,25 +54,26 @@ public class CommandRankInfo extends SubCommand {
         Map<Advancement, Boolean> map = rank.isPlayerPromotable(player);
 
         for (Advancement advancement: map.keySet()) {
+            builder.append("\n&9 - &r");
             builder.append(map.get(advancement) ? ChatColor.GREEN : ChatColor.RED);
-            builder.append(Objects.requireNonNull(advancement.getDisplay()).getTitle()).append(ChatColor.RESET).append(", ");
+            builder.append(advancement.getDisplay().getTitle()).append(ChatColor.RESET);
         }
 
         List<String> list = new ArrayList<>();
 
         list.add(ChatUtils.format("&9-------+ RANK DATA +-------"));
-        list.add(ChatUtils.format("&9Rank Name - " + rank.getName()));
-        list.add(ChatUtils.format("&9Displayed Chat Name - " + rank.getChatTag() + player.getName()));
-        list.add(ChatUtils.format("&9Displayed Tab Name - " + rank.getTabTag() + player.getName()));
+        list.add(ChatUtils.format("&9Rank Name: &r" + rank.getName()));
+        list.add(ChatUtils.format("&9Displayed Chat Name: &r" + rank.getChatTag() + player.getName()));
+        list.add(ChatUtils.format("&9Displayed Tab Name: &r" + rank.getTabTag() + player.getName()));
         list.add(ChatUtils.format(""));
-        list.add(ChatUtils.format("&9Promotable Ranks - " + rank.getNextRanks().toString()));
-        list.add(ChatUtils.format("&9Advancement Status - " + builder));
+        list.add(ChatUtils.format("&9Promotable Ranks: &r" + rank.getNextRanks().toString()));
+        list.add(ChatUtils.format("&9Advancement Status: &r" + builder));
         list.add(ChatUtils.format(""));
-        list.add(ChatUtils.format("&9Warp Distance - " + rank.getMaxDistance()));
-        list.add(ChatUtils.format("&9Warp Delay - " + rank.getWarpDelay()));
-        list.add(ChatUtils.format("&9Warp Cooldown - " + rank.getWarpCooldown()));
-        list.add(ChatUtils.format("&9Max Points - " + rank.getWarpCap()));
-        list.add(ChatUtils.format("&9Cross Teleport Permitted - " + rank.getWarpCooldown()));
+        list.add(ChatUtils.format("&9Warp Distance: &r" + rank.getMaxDistance()));
+        list.add(ChatUtils.format("&9Warp Delay: &r" + rank.getWarpDelay()));
+        list.add(ChatUtils.format("&9Warp Cooldown: &r" + rank.getWarpCooldown()));
+        list.add(ChatUtils.format("&9Max Point: &r" + rank.getWarpCap()));
+        list.add(ChatUtils.format("&9Cross Teleport Permitted: &r" + (rank.isCrossWorldPermitted() ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No")));
         list.add(ChatUtils.format("&9-------+ END RANK DATA +-------"));
 
         for (String s: list) player.sendMessage(s);

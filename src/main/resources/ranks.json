@@ -1,5 +1,14 @@
 [
   {
-
+    "name": "default",
+    "chatTag": "{TEST} ",
+    "tabTag": "[TEST] ",
+    "nextRanks": [],
+    "advanceRequired": ["story/mine_stone", "story/upgrade_tools"],
+    "warpCap": 3,
+    "warpDelay": 10,
+    "warpCooldown": 15,
+    "maxDistance": 300,
+    "crossWorldPermitted": "true"
   }
 ]

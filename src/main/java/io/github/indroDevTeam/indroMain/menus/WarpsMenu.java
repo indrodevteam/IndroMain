@@ -14,14 +14,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class WarpsMenu extends Menu {
     private Profile profile;
-    private List<Point> points;
+    private final List<Point> points;
     public WarpsMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
         if (IndroMain.getDataManager().getProfile(playerMenuUtility.getOwner().getUniqueId()).isPresent()) {
@@ -74,14 +72,13 @@ public class WarpsMenu extends Menu {
             return;
         }
 
-        if (profile.isTeleportActive()) {
+        if (IndroMain.getCooldowns().checkTeleportStatus(p)) {
             ChatUtils.sendFailure(p, "You're already teleporting to somewhere else!");
             return;
         }
 
         // teleport is cleared if it reaches here
         profile.warp(p, point);
-        profile.teleportXp(p);
 
         IndroMain.getDataManager().updateProfile(p.getUniqueId(), profile);
     }

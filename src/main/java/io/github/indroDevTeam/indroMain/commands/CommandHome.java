@@ -48,14 +48,13 @@ public class CommandHome implements TabExecutor {
             return true;
         }
 
-        if (profile.isTeleportActive()) {
+        if (IndroMain.getCooldowns().checkTeleportStatus(player)) {
             ChatUtils.sendFailure(player, "You're already teleporting to somewhere else!");
             return true;
         }
 
         // teleport is cleared if it reaches here
         profile.warp(player, point);
-        profile.teleportXp(player);
 
         IndroMain.getDataManager().updateProfile(player.getUniqueId(), profile);
         return true;

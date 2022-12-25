@@ -8,8 +8,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Getter
@@ -18,10 +16,7 @@ public class Profile {
     private UUID userId;
     private String rankName;
     private int level, currentXp, nextXp;
-    
-    private transient Rank rank;
-    private transient LocalDateTime cooldownTime;
-    private transient boolean teleportActive = false;
+    private Rank rank;
 
     public Profile(UUID userId, Rank rank, int level, int currentXp, int nextXp) {
         this.userId = userId;
@@ -44,30 +39,34 @@ public class Profile {
     // Class-based Methods
     ///////////////////////////////////////////////////////////////////////////
 
-    public void teleportXp(Player player) {
+    private void teleportXp(Player player) {
         currentXp++;
         if (currentXp >= nextXp) {
             currentXp -= nextXp;
             level++;
-            ChatUtils.sendSuccess(player, "You've been promoted to Lv" + level);
+            ChatUtils.sendSuccess(player, "You've been promoted to Level " + level);
         }
     }
 
     public void warp(Player player, @NotNull Point point) {
+        boolean teleportCooldown = IndroMain.getCooldowns().isPlayerTeleportable(this);
+        boolean teleportActive = IndroMain.getCooldowns().checkTeleportStatus(player);
+        int timeRemaining = IndroMain.getCooldowns().getRemainingTime(this);
+
         if (teleportActive) {
             IndroMain.sendParsedMessage(player, ChatColor.BLUE + "A teleport is already queued up, please wait for that to complete before teleporting again.");
             return;
         }
 
-        if (cooldownTime != null && LocalDateTime.now().isBefore(cooldownTime)) {
-            IndroMain.sendParsedMessage(player, ChatColor.BLUE + "You've recently warped, wait " + (cooldownTime.toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) + " seconds!");
+        if (teleportCooldown) {
+            IndroMain.sendParsedMessage(player, ChatColor.BLUE + "You've recently warped, wait " + timeRemaining + " seconds!");
             return;
         }
 
         // conditions have been fulfilled for a teleport
         IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleporting...");
         Location location = point.getLocation();
-        teleportActive = true;
+        IndroMain.getCooldowns().setTeleportStatus(player, true);
 
         int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(IndroMain.getInstance(), new Runnable() {
             private double angle = 360;
@@ -80,8 +79,9 @@ public class Profile {
                     double z = (radius * Math.cos(angle));
                     angle -= 0.1;
 
-                    player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, player.getLocation().add(x, 2, z), 0, 0, -0.5, 0);
+                    player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, player.getLocation().add(x, 2.75, z), 0, 0, -0.5, 0);
                 }
+                player.playSound(player.getLocation(), Sound.ENTITY_FROG_TONGUE, 0.5f, 0f);
             }
         }, 0, 10);
 
@@ -89,19 +89,20 @@ public class Profile {
             Bukkit.getScheduler().cancelTask(id);
             if (!player.getType().isAlive()) {
                 IndroMain.sendParsedMessage(player, ChatColor.YELLOW + "Teleport failed!");
-                teleportActive = false;
+                IndroMain.getCooldowns().setTeleportStatus(player, false);
                 return;
             }
+
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
             location.getChunk().load();
             player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 3, 0);
             player.teleport(location);
             IndroMain.sendParsedMessage(player, ChatColor.BLUE + "Teleport deployed!");
 
-            this.setCurrentXp(this.getCurrentXp() + 1);
-            teleportActive = false;
+            teleportXp(player);
+            player.setNoDamageTicks(40);
+            IndroMain.getCooldowns().setTeleportStatus(player, false);
+            IndroMain.getCooldowns().addTeleportCooldown(this);
         }, 20L * rank.getWarpDelay());
-
-        this.cooldownTime = LocalDateTime.now().plusSeconds(rank.getWarpCooldown());
     }
 }
